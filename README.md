@@ -1,13 +1,13 @@
 # Backend Team
 
-Name | Nickname | Rolle
+Name | Nickname | GitHub Nick | Rolle
 ------------ | ------------ | ------------
-Mathis | Block | Teamleitung
-Timo | Kohlmeier | Entwickler
-Lukas | Hitzemann | Entwickler
-Anestis Lalidis | Mateo | Entwickler
-Sebastian | Steinmeyer | Entwickler
-Julian | Wasilewski | Entwickler
+Mathis | Block | vMysterion| Teamleitung
+Timo | Kohlmeier | Wambo04 | Entwickler
+Lukas | Hitzemann | Batschko | Entwickler
+Anestis Lalidis | Mateo | Nesti024 | Entwickler
+Sebastian | Steinmeyer | CrappyAlgorithm | Entwickler
+Julian | Wasilewski | JulianWasilewski | Entwickler
 
 # Einrichtung der Entwicklungsumgebung in VSCode:
 - Projekt clonen
