@@ -1,8 +1,8 @@
 # Backend Team
 
 Name | Nickname | GitHub Nick | Rolle
------------- | ------------ | ------------
-Mathis | Block | vMysterion| Teamleitung
+------------ | ------------ | ------------ | ------------
+Mathis | Block | vMysterion | Teamleitung
 Timo | Kohlmeier | Wambo04 | Entwickler
 Lukas | Hitzemann | Batschko | Entwickler
 Anestis Lalidis | Mateo | Nesti024 | Entwickler
