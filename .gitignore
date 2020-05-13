@@ -2,3 +2,4 @@
 #Folder#
 ########
 venv/
+__pycache__/
