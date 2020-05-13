@@ -9,10 +9,14 @@ Anestis Lalidis | Mateo | Nesti024 | Entwickler
 Sebastian | Steinmeyer | CrappyAlgorithm | Entwickler
 Julian | Wasilewski | JulianWasilewski | Entwickler
 
-# Einrichtung der Entwicklungsumgebung in VSCode:
+# Einrichtung der Entwicklungsumgebung:
+- MariaDB 10.x installieren
+-- zur besseren Kompatibilität bitte Nutzer="root" und Passwort="softwareprojekt2020" verwenden
+-- bei abweichenden Daten muss dies unter backend/util/db.py angepasst werden (bitte nicht commiten!)
 - Projekt clonen
 - Projektordner in der Konsole öffnen
-- Falls nicht vorhanden virtualenv installieren
+- Falls nicht vorhanden virtualenv installieren (wird ergänzt falls nötig)
+- Virtual Environment anlegen
 - Linux: 
 ```sh
 $ python3 -m venv venv
@@ -21,23 +25,40 @@ $ python3 -m venv venv
 ```sh
 $ python -m venv venv
 ```
-- Projektordner in VSCode öffnen
-- Python extension
-- Strg+Shift+P "Python: Select Interpreter" auswählen
-- Den Interpreter mit der Angabe "venv" auswählen
-- Rechtsklick auf den Ordner venv und "Open in Terminal" auswählen
+- Virtual Enviroment starten
+- Linux:
+```sh
+$ folgt noch
+```
+- Windows:
+```sh
+$ .\venv\Scripts\activate.bat
+```
+- Nun sollte vor dem Komandozeilenpromt (venv) erscheinen
+- Installieren der notwendigen Pakete
 - Linux: 
 ```sh
 $ pip3 install flask
+$ pip3 install mysql-connector
 ```
 - Windows:
 ```sh
 $ pip install flask
+$ pip install mysql-connector
 ```
 
 # Starten der Anwendung:
 - In der Konsole ins Hauptverzeichnis des Projekts wechseln
-- Setzen von 2 enviroment Variablen
+- Virtual Enviroment starten
+- Linux:
+```sh
+$ folgt noch
+```
+- Windows:
+```sh
+$ .\venv\Scripts\activate.bat
+```
+- Setzen von 2 Enviroment Variablen
 - Linux: 
 ```sh
 $ export FLASK_APP=backend
@@ -57,6 +78,7 @@ $ flask <Befehl>
 Befehl | Beschreibung
 --- | ---
 run | startet das Backend
+init-db | initialisiert bzw bereinigt die Datenbank
 
 # Startparameter für run
 Parameter | Beschreibung
