@@ -1,22 +1,22 @@
 ## @package backend.util.db
-#  @author Sebastian Steinmeyer
 #  Handles the functionality for the database access
 import mysql.connector as mariadb
 import click
 from flask import current_app, g
 from flask.cli import with_appcontext
 
+## set the configuration of the database connection
+db_config = {
+  'user': 'root',
+  'password': 'softwareprojekt2020',
+  'host': 'localhost'
+}
+
 ## Get the database.
 #  @return the database object
 def get_db():
     if 'db' not in g:
-        conn = mariadb.connect(
-            user='root',
-            password='softwareprojekt2020',
-            host="localhost",
-            database='mydb'
-        )
-        g.db = conn.cursor()
+        g.db = mariadb.connect(**db_config)
     return g.db
 
 ## Close the database.
@@ -27,15 +27,11 @@ def close_db(e=None):
 
 ## Initiates the database with the schema file.
 def init_db():
-    conn = mariadb.connect(
-        user='root',
-        password='softwareprojekt2020',
-        host="localhost")
-    db = conn.cursor()
+    cursor = get_db().cursor()
     with current_app.open_resource('sql_scripts/test_schema.sql') as f:
         commands = f.read().decode('utf-8').split(';')
         for command in commands:
-            db.execute(command)
+            cursor.execute(command)
         
 
 ## Defines the flask command for initializing the database.
@@ -46,7 +42,7 @@ def init_db_command():
     click.echo('Initialized and cleared the database.')
 
 ## Adds the commands and close context to the given app.
-#  @param app the app to register the commands in
+#  @param app the app the commands should registered to
 def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
