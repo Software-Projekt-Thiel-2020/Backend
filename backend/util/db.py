@@ -28,8 +28,9 @@ def close_db(e=None):
 ## Initiates the database with the schema file.
 def init_db():
     cursor = get_db().cursor()
-    with current_app.open_resource('sql_scripts/test_schema.sql') as f:
+    with current_app.open_resource('sql_scripts/schema.sql') as f:
         commands = f.read().decode('utf-8').split(';')
+        commands = commands[: len(commands) - 1]
         for command in commands:
             cursor.execute(command)
         
