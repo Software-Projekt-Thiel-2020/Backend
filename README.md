@@ -28,7 +28,7 @@ $ python -m venv venv
 - Virtual Enviroment starten
 - Linux:
 ```sh
-$ folgt noch
+$ source venv/bin/activate
 ```
 - Windows:
 ```sh
@@ -52,7 +52,7 @@ $ pip install mysql-connector
 - Virtual Enviroment starten
 - Linux:
 ```sh
-$ folgt noch
+$ $ source venv/bin/activate
 ```
 - Windows:
 ```sh
@@ -85,3 +85,34 @@ Parameter | Beschreibung
 --- | ---
 -h host-ip :text | Angabe der Socket-IP. Mögliche externe IP's können mit ifconfig eingesehen werden.
 -p port :integer | Angabe des Socket-Port.
+
+# Raspberry Testumgebung
+Bei Fragen bitte an CrappyAlgorithm (Sebastian Steinmeyer) wenden.
+## ssh Zugriff 
+- falls nicht vorhanden ssh Client installieren (z.B. Putty)
+
+Verbindungsdaten:
+```
+IP: 84.118.2.15
+Port: 222
+Nutzername: pi
+Passwort: softwareprojekt2020
+```
+
+## Backend starten
+- Virtual Enviroment wie oben erklärt starten
+- fall nötig mit folgendem Befehl die Datenbank bereinigen
+```sh
+$ flask init-db
+```
+- Flask starten:
+```sh
+$ flask run -h 192.168.178.50 
+```
+- Das Backend ist nun unter folgenden Verbindungsdaten erreichbar:
+```
+IP: 84.118.2.15
+Port: 80
+```
+
+
