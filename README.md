@@ -95,8 +95,6 @@ Verbindungsdaten:
 ```
 IP: 84.118.2.15
 Port: 222
-Nutzername: pi
-Passwort: softwareprojekt2020
 ```
 
 ## Backend starten
