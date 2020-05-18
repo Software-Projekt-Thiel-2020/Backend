@@ -1,7 +1,7 @@
 ## @package backend.resources.register
 #  Handles the register ressources.
 #  See rest api documentation for further information.
-from flask import (Blueprint, Response, request,jsonify)
+from flask import (Blueprint, Response, request,json)
 from backend.util.db import get_db
 
 
@@ -9,15 +9,22 @@ bp = Blueprint('institutions', __name__, url_prefix='/api/institutions') # set b
 
 ## Handles the ressource <base>/sample with GET and POST.
 @bp.route('',methods=['GET'])
-def register():
+def institutions():
+    id = request.args.get('id', default = 0, type = int)
     cursor = get_db().cursor()
-    test = request.args.get('id', default = 0, type = int)
-    if request.method == 'GET': #handle get request on base_url/sample
-        cursor.execute('use mydb;') 
-        cursor.execute('select idInstitution,nameInstitution,webpageInstitution from institution;') #execute statemant
-        version = cursor.fetchall() #fetch database response | see fetchmany(size=x) and fetchall()
+    cursor.execute('use mydb;') 
+    if(id==0):
+      cursor.execute('select idInstitution,nameInstitution,webpageInstitution from institution;')
+      data = cursor.fetchall() 
+    else:
+      cursor.execute('select idInstitution,nameInstitution,webpageInstitution from institution WHERE idInstitution='+str(id)+';') 
+      data = cursor.fetchall() 
 
-        json1=jsonify(version)
-        return json1, 201
-       #return Response(json1, status=200,mimetype='application/json')
+    names=["id","name","webpage"]
+    json_data=[]
+    for result in data:
+       json_data.append(dict(zip(names,result)))
+
+    jstring = json.dumps(json_data)
+    return Response(jstring, status=200,mimetype='application/json')
     
