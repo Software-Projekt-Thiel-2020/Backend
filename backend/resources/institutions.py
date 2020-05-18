@@ -13,7 +13,7 @@ def institutions():
       cursor.execute('select idInstitution,nameInstitution,webpageInstitution from institution;')
       data = cursor.fetchall() 
     else:
-      cursor.execute('select idInstitution,nameInstitution,webpageInstitution from institution WHERE idInstitution='+str(id)+';') 
+      cursor.execute('select idInstitution,nameInstitution,webpageInstitution from institution WHERE idInstitution = %s', (id,)) 
       data = cursor.fetchall() 
 
     names=["id","name","webpage"]
