@@ -1,13 +1,9 @@
-## @package backend.resources.register
-#  Handles the register ressources.
-#  See rest api documentation for further information.
 from flask import (Blueprint, Response, request,json)
 from backend.util.db import get_db
 
 
 bp = Blueprint('institutions', __name__, url_prefix='/api/institutions') # set blueprint name and resource path
 
-## Handles the ressource <base>/sample with GET and POST.
 @bp.route('',methods=['GET'])
 def institutions():
     id = request.args.get('id', default = 0, type = int)
