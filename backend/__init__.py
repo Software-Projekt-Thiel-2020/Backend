@@ -30,10 +30,11 @@ def create_app(test_config=None):
     #add new resources in this block
     from backend.resources import ( 
         sample,
-        institutions
+        institutions,
+        projects
     )
     app.register_blueprint(sample.bp)
     app.register_blueprint(institutions.bp)
-    
+    app.register_blueprint(projects.bp)
 
     return app
