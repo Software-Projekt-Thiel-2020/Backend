@@ -5,7 +5,7 @@ bp = Blueprint('projects', __name__, url_prefix='/api/projects')
 
 
 @bp.route('', methods=['GET'])
-def projects():
+def projects_get():
     """
     Handles the resource <base>/api/projects with GET.
 
@@ -36,7 +36,7 @@ def projects():
 
 
 @bp.route('', methods=['POST'])
-def projects():
+def projects_post():
     """
     Handles the resource <base>/api/projects with POST.
 
