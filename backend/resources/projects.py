@@ -6,14 +6,12 @@ bp = Blueprint('projects', __name__, url_prefix='/api/projects') #set blueprint 
 ## Handles the ressource <base>/api/projects with GET and POST.
 @bp.route('',methods=['GET'])
 def projects():
-    error = None
     args = request.args
     if request.method == 'GET':
         cursor = get_db().cursor()
         id = args.get('id')
         instid = args.get('idinstitution')
         cursor.execute('use mydb')
-        resp = None
         if id is not None and instid is not None:
             cursor.execute('select * from project where idProject = %s and fkInstitutionProject = %s', (id, instid))
         elif id is not None and instid is None:
@@ -28,8 +26,7 @@ def projects():
         for result in cursor:
             json_data.append(dict(zip(json_names,result)))
 
-        json_str = json.dumps(json_data)
-        return Response(json_str, status=200, mimetype='application/json')
+        return json_data
         
     else:
         abort(400)
