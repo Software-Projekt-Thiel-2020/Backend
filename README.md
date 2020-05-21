@@ -17,58 +17,56 @@ Julian | Wasilewski | JulianWasilewski | Entwickler
 - Projektordner in der Konsole öffnen
 - Falls nicht vorhanden virtualenv installieren (wird ergänzt falls nötig)
 - Virtual Environment anlegen
-- Linux: 
-```sh
-$ python3 -m venv venv
-```
-- Windows:
-```sh
-$ python -m venv venv
-```
+    - Linux: 
+    ```sh
+    $ python3 -m venv venv
+    ```
+    - Windows:
+    ```sh
+    $ python -m venv venv
+    ```
 - Virtual Enviroment starten
-- Linux:
-```sh
-$ source venv/bin/activate
-```
-- Windows:
-```sh
-$ .\venv\Scripts\activate.bat
-```
+    - Linux:
+    ```sh
+    $ source venv/bin/activate
+    ```
+    - Windows:
+    ```sh
+    $ .\venv\Scripts\activate.bat
+    ```
 - Nun sollte vor dem Komandozeilenpromt (venv) erscheinen
 - Installieren der notwendigen Pakete
-- Linux: 
-```sh
-$ pip3 install flask
-$ pip3 install mysql-connector
-```
-- Windows:
-```sh
-$ pip install flask
-$ pip install mysql-connector
-```
+    - Linux: 
+    ```sh
+    $ pip3 install -r requirements.txt
+    ```
+    - Windows:
+    ```sh
+    $ pip install -r requirements.txt
+    ```
 
 # Starten der Anwendung:
 - In der Konsole ins Hauptverzeichnis des Projekts wechseln
 - Virtual Enviroment starten
-- Linux:
-```sh
-$ $ source venv/bin/activate
-```
-- Windows:
-```sh
-$ .\venv\Scripts\activate.bat
-```
+    - Linux:
+    ```sh
+    $ $ source venv/bin/activate
+    ```
+    - Windows:
+    ```sh
+    $ .\venv\Scripts\activate.bat
+    ```
 - Setzen von 2 Enviroment Variablen
-- Linux: 
-```sh
-$ export FLASK_APP=backend
-$ export FLASK_ENV=development
-```
-- Windows:
-```sh
-$ set FLASK_APP=backend
-$ set FLASK_ENV=development
-```
+    - Linux: 
+    ```sh
+    $ export FLASK_APP=backend
+    $ export FLASK_ENV=development
+    ```
+    - Windows:
+    ```sh
+    $ set FLASK_APP=backend
+    $ set FLASK_ENV=development
+    ```
 - Nun kann die Anwendung wie folgt genutzt werden
 ```sh
 $ flask <Befehl>
@@ -114,3 +112,14 @@ Port: 80
 ```
 
 
+# Code linting und Statische Analyse
+- Zum testen vor einem PR bitte mit:
+    - Linux:
+    ```sh
+    $ ./CI.sh
+    ```
+    - Windows:
+    ```sh
+    $ CI.bat
+    ```
+    prüfen ob keine Fehler mehr da sind.
