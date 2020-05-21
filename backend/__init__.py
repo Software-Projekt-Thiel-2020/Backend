@@ -28,12 +28,13 @@ def create_app(test_config=None):
     db.init_app(app)
 
     #add new resources in this block
-    from backend.resources import ( 
+    from .resources import ( 
         sample,
-        institutions
+        institutions,
+        projects,
     )
     app.register_blueprint(sample.bp)
     app.register_blueprint(institutions.bp)
-    
+    app.register_blueprint(projects.bp)
 
     return app
