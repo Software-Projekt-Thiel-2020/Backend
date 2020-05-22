@@ -30,6 +30,7 @@ pylint:
     - too-few-public-methods
     - missing-docstring
     - star-args
+    - import-error
 
 pep8:
   full: true
@@ -45,6 +46,9 @@ pep257:
     - D205
     - D400
     - D401
+    - D212
+  enable:
+    - D213
 
 mccabe:
   run: true
