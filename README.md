@@ -11,8 +11,8 @@ Julian | Wasilewski | JulianWasilewski | Entwickler
 
 # Einrichtung der Entwicklungsumgebung:
 - MariaDB 10.x installieren
--- zur besseren Kompatibilität bitte Nutzer="root" und Passwort="softwareprojekt2020" verwenden
--- bei abweichenden Daten muss dies unter backend/util/db.py angepasst werden (bitte nicht commiten!)
+-- zur besseren Kompatibilität bitte Nutzer="backend" und Passwort="softwareprojekt2020" erstellen
+-- bei abweichenden Daten muss dies in der _backend_config.ini_ angepasst werden (bitte nicht commiten!)
 - Projekt clonen
 - Projektordner in der Konsole öffnen
 - Falls nicht vorhanden virtualenv installieren (wird ergänzt falls nötig)
