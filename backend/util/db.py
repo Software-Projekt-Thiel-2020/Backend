@@ -1,14 +1,18 @@
 """Handles the functionality for the database access."""
+import configparser
 import click
 import mysql.connector as mariadb
 from flask import current_app, g
 from flask.cli import with_appcontext
 
+CFG_PARSER = configparser.ConfigParser()
+CFG_PARSER.read("backend_config.ini")
+
 # set the configuration of the database connection
 DB_CONFIG = {
-    'user': 'backend',
-    'password': 'softwareprojekt2020',
-    'host': 'localhost'
+    'user': CFG_PARSER["DB"]["USER"],
+    'password': CFG_PARSER["DB"]["PASSWORD"],
+    'host': CFG_PARSER["DB"]["HOST"],
 }
 
 

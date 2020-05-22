@@ -1,10 +1,9 @@
 
-#Folder#
-########
 venv_pypy/
 .idea/
 .mypy_cache
 .prospector
+.backend_config.ini
 
 # https://github.com/github/gitignore/blob/master/Python.gitignore
 # Byte-compiled / optimized / DLL files
