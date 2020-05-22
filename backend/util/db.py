@@ -1,49 +1,70 @@
-## @package backend.util.db
-#  Handles the functionality for the database access
-import mysql.connector as mariadb
+"""Handles the functionality for the database access."""
 import click
+import mysql.connector as mariadb
 from flask import current_app, g
 from flask.cli import with_appcontext
 
-## set the configuration of the database connection
-db_config = {
-  'user': 'root',
-  'password': 'softwareprojekt2020',
-  'host': 'localhost'
+# set the configuration of the database connection
+DB_CONFIG = {
+    'user': 'backend',
+    'password': 'softwareprojekt2020',
+    'host': 'localhost'
 }
 
-## Get the database.
-#  @return the database object
+
 def get_db():
+    """
+    Get the database.
+
+    :return: the database object
+    """
     if 'db' not in g:
-        g.db = mariadb.connect(**db_config)
+        g.db = mariadb.connect(**DB_CONFIG)
     return g.db
 
-## Close the database.
-def close_db(e=None):
-    db = g.pop('db', None)
-    if db is not None:
-        db.close()
 
-## Initiates the database with the schema file.
+def close_db(_):
+    """
+    Close the database.
+    :return: -
+    """
+    try:
+        g.pop('db', None).close()
+    except AttributeError:
+        pass
+
+
 def init_db():
+    """
+    Initiates the database with the schema file.
+
+    :return: -
+    """
     cursor = get_db().cursor()
-    with current_app.open_resource('sql_scripts/schema.sql') as f:
-        commands = f.read().decode('utf-8').split(';')
+    with current_app.open_resource('sql_scripts/schema.sql') as sql_file:
+        commands = sql_file.read().decode('utf-8').split(';')
         commands = commands[: len(commands) - 1]
         for command in commands:
             cursor.execute(command)
-        
 
-## Defines the flask command for initializing the database.
+
 @click.command('init-db')
 @with_appcontext
 def init_db_command():
+    """
+    Defines the flask command for initializing the database.
+
+    :return: -
+    """
     init_db()
     click.echo('Initialized and cleared the database.')
 
-## Adds the commands and close context to the given app.
-#  @param app the app the commands should registered to
+
 def init_app(app):
+    """
+    Adds the commands and close context to the given app.
+    :param app: the app the commands should registered to
+    :return: -
+    """
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
