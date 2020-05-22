@@ -3,7 +3,7 @@ Handles the register ressources.
 See rest api documentation for further information.
 """
 from flask import Blueprint
-from backend.util.db import get_db
+from backend.database.db import get_db
 
 BP = Blueprint('sample', __name__, url_prefix='/sample')  # set blueprint name and resource path
 
@@ -13,7 +13,7 @@ def register_get():  # noqa
     """
     Handles GET for resource <base>/api/sample .
 
-    :return: DB version
+    :return: database version
     """
     cursor = get_db().cursor()
 

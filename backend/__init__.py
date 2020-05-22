@@ -1,8 +1,8 @@
 """The application factory of the backend."""
 import os
 from flask import Flask
-from backend.util import db
-from .resources import sample, institutions, projects  # add new resources here
+from backend.database import db
+from backend.resources import BLUEPRINTS
 
 
 def create_app(test_config=None):  # noqa
@@ -30,8 +30,7 @@ def create_app(test_config=None):  # noqa
 
     db.init_app(app)
 
-    app.register_blueprint(sample.BP)
-    app.register_blueprint(institutions.BP)
-    app.register_blueprint(projects.BP)
+    for blueprint in BLUEPRINTS:
+        app.register_blueprint(blueprint)
 
     return app

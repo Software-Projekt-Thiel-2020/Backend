@@ -1,7 +1,7 @@
 """Handles the functionality for the database access."""
 import configparser
 import click
-import mysql.connector as mariadb
+from mysql import connector
 from flask import current_app, g
 from flask.cli import with_appcontext
 
@@ -10,9 +10,9 @@ CFG_PARSER.read("backend_config.ini")
 
 # set the configuration of the database connection
 DB_CONFIG = {
-    'user': CFG_PARSER["DB"]["USER"],
-    'password': CFG_PARSER["DB"]["PASSWORD"],
-    'host': CFG_PARSER["DB"]["HOST"],
+    'user': CFG_PARSER["Database"]["USER"],
+    'password': CFG_PARSER["Database"]["PASSWORD"],
+    'host': CFG_PARSER["Database"]["HOST"],
 }
 
 
@@ -22,8 +22,8 @@ def get_db():
 
     :return: the database object
     """
-    if 'db' not in g:
-        g.db = mariadb.connect(**DB_CONFIG)
+    if 'database' not in g:
+        g.db = connector.connect(**DB_CONFIG)
     return g.db
 
 
@@ -33,7 +33,7 @@ def close_db(_):
     :return: -
     """
     try:
-        g.pop('db', None).close()
+        g.pop('database', None).close()
     except AttributeError:
         pass
 

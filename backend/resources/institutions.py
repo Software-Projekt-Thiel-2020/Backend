@@ -1,6 +1,6 @@
 """Institution Resource."""
 from flask import Blueprint, request, jsonify
-from backend.util.db import get_db
+from backend.database.db import get_db
 
 BP = Blueprint('institutions', __name__, url_prefix='/api/institutions')  # set blueprint name and resource path
 
