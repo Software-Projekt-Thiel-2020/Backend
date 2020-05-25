@@ -9,6 +9,12 @@ Anestis Lalidis | Mateo | Nesti024 | Entwickler
 Sebastian | Steinmeyer | CrappyAlgorithm | Entwickler
 Julian | Wasilewski | JulianWasilewski | Entwickler
 
+# Abhängigkeiten installieren:
+- Über pip die requirements.txt als Quelle nutzen, um die Abhängigkeiten zu installieren
+```
+$ pip install -r requirements.txt
+```
+
 # Einrichtung der Entwicklungsumgebung:
 - MariaDB 10.x installieren
 -- zur besseren Kompatibilität bitte Nutzer="backend" und Passwort="softwareprojekt2020" erstellen
