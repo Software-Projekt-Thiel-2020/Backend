@@ -38,6 +38,7 @@ def projects_get():  # noqa
 
     return jsonify(json_data)
 
+
 @BP.route('/<id>', methods=['GET'])
 def projects_id(id):  # noqa
     """
@@ -48,6 +49,7 @@ def projects_id(id):  # noqa
     """
 
     return jsonify({'status': str(id)})
+
 
 @BP.route('', methods=['POST'])
 def projects_post():  # noqa
