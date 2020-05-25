@@ -47,7 +47,7 @@ def projects_id(id):  # noqa
     :return: Project and all it's milestones
     """
 
-    return jsonify({'status': str(id) })
+    return jsonify({'status': str(id)})
 
 @BP.route('', methods=['POST'])
 def projects_post():  # noqa
