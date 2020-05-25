@@ -2,6 +2,7 @@ import configparser
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 import alchemy_decl as ad
+from db import get_session
 
 CFG_PARSER = configparser.ConfigParser()
 CFG_PARSER.read("../../backend_config.ini")  # run this script as local py file to let the path work
@@ -19,7 +20,7 @@ engine = create_engine(db_uri)
 print(engine.table_names())
 
 Session = sessionmaker(bind=engine)
-session = Session()
+session = get_session()
 
 for project in session.query(ad.Project):
     print(project.idProject, project.nameProject)

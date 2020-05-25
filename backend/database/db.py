@@ -4,6 +4,8 @@ import click
 from mysql import connector
 from flask import current_app, g
 from flask.cli import with_appcontext
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine
 
 CFG_PARSER = configparser.ConfigParser()
 CFG_PARSER.read("backend_config.ini")
@@ -14,6 +16,21 @@ DB_CONFIG = {
     'password': CFG_PARSER["Database"]["PASSWORD"],
     'host': CFG_PARSER["Database"]["HOST"],
 }
+
+
+def get_session():
+    """
+    Get the SQLAlchemy database session
+
+    :return: the session object
+    """
+    db_uri = 'mysql+pymysql://' + DB_CONFIG['user'] + ':' + DB_CONFIG['password'] + '@' + DB_CONFIG['host'] + '/mydb'
+
+    engine = create_engine(db_uri)
+    print(engine.table_names())
+
+    _session = sessionmaker(bind=engine)
+    return _session()
 
 
 def get_db():
