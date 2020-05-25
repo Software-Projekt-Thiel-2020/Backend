@@ -38,6 +38,16 @@ def projects_get():  # noqa
 
     return jsonify(json_data)
 
+@BP.route('/<id>', methods=['GET'])
+def projects_id(id):  # noqa
+    """
+    Handles GET for resource <base>/api/projects/<id> .
+
+    :parameter ID of a project
+    :return: Project and all it's milestones
+    """
+
+    return jsonify({'status': str(id) })
 
 @BP.route('', methods=['POST'])
 def projects_post():  # noqa
