@@ -21,18 +21,17 @@ def user_get():  # noqa
     cursor.execute('use mydb')
 
     if name_user:
-        cursor.execute('SELECT idUser, usernameUser, firstnameUser, lastnameUser, emailUser, publickeyUser,'
-                       ' privatekeyUser FROM user WHERE usernameUser = %s', (name_user,))
+        cursor.execute('SELECT idUser, usernameUser, firstnameUser, lastnameUser, emailUser, publickeyUser'
+                       ' FROM user WHERE usernameUser = %s', (name_user,))
         data = cursor.fetchall()
     elif id_user:
-        cursor.execute('SELECT idUser, usernameUser, firstnameUser, lastnameUser, emailUser, publickeyUser,'
-                       ' privatekeyUser FROM user WHERE idUser = %s', (id_user,))
+        cursor.execute('SELECT idUser, usernameUser, firstnameUser, lastnameUser, emailUser, publickeyUser'
+                       ' FROM user WHERE idUser = %s', (id_user,))
         data = cursor.fetchall()
-    names = ["id", "username", "firstname", "lastname", "email", "publickey", "privateKey"]
+    names = ["id", "username", "firstname", "lastname", "email", "publickey"]
     json_data = []
     for result in data:
         res = dict(zip(names, result))
         res["publickey"] = res["publickey"].decode("utf-8").rstrip("\x00")
-        res["privateKey"] = res["privateKey"].decode("utf-8").rstrip("\x00")
         json_data.append(res)
     return jsonify(json_data)
