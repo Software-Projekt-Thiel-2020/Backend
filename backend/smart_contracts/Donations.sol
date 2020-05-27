@@ -1,27 +1,21 @@
 pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
+//pragma experimental ABIEncoderV2;
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
 contract Project is Ownable{
   
   //time variable -> wie verkleinert -> timestamp?
   
-  //donor als datenstruktur damit project seine donor kennt.
-  
   //wie sinnvoll ist es geld abzuheben? -> minimum voting betrag wird sinnlos
-  
-  //gas requirement infinite?
   
   //negative votes nötig?
   
-  //wenn Zeit abgelaufen darf nicht mehr gewählt werden
+  //ToDo: wenn Zeit abgelaufen darf nicht mehr gewählt werden
   
-  //donor pro Milestone entscheiden ob er voten möchte (kann er nicht mehr ändern!)
-  
-  //voting methode lieber in project als in donor!
-  
- //Fehlt: Spenden werden ausgezahlt, wenn (voting)Ziel erreicht ist und minDonation erreicht wurde? Was wenn nicht erreicht?
- // '-> project hat ein button zum auszahlen der Donor beträge. Button funktioniert nur wenn Bedingungen erreicht.
+ //ToDo: Spenden werden ausgezahlt, wenn (voting)Ziel erreicht ist und minDonation erreicht wurde? Was wenn nicht erreicht?
+ // '-> project hat ein button zum auszahlen der Donor beträge (an owner). Button funktioniert nur wenn Bedingungen erreicht.
+ //Geld befindet sich momentan im Donor contract, sinnvoll?
  
+ //Viele Methoden noch unsicher! Jeder kann sie aufrufen -> welche? (vor allem setter)
  
  
   constructor(int _time) public{
@@ -34,9 +28,13 @@ contract Project is Ownable{
   }
   
   mapping(uint8 => Milestone) public milestones;
+  mapping(address => Donor) public donors;
   uint8 milestonesCounter = 0;
 
   int time; // wie lange darf noch gevoted werden? Auf Projekt oder auf Milestone bezogen?
+ 
+  enum votePosition{ POSITIVE_VOTE, NEGATIVE_VOTE}
+ 
   
   struct Milestone {
     bytes name;            // muss in hex übergeben werden
@@ -51,27 +49,30 @@ contract Project is Ownable{
     
   }
   
-    //getter und setter um sie im donor contract zu benutzen
-  function getMilestoneMinDonToVote(uint8 _milestoneId) view public returns (uint256){
-      return milestones[_milestoneId].minDonToVote;
+  function setDonatedAmount(uint8 milestoneId,uint256 amount)public{
+        milestones[milestoneId].donatedAmount += amount;
   }
   
-  //kann von jedem aufgerufen werden
-  function setDonatedAmount(uint8 milestoneId, uint256 amount) external{
-      milestones[milestoneId].donatedAmount += amount;
-  }
+   event Vote(uint8 milestoneId, address donor_add,votePosition vp);
   
-  //kann von jedem (auch owner) aufgerufen werden!!
-  function setMilestoneVotePositive(uint8 _milestoneId) external {
-     
-        milestones[_milestoneId].positiveVotes += 1;
-      
-  }
-  function setMilestoneVoteNegative(uint8 _milestoneId) external {
-        milestones[_milestoneId].negativeVotes += 1;
-      
-  }
-   
+    //ToDo: überprüfen ob der aufrufer der Donor der addresse ist! -> wie?
+    // erhöht den wahl counter des projects(positiv oder negativ).
+    //Problem: wenn man in remix value auf 5 ether stellt und 5 zahlt wird counter um 5 erhöht. Bei wei genau so.
+    function vote(uint8 milestoneId, address donor_add,votePosition vp) public {
+        if(donors[donor_add].getWantsToVote(milestoneId) && (donors[donor_add].getDonatedAmountPerMilestone(milestoneId) >= milestones[milestoneId].minDonation) 
+        && (donors[donor_add].getVotedMilestones(milestoneId) == false)){
+            if(vp == votePosition.POSITIVE_VOTE){
+                milestones[milestoneId].positiveVotes++;
+            } else if(vp == votePosition.NEGATIVE_VOTE){
+                milestones[milestoneId].negativeVotes++;
+            }
+            donors[donor_add].setVotedMilestones(milestoneId);
+            emit Vote(milestoneId,donor_add,vp);
+        }
+    }    
+    
+    
+  
    event AddMilestone(bytes _name, uint256 _minDonation, uint128 _neededVotes,uint128 _minDonToVote,uint32 positiveVotes,uint32 negativeVotes);
    
    //fügt einen neuen Meilenstein hinzu. Prüft ob das Ziel höher ist als beim letzten (beim ersten nicht)
@@ -114,46 +115,42 @@ contract Donor is Ownable{
     Project project;
     
     
-    //Spender mit bestimmten Projekt verbinden, er muss die Adresse (öffentlich abrufbar) des Projects eingeben und ob er wählen möchte.
-    //'-> ob er wählen möchte wird in project verschoben
-    constructor(address ProjectAddress, bool _wantsToVote) public{
+    //Spender mit bestimmten Projekt verbinden, er muss die Adresse (öffentlich abrufbar) des Projects eingeben
+    constructor(address ProjectAddress) public{
         project = Project(ProjectAddress);
-        wantsToVote = _wantsToVote;
     }
     
-    enum votePosition{ POSITIVE_VOTE, NEGATIVE_VOTE} 
-    bool[128] votedMilestones; //es wird nicht gespeichert ob votes negativ sind
-    bool wantsToVote; //wird entfertn
-
     
-    mapping(uint128 => uint256) public donatedAmountPerMilestone;
+    bool[128] votedMilestones; //es wird nicht gespeichert ob votes negativ sind, mapping immer besser?
+    bool[128] wantsToVote;
     
-    event Deposit(uint256 amount, uint8 milestoneId);
+    function getVotedMilestones(uint8 milestoneId) public view returns (bool){
+        return votedMilestones[milestoneId];
+    }
+    
+    function setVotedMilestones(uint8 milestoneId) public{
+        votedMilestones[milestoneId] = true;
+    }
+    
+    function getWantsToVote(uint8 milestoneId) public view returns (bool){
+        return wantsToVote[milestoneId];
+    }
+    
+    mapping(uint8 => uint256) public donatedAmountPerMilestone;
+    
+    function getDonatedAmountPerMilestone(uint8 milestoneId) public view returns(uint256){
+        return donatedAmountPerMilestone[milestoneId];
+    }
+    
+    function setDonatedAmountPerMilestone(uint8 milestoneId,uint256 amount) public{
+        donatedAmountPerMilestone[milestoneId] += amount;
+    }
+    
+    
+    event Donate(uint256 amount, uint8 milestoneId, bool wantsToVote);
     event Withdraw(uint256 amount, uint8 milestoneId);
     
-    //wird entfernt
-    function setWantsToVote(bool newValue) onlyOwner public{
-        wantsToVote = newValue;
-    }
     
-    event Vote(uint8 milestoneId, votePosition vp);
-    
-    //wird in Project verschoben
-    // erhöht den wahl counter des projects(positiv oder negativ).
-    //Problem: wenn man in remix value auf 5 ether stellt und 5 zahlt wird counter um 5 erhöht. Bei wei genau so.
-    function vote(uint8 milestoneId, votePosition vp) public {
-        uint256 minDonation = project.getMilestoneMinDonToVote(milestoneId);
-        if(wantsToVote && (donatedAmountPerMilestone[milestoneId] >= minDonation) && (votedMilestones[milestoneId] == false)){
-            if(vp ==votePosition.POSITIVE_VOTE){
-                project.setMilestoneVotePositive(milestoneId);
-            } else if(vp == votePosition.NEGATIVE_VOTE){
-                project.setMilestoneVoteNegative(milestoneId);
-            }
-            votedMilestones[milestoneId] = true;
-            emit Vote(milestoneId,vp);
-
-        }
-    }
     
     function getBalance() public view returns (uint256) {
         return address(this).balance;
@@ -162,18 +159,30 @@ contract Donor is Ownable{
     //für bestimmten milestone spenden
     //warnen wenn nicht genug geld auf konto?
     //spenden auf nicht existierende milestones möglich
-    function deposit(uint256 amount,uint8 milestoneId) onlyOwner payable public {
+    function donateAndVote(uint256 amount,uint8 milestoneId) onlyOwner payable public {
         require(msg.value == amount);
         donatedAmountPerMilestone[milestoneId] += amount;
         project.setDonatedAmount(milestoneId, amount);
-        emit Deposit(amount,milestoneId);
+        wantsToVote[milestoneId] = true;
+        emit Donate(amount,milestoneId,true);
         
     }
     
+    //Laut Pflichtenheft donate methoden in project. -> kann man noch schnell ändern aber ich find das so schöner..
+    //'-> sinnvoll?
+    function donateDontVote(uint256 amount,uint8 milestoneId) onlyOwner payable public {
+        require(msg.value == amount);
+        donatedAmountPerMilestone[milestoneId] += amount;
+        project.setDonatedAmount(milestoneId, amount);
+        wantsToVote[milestoneId] = false;
+        emit Donate(amount,milestoneId,false);
+        
+    }
 
    //bestimmten betrag von bestimmten Milestone abheben (nur wenn vorher auch so viel gespendet)
     function withdraw(uint256 amount,uint8 milestoneId) onlyOwner payable public {
         require(donatedAmountPerMilestone[milestoneId] >= amount);
+        donatedAmountPerMilestone[milestoneId] -= amount;
         msg.sender.transfer(amount);
         emit Withdraw(amount, milestoneId);
         
