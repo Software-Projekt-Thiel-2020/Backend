@@ -1,67 +1,65 @@
 """Project Resource."""
 from flask import Blueprint, request, jsonify
-from sqlalchemy import and_
-from backend.database.db import get_session
-from backend.database.alchemy_decl import Project
+from backend.database.db import DB_SESSION
+from backend.database.model import Project
 
 
 BP = Blueprint('projects', __name__, url_prefix='/api/projects')
 
 
 @BP.route('', methods=['GET'])
-def projects_get():  # noqa
+def projects_get():
     """
     Handles GET for resource <base>/api/projects .
 
     :return: json data of projects
     """
     args = request.args
-    id_project = args.get('id')
+    id_project = args.get('id', type=int)
     id_institution = args.get('idinstitution')
 
-    session = get_session()
-    result = None
-    if id_project and id_institution:
-        result = session.query(Project).filter(and_(Project.idProject==id_project, Project.fkInstitutionProject==id_institution))
-    elif id_project:
-        result = session.query(Project).filter(Project.idProject==id_project)
-    elif id_institution:
-        result = session.query(Project).filter(Project.fkInstitutionProject==id_institution)
-    else:
-        result = session.query(Project)
+    session = DB_SESSION()
+    results = session.query(Project)
+
+    if id_project:
+        results = results.filter(Project.idProject == id_project)
+    if id_institution:
+        results = results.filter(Project.institution_id == id_institution)
 
     json_data = []
     json_names = ['id', 'name', 'webpage', 'idsmartcontract', 'idinstitution']
-    for r in result:
+    for result in results:
         json_data.append(dict(zip(json_names, [
-            r.idProject, 
-            r.nameProject, 
-            r.webpageProject, 
-            r.fkSmartContractProject,
-            r.fkInstitutionProject])))
+            result.idProject,
+            result.nameProject,
+            result.webpageProject,
+            result.smartcontract_id,
+            result.institution_id,
+        ])))
 
     return jsonify(json_data)
 
 
 @BP.route('/<id>', methods=['GET'])
-def projects_id(id):  # noqa
+def projects_id(id):  # pylint:disable=invalid-name,redefined-builtin
     """
     Handles GET for resource <base>/api/projects/<id> .
-    :parameter ID of a project
+
+    :param id: id of a project
     :return: Project and all it's milestones
     """
+    # ToDo: Implement GET /projects/<id>
 
     return jsonify({'status': str(id)})
 
 
 @BP.route('', methods=['POST'])
-def projects_post():  # noqa
+def projects_post():
     """
     Handles POST for resource <base>/api/projects .
 
     :return: "{'status': 'ok'}", 200
     """
-
     # if not logged in:
     #   return jsonify({'error': 'not logged in'}), 403
 

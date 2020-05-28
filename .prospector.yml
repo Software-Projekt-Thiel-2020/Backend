@@ -60,4 +60,4 @@ pyflakes:
   run: true
 
 vulture:
-  run: true
+  run: false

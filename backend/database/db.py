@@ -1,72 +1,49 @@
 """Handles the functionality for the database access."""
 import configparser
 import click
-from mysql import connector
-from flask import current_app, g
 from flask.cli import with_appcontext
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy import create_engine
+from backend.database.model import BASE, add_sample_data
 
-CFG_PARSER = configparser.ConfigParser()
+CFG_PARSER: configparser.ConfigParser = configparser.ConfigParser()
 CFG_PARSER.read("backend_config.ini")
 
-# set the configuration of the database connection
-DB_CONFIG = {
+# Set the configuration of the database connection
+DB_CONFIG: dict = {
     'user': CFG_PARSER["Database"]["USER"],
     'password': CFG_PARSER["Database"]["PASSWORD"],
     'host': CFG_PARSER["Database"]["HOST"],
 }
 
+# Create DB Engine
+DB_URI: str = 'mysql+pymysql://' + DB_CONFIG['user'] + ':' + DB_CONFIG['password'] + '@' + DB_CONFIG['host'] + '/mydb'
+ENGINE = create_engine(DB_URI)
 
-def get_session():
-    """
-    Get the SQLAlchemy database session
+# Bind engine to metadata of the BASE (our model)
+BASE.metadata.bind = ENGINE
 
-    :return: the session object
-    """
-    db_uri = 'mysql+pymysql://' + DB_CONFIG['user'] + ':' + DB_CONFIG['password'] + '@' + DB_CONFIG['host'] + '/mydb'
-
-    engine = create_engine(db_uri)
-    print(engine.table_names())
-
-    _session = sessionmaker(bind=engine)
-    return _session()
-
-
-def get_db():
-    """
-    Get the database.
-
-    :return: the database object
-    """
-    if 'database' not in g:
-        g.db = connector.connect(**DB_CONFIG)
-    return g.db
+# Create DB Session
+DB_SESSION: scoped_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=ENGINE))
 
 
 def close_db(_):
     """
-    Close the database.
+    Close the database session.
     :return: -
     """
-    try:
-        g.pop('database', None).close()
-    except AttributeError:
-        pass
+    DB_SESSION()
 
 
 def init_db():
     """
-    Initiates the database with the schema file.
+    Initiates the database from the ORM model.
 
     :return: -
     """
-    cursor = get_db().cursor()
-    with current_app.open_resource('sql_scripts/schema.sql') as sql_file:
-        commands = sql_file.read().decode('utf-8').split(';')
-        commands = commands[: len(commands) - 1]
-        for command in commands:
-            cursor.execute(command)
+    BASE.metadata.drop_all(ENGINE)
+    BASE.metadata.create_all(ENGINE)
+    add_sample_data(DB_SESSION)
 
 
 @click.command('init-db')
@@ -84,6 +61,7 @@ def init_db_command():
 def init_app(app):
     """
     Adds the commands and close context to the given app.
+
     :param app: the app the commands should registered to
     :return: -
     """

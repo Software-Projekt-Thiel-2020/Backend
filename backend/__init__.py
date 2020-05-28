@@ -5,7 +5,7 @@ from backend.database import db
 from backend.resources import BLUEPRINTS
 
 
-def create_app(test_config=None):  # noqa
+def create_app(test_config=None):
     """
     Creates the application and register all resources to it.
 
