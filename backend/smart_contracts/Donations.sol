@@ -8,23 +8,13 @@ contract Project is Ownable{
   //wie sinnvoll ist es geld abzuheben? -> minimum voting betrag wird sinnlos
   
   //negative votes nötig?
-  
-  //ToDo: wenn Zeit abgelaufen darf nicht mehr gewählt werden
-  
- //ToDo: Spenden werden ausgezahlt, wenn (voting)Ziel erreicht ist und minDonation erreicht wurde? Was wenn nicht erreicht?
- // '-> project hat ein button zum auszahlen der Donor beträge (an owner). Button funktioniert nur wenn Bedingungen erreicht.
- //Geld befindet sich momentan im Donor contract, sinnvoll?
  
  //Viele Methoden noch unsicher! Jeder kann sie aufrufen -> welche? (vor allem setter)
  
  
-  constructor(int _time) public{
+   constructor(int _time) public{
       require(_time > 0); //  wie klein darf time sein?
       time = _time;
-  }
-  
-  function getAddress() view public returns (address){
-      return address(this);
   }
   
   mapping(uint8 => Milestone) public milestones;
@@ -44,21 +34,45 @@ contract Project is Ownable{
     uint128 minDonToVote; //min. gespendeter Betrag zum wählen
     uint32 positiveVotes;
     uint32 negativeVotes;
-    bool donReached;        //test
-    bool votesReached;      //test
-    
+    bool payoutPart;
+    bool payoutAll;
   }
   
-  function setDonatedAmount(uint8 milestoneId,uint256 amount)public{
-        milestones[milestoneId].donatedAmount += amount;
+    function getAddress() view public returns (address){
+      return address(this);
   }
+  
+   event PayingOutPart(uint8 milestoneId,uint amount);
+ event PayingOutAll(uint8 milestoneId);
+ 
+ //was bei nicht existierenden milestones?
+ //wenn spendenziel erreicht prozentsatz -> wie viel? 
+ //wenn voting ziel erreicht alles
+ function payingOut(uint8 milestoneId) onlyOwner public{
+     if(milestones[milestoneId].neededVotes < milestones[milestoneId].positiveVotes){
+         if(milestones[milestoneId].donatedAmount >= milestones[milestoneId].minDonation && (milestones[milestoneId].payoutPart == false)){
+             uint amount = milestones[milestoneId].donatedAmount /10;  //10% auszahlen
+             msg.sender.transfer(amount);                 
+             milestones[milestoneId].donatedAmount -= amount;
+             milestones[milestoneId].payoutPart = true;
+             emit PayingOutPart(milestoneId,amount);
+        }
+     } else if(milestones[milestoneId].neededVotes >= milestones[milestoneId].positiveVotes && (milestones[milestoneId].payoutAll == false)){
+         msg.sender.transfer(milestones[milestoneId].donatedAmount);
+            milestones[milestoneId].payoutPart = true;
+            milestones[milestoneId].payoutAll = true;
+            emit PayingOutAll(milestoneId);
+     }
+ }
   
    event Vote(uint8 milestoneId, address donor_add,votePosition vp);
   
+    //if durch require ersetzen?  
     //ToDo: überprüfen ob der aufrufer der Donor der addresse ist! -> wie?
     // erhöht den wahl counter des projects(positiv oder negativ).
     //Problem: wenn man in remix value auf 5 ether stellt und 5 zahlt wird counter um 5 erhöht. Bei wei genau so.
     function vote(uint8 milestoneId, address donor_add,votePosition vp) public {
+        require(time>0);
         if(donors[donor_add].getWantsToVote(milestoneId) && (donors[donor_add].getDonatedAmountPerMilestone(milestoneId) >= milestones[milestoneId].minDonation) 
         && (donors[donor_add].getVotedMilestones(milestoneId) == false)){
             if(vp == votePosition.POSITIVE_VOTE){
@@ -72,6 +86,28 @@ contract Project is Ownable{
     }    
     
     
+    event Donate(uint256 amount, uint8 milestoneId, address donor_add,bool wantsToVote);
+
+    
+    //für bestimmten milestone spenden
+    //spenden auf nicht existierende milestones möglich
+    //wer kann diese Funktion aufrufen?
+    function donateAndVote(uint256 amount,uint8 milestoneId,address donor_add) onlyOwner payable public {
+        require(msg.value == amount);
+        donors[donor_add].setDonatedAmountPerMilestone(milestoneId,amount);
+        milestones[milestoneId].donatedAmount += amount;
+        donors[donor_add].setWantsToVote(milestoneId);
+        emit Donate(amount,milestoneId,donor_add,true);
+        
+    }
+    
+    function donateDontVote(uint256 amount,uint8 milestoneId,address donor_add) onlyOwner payable public {
+       require(msg.value == amount);
+        donors[donor_add].setDonatedAmountPerMilestone(milestoneId,amount);
+        milestones[milestoneId].donatedAmount += amount;
+        donors[donor_add].setWantsToVote(milestoneId);
+        emit Donate(amount,milestoneId,donor_add,false);
+    }
   
    event AddMilestone(bytes _name, uint256 _minDonation, uint128 _neededVotes,uint128 _minDonToVote,uint32 positiveVotes,uint32 negativeVotes);
    
@@ -89,24 +125,7 @@ contract Project is Ownable{
                 emit AddMilestone(_name,_minDonation,_neededVotes,_minDonToVote,0,0);
         }
    }
-   
-   event DonationReached(uint8 milestoneId);
-   
-   function checkIfDonationReached(uint8 milestoneId) public{
-       if(milestones[milestoneId].donatedAmount >= milestones[milestoneId].minDonation){
-           milestones[milestoneId].donReached = true;
-           emit DonationReached(milestoneId);
-       }
-   }
-   
-   event VotesReached(uint8 milestoneId);
-   
-   function checkIfVotingReached(uint8 milestoneId) public{
-       if(milestones[milestoneId].neededVotes >= milestones[milestoneId].positiveVotes){
-           milestones[milestoneId].votesReached = true;
-           emit VotesReached(milestoneId);
-       }
-   }
+
   
 }
 
@@ -120,7 +139,8 @@ contract Donor is Ownable{
         project = Project(ProjectAddress);
     }
     
-    
+    mapping(uint8 => uint256) public donatedAmountPerMilestone;
+
     bool[128] votedMilestones; //es wird nicht gespeichert ob votes negativ sind, mapping immer besser?
     bool[128] wantsToVote;
     
@@ -136,8 +156,10 @@ contract Donor is Ownable{
         return wantsToVote[milestoneId];
     }
     
-    mapping(uint8 => uint256) public donatedAmountPerMilestone;
-    
+    function setWantsToVote(uint8 milestoneId)public{
+        wantsToVote[milestoneId] = true;
+    }
+
     function getDonatedAmountPerMilestone(uint8 milestoneId) public view returns(uint256){
         return donatedAmountPerMilestone[milestoneId];
     }
@@ -147,7 +169,6 @@ contract Donor is Ownable{
     }
     
     
-    event Donate(uint256 amount, uint8 milestoneId, bool wantsToVote);
     event Withdraw(uint256 amount, uint8 milestoneId);
     
     
@@ -155,29 +176,7 @@ contract Donor is Ownable{
     function getBalance() public view returns (uint256) {
         return address(this).balance;
     }
-    
-    //für bestimmten milestone spenden
-    //warnen wenn nicht genug geld auf konto?
-    //spenden auf nicht existierende milestones möglich
-    function donateAndVote(uint256 amount,uint8 milestoneId) onlyOwner payable public {
-        require(msg.value == amount);
-        donatedAmountPerMilestone[milestoneId] += amount;
-        project.setDonatedAmount(milestoneId, amount);
-        wantsToVote[milestoneId] = true;
-        emit Donate(amount,milestoneId,true);
-        
-    }
-    
-    //Laut Pflichtenheft donate methoden in project. -> kann man noch schnell ändern aber ich find das so schöner..
-    //'-> sinnvoll?
-    function donateDontVote(uint256 amount,uint8 milestoneId) onlyOwner payable public {
-        require(msg.value == amount);
-        donatedAmountPerMilestone[milestoneId] += amount;
-        project.setDonatedAmount(milestoneId, amount);
-        wantsToVote[milestoneId] = false;
-        emit Donate(amount,milestoneId,false);
-        
-    }
+ 
 
    //bestimmten betrag von bestimmten Milestone abheben (nur wenn vorher auch so viel gespendet)
     function withdraw(uint256 amount,uint8 milestoneId) onlyOwner payable public {
