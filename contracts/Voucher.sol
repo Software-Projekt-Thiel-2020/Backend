@@ -23,8 +23,8 @@ contract Institution{
         Voucher memory v;
         v.expires_unixtime=uint64(now)+(_expires_in_Days*1 days);
         v.description=_description;
-        voucher[_owner].push(v);
         uint64 index=uint64(voucher[_owner].length);
+        voucher[_owner].push(v);
         emit newVoucher(_owner, index, v.description, v.expires_unixtime);
     }
     
