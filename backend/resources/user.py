@@ -14,8 +14,6 @@ def user_get():
 
     :return: json data of projects
     """
-    missing_arg = True
-    arg_amount = 0
     args = request.args
     name_user = args.get('username')
     id_user = args.get('id')
