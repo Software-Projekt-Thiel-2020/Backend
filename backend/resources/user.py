@@ -14,6 +14,8 @@ def user_get():
 
     :return: json data of projects
     """
+    missing_arg = True
+    arg_amount = 0
     args = request.args
     name_user = args.get('username')
     id_user = args.get('id')
@@ -21,10 +23,15 @@ def user_get():
     session = DB_SESSION()
     results = session.query(User)
 
+    if name_user and id_user:
+        return jsonify({'error': 'to many Arguments'}), 400
+
     if name_user:
         results = results.filter(User.usernameUser == name_user)
-    if id_user:
+    elif id_user:
         results = results.filter(User.idUser == id_user)
+    else:
+        return jsonify({'error': 'missing Argument'}), 400
 
     json_data = []
     json_names = ['id', 'username', 'firstname', 'lastname', 'email', 'publickey']
