@@ -1,4 +1,4 @@
-
+backend/smart_contracts/node_modules/
 venv_pypy/
 .idea/
 .mypy_cache
