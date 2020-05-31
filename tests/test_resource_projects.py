@@ -48,7 +48,7 @@ def test_projects_get_w_institution(client):
 def test_projects_get_w_non_existant_institution(client):
     """get with non existant id_institution."""
     res = client.get('/api/projects?idinstitution=1337')
-    assert res._status_code == 200
+    assert res._status_code == 200  # ToDo: oder 404 Not Found?
     assert len(res.json) == 0
 
 
@@ -62,7 +62,7 @@ def test_projects_get_w_bad_institution_value(client):
 def test_projects_get_w_very_big_institution_value(client):
     """get with VERYBIGINT as value of id_institution."""
     res = client.get(
-        '/api/projects?idinstitution=4149515568880992958512407863691161151012446232242436899995657329690652811412908146399707048947103794288197886611300789182395151075411775307886874834113963687061181803401509523685375')
+        '/api/projects?idinstitution=' + "1" * 200)
     assert res._status_code == 200
     assert len(res.json) == 0
 
@@ -88,32 +88,37 @@ def test_projects_get_w_existant_unexpected_param2(client):
     assert len(res.json) == 3
 
 
-"""Following tests will fail: function is not implementet yet"""
-
-
 def test_projects_id_get_existant_param(client):
     """get for project id with existant id."""
     res = client.get('/api/projects/1')
     assert res._status_code == 200
     assert len(res.json) == 1
 
+    assert res.json[0]["id"] == 1
+    assert res.json[0]["idinstitution"] == 1
+    assert res.json[0]["idsmartcontract"] == 2
+    assert res.json[0]["name"] == "Computer malt Bild"
+    assert res.json[0]["webpage"] == "www.cmb.de"
+
 
 def test_projects_id_get_nonexistant_param(client):
     """get for project id with invalid id"""
     res = client.get('/api/projects/1337')
-    assert res._status_code == 200
+    assert res._status_code == 404
     assert len(res.json) == 0
 
 
 def test_projects_id_get_bad_value(client):
     """get for project id with bad value"""
-    res = client.get('/api/projects/asjdngkjrengskj')
+    res = client.get('/api/projects/abcdefg')
     assert res._status_code == 400
     assert len(res.json) == 1
 
 
 def test_projects_id_get_big_value(client):
     """get for project id with very big int as id"""
-    res = client.get('/api/projects/111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111')
+    res = client.get('/api/projects/' + "1" * 200)
     assert res._status_code == 200
     assert len(res.json) == 0
+
+# ToDo: test_projects_post_
