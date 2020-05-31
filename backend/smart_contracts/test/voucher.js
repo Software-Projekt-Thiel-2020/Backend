@@ -63,8 +63,15 @@ contract('Institution', (accounts) => {
         const voucher_index = 0;
 
         let result = await uut.addVoucher(receiver, web3.utils.fromAscii(test_description), 0, {from: owner});
-        truffleAssert.eventEmitted(result, 'newVoucher', (ev) => { return true; });
-        await uut.redeem(voucher_index, {from: receiver});
+        truffleAssert.eventEmitted(result, 'newVoucher', (ev) => {
+            assert.equal(true, true, 'newVoucher ok');
+            return true;
+        });
+        result = await uut.redeem(voucher_index, {from: receiver});
+        truffleAssert.eventEmitted(result, 'redeemVoucher', (ev) => {
+            assert.equal(true, true, 'first redeem voucher ok');
+            return true;
+        });
 
         await truffleAssert.reverts(
             uut.redeem(voucher_index, {from: receiver})
