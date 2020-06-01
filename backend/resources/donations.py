@@ -4,6 +4,7 @@ from flask import Blueprint, request, jsonify
 from backend.database.db import DB_SESSION
 from backend.database.model import Donation
 from backend.database.model import Milestone
+from backend.resources.helpers import check_params_int
 
 BP = Blueprint('donations', __name__, url_prefix='/api/donations')
 
@@ -23,18 +24,8 @@ def donations_get():
     idproject_project = request.args.get('idproject')
 
     try:
-        if id_donation:
-            int(id_donation)
-        if minamount_donation:
-            int(minamount_donation)
-        if maxamount_donation:
-            int(maxamount_donation)
-        if iduser_user:
-            int(iduser_user)
-        if idmilestone_milestone:
-            int(idmilestone_milestone)
-        if idproject_project:
-            int(idproject_project)
+        check_params_int([id_donation, minamount_donation, maxamount_donation, iduser_user, idmilestone_milestone,
+                          idproject_project])
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
