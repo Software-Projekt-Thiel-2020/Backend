@@ -1,6 +1,13 @@
 """Project Resource."""
 from flask import Blueprint, request, jsonify
+<<<<<<< refs/remotes/origin/api_projects
 from backend.database.db import get_db
+=======
+from backend.database.db import DB_SESSION
+from backend.database.model import Project
+from backend.database.model import Milestone
+
+>>>>>>> local
 
 BP = Blueprint('projects', __name__, url_prefix='/api/projects')
 
@@ -48,7 +55,45 @@ def projects_id(id):  # noqa
     :return: Project and all it's milestones
     """
 
-    return jsonify({'status': str(id)})
+    id_project = id
+
+    try:
+        if id_project:
+            int(id_project)
+    except ValueError:
+        return jsonify({"error": "bad argument"}), 400
+
+    session = DB_SESSION()
+    results = session.query(Project)
+
+    if id_project:
+        results = results.filter(Project.idProject == id_project).one()
+
+    milestoneresults = session.query(Milestone).filter(Milestone.project_id == id_project)
+
+    json_ms = []
+    json_names = ['id', 'idProjekt', 'goal', 'requiredVotes', 'currentVotes', "until"]
+    for row in milestoneresults:
+        json_ms.append(dict(zip(json_names, [
+            row.idMilestone,
+            row.goalMilestone,
+            row.requiredVotesMilestone,
+            row.currentVotesMilestone,
+            row.untilBlockMilestone,
+        ])))
+
+    json_data = []
+    json_names = ['id', 'name', 'webpage', 'idsmartcontract', 'idinstitution', "milestones"]
+    json_data.append(dict(zip(json_names, [
+        results.idProject,
+        results.nameProject,
+        results.webpageProject,
+        results.smartcontract_id,
+        results.institution_id,
+        json_ms
+    ])))
+
+    return jsonify(json_data)
 
 
 @BP.route('', methods=['POST'])
