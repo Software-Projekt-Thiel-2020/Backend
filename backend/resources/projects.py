@@ -1,5 +1,6 @@
 """Project Resource."""
 from flask import Blueprint, request, jsonify
+from sqlalchemy.orm.exc import NoResultFound
 from backend.database.db import DB_SESSION
 from backend.database.model import Project
 from backend.database.model import Milestone
@@ -68,8 +69,10 @@ def projects_id(id):  # noqa
     results = session.query(Project)
 
     try: 
-       if id_project:
+        if id_project:
             results = results.filter(Project.idProject == id_project).one()
+    except NoResultFound:
+        return jsonify(), 404
     except:
         return jsonify(), 200
 
