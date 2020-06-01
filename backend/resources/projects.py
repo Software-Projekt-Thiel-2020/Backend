@@ -1,5 +1,8 @@
 """Project Resource."""
+import json
 from flask import Blueprint, request, jsonify
+from sqlalchemy import func
+from sqlalchemy import exc
 from sqlalchemy.orm.exc import NoResultFound
 from backend.database.db import DB_SESSION
 from backend.database.model import Project
@@ -115,4 +118,120 @@ def projects_post():
 
     # ToDo: Implement POST /projects
 
-    return jsonify({'status': 'ok'}), 200
+    authToken = request.headers.get('authToken', default=None)
+    name = request.headers.get('name', default=None)
+    webpage = request.headers.get('webpage', default="")
+    idInstitution = request.headers.get('idInstitution', default="")
+    goal = request.headers.get('goal', default=None)
+    requiredVotes = request.headers.get('requiredVotes', default=None)
+    until = request.headers.get('until', default=None)
+    milestones = request.headers.get('milestones', default="")
+
+    if authToken is None:
+        return jsonify({'error': 'Not logged in'}), 403
+    
+    if name is None or goal is None or requiredVotes is None or until is None:
+        return jsonify({'error': 'Missing parameter'}), 403
+
+    session = DB_SESSION()    
+
+    # TODO uuid refactor + smartcontract_id
+
+    max_ms_v = int(session.query(func.max(Milestone.idMilestone)).one()[0])
+    max_pr_v = int(session.query(func.max(Project.idProject)).one()[0])
+
+    ms_json = json.loads(milestones)
+    try:
+        for milestone in ms_json:
+            max_ms_v += 1
+            session.add(Milestone(
+                idMilestone = max_ms_v,
+                goalMilestone = milestone['goal'],
+                requiredVotesMilestone = milestone['requiredVotes'],
+                currentVotesMilestone = 0,
+                untilBlockMilestone = milestone['until']
+                ))
+        session.commit()
+    except exc.SQLAlchemyError:
+        return jsonify({'status': 'Commit error - Milestone'}), 400
+    except KeyError:
+        return jsonify({'status': 'Unknown Key'}), 400
+
+    try:
+        session.add(Project(
+            idProject = str(max_pr_v + 1),
+            nameProject = name,
+            webpageProject = webpage,
+            smartcontract_id = 1,
+            institution_id = idInstitution
+            ))
+        session.commit()
+    except exc.SQLAlchemyError:
+        return jsonify({'status': 'Commit error - Project'}), 400
+
+    return jsonify({'status': 'ok'}), 201
+
+@BP.route('', methods=['POST'])
+def projects_post():
+    """
+    Handles POST for resource <base>/api/projects .
+
+    :return: "{'status': 'ok'}", 200
+    """
+    # if not logged in:
+    #   return jsonify({'error': 'not logged in'}), 403
+
+    # ToDo: Implement POST /projects
+
+    authToken = request.headers.get('authToken', default=None)
+    name = request.headers.get('name', default=None)
+    webpage = request.headers.get('webpage', default="")
+    idInstitution = request.headers.get('idInstitution', default="")
+    goal = request.headers.get('goal', default=None)
+    requiredVotes = request.headers.get('requiredVotes', default=None)
+    until = request.headers.get('until', default=None)
+    milestones = request.headers.get('milestones', default="")
+
+    if authToken is None:
+        return jsonify({'error': 'Not logged in'}), 403
+    
+    if name is None or goal is None or requiredVotes is None or until is None:
+        return jsonify({'error': 'Missing parameter'}), 403
+
+    session = DB_SESSION()    
+
+    # TODO uuid refactor + smartcontract_id
+
+    max_ms_v = int(session.query(func.max(Milestone.idMilestone)).one()[0])
+    max_pr_v = int(session.query(func.max(Project.idProject)).one()[0])
+
+    ms_json = json.loads(milestones)
+    try:
+        for milestone in ms_json:
+            max_ms_v += 1
+            session.add(Milestone(
+                idMilestone = max_ms_v,
+                goalMilestone = milestone['goal'],
+                requiredVotesMilestone = milestone['requiredVotes'],
+                currentVotesMilestone = 0,
+                untilBlockMilestone = milestone['until']
+                ))
+        session.commit()
+    except exc.SQLAlchemyError:
+        return jsonify({'status': 'Commit error - Milestone'}), 400
+    except KeyError:
+        return jsonify({'status': 'Unknown Key'}), 400
+
+    try:
+        session.add(Project(
+            idProject = str(max_pr_v + 1),
+            nameProject = name,
+            webpageProject = webpage,
+            smartcontract_id = 1,
+            institution_id = idInstitution
+            ))
+        session.commit()
+    except exc.SQLAlchemyError:
+        return jsonify({'status': 'Commit error - Project'}), 400
+
+    return jsonify({'status': 'ok'}), 201
