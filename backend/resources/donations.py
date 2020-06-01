@@ -15,13 +15,12 @@ def donations_get():
 
     :return: json data of projects
     """
-    args = request.args
-    id_donation = args.get('id')
-    minamount_donation = args.get('minamount')
-    maxamount_donation = args.get('maxamount')
-    iduser_user = args.get('iduser')
-    idmilestone_milestone = args.get('idmilestone')
-    idproject_project = args.get('idproject')
+    id_donation = request.args.get('id')
+    minamount_donation = request.args.get('minamount')
+    maxamount_donation = request.args.get('maxamount')
+    iduser_user = request.args.get('iduser')
+    idmilestone_milestone = request.args.get('idmilestone')
+    idproject_project = request.args.get('idproject')
 
     session = DB_SESSION()
     results = session.query(Donation)
@@ -37,9 +36,7 @@ def donations_get():
     if idmilestone_milestone:
         results = results.filter(Donation.milestone_id == idmilestone_milestone)
     if idproject_project:
-        subresults = session.query(Milestone.idMilestone)
-        subresults = subresults.filter(Milestone.project_id == idproject_project)
-        results = results.filter(Donation.milestone_id.in_(subresults))
+        results = results.join(Donation.milestone).filter(Milestone.project_id == idproject_project)
     json_data = []
     json_names = ['id', 'amount', 'userid', 'milestoneid']
     for result in results:

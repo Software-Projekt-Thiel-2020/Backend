@@ -118,7 +118,7 @@ Port: 80
 ```
 
 
-# Code linting und Statische Analyse
+# Code linting, Statische Analyse und testing
 - Zum testen vor einem PR bitte mit:
     - Linux:
     ```sh
@@ -129,3 +129,11 @@ Port: 80
     $ CI.bat
     ```
     prüfen ob keine Fehler mehr da sind.
+
+## Code testing allein
+```sh
+$ pytest -v
+```
+
+### Smartcontracts
+siehe [hier](backend/smart_contracts/TEST.md)

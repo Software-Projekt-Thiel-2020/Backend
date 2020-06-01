@@ -11,13 +11,11 @@ CFG_PARSER.read("backend_config.ini")
 
 # Set the configuration of the database connection
 DB_CONFIG: dict = {
-    'user': CFG_PARSER["Database"]["USER"],
-    'password': CFG_PARSER["Database"]["PASSWORD"],
-    'host': CFG_PARSER["Database"]["HOST"],
+    'URI': CFG_PARSER["Database"]["URI"],
 }
 
 # Create DB Engine
-DB_URI: str = 'mysql+pymysql://' + DB_CONFIG['user'] + ':' + DB_CONFIG['password'] + '@' + DB_CONFIG['host'] + '/mydb'
+DB_URI: str = DB_CONFIG['URI']
 ENGINE = create_engine(DB_URI)
 
 # Bind engine to metadata of the BASE (our model)

@@ -5,3 +5,5 @@ sqlalchemy==1.3.17
 pymysql==0.9.3
 prospector[with_mypy,with_pyroma,with_vulture]
 bandit
+coverage
+pytest
