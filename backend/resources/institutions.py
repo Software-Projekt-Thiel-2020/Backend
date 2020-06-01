@@ -1,8 +1,8 @@
 """Institution Resource."""
 from flask import Blueprint, request, jsonify
+from sqlalchemy import exc
 from backend.database.db import DB_SESSION
 from backend.database.model import Institution
-from sqlalchemy import exc
 
 BP = Blueprint('institutions', __name__, url_prefix='/api/institutions')  # set blueprint name and resource path
 
@@ -32,6 +32,7 @@ def institutions_get():
 
     return jsonify(json_data)
 
+
 @BP.route('', methods=['POST'])
 def institutions_post():
     """
@@ -39,8 +40,7 @@ def institutions_post():
 
     :return: json response
     """
-
-    authToken = request.headers.get('authToken')
+    auth_token = request.headers.get('authToken')
     name = request.headers.get('name')
     webpage = request.headers.get('webpage')
 
@@ -54,11 +54,9 @@ def institutions_post():
 
     #check if name is already taken
     for result in results:
-        if(name == result.nameInstitution):
+        if name == result.nameInstitution:
             return jsonify({'status': 'Name bereits vergeben'}), 403
 
-
-   
     #TODO uuid refactor + smartcontract_id
     try:
         session.add(Institution(idInstitution = 5, nameInstitution = name, webpageInstitution = webpage ,smartcontract_id = "666"))
@@ -66,5 +64,4 @@ def institutions_post():
     except exc.SQLAlchemyError:
         return jsonify({'status': 'Commit error'}), 400
     
-
     return jsonify({'status': 'Institution wurde erstellt'}), 200
