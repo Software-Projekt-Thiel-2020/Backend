@@ -7,7 +7,7 @@ contract Project is Ownable{
   
   //wie sinnvoll ist es geld abzuheben? -> minimum voting betrag wird sinnlos
   
-  //negative votes nötig?
+  //negative votes nï¿½tig?
  
  //Viele Methoden noch unsicher! Jeder kann sie aufrufen -> welche? (vor allem setter)
  
@@ -27,11 +27,11 @@ contract Project is Ownable{
  
   
   struct Milestone {
-    bytes name;            // muss in hex übergeben werden
+    bytes name;            // muss in hex ï¿½bergeben werden
     uint256 donatedAmount;  //bereits gespendet
-    uint256 minDonation; //benötigte Spenden zum erreichen des Meilensteins, nicht im Pflichtenheft
+    uint256 minDonation; //benï¿½tigte Spenden zum erreichen des Meilensteins, nicht im Pflichtenheft
     uint128 neededVotes;  //   Vom ersteller festgelegt? gibt es ein minimum?
-    uint128 minDonToVote; //min. gespendeter Betrag zum wählen
+    uint128 minDonToVote; //min. gespendeter Betrag zum wï¿½hlen
     uint32 positiveVotes;
     uint32 negativeVotes;
     bool payoutPart;
@@ -68,9 +68,9 @@ contract Project is Ownable{
    event Vote(uint8 milestoneId, address donor_add,votePosition vp);
   
     //if durch require ersetzen?  
-    //ToDo: überprüfen ob der aufrufer der Donor der addresse ist! -> wie?
-    // erhöht den wahl counter des projects(positiv oder negativ).
-    //Problem: wenn man in remix value auf 5 ether stellt und 5 zahlt wird counter um 5 erhöht. Bei wei genau so.
+    //ToDo: ï¿½berprï¿½fen ob der aufrufer der Donor der addresse ist! -> wie?
+    // erhï¿½ht den wahl counter des projects(positiv oder negativ).
+    //Problem: wenn man in remix value auf 5 ether stellt und 5 zahlt wird counter um 5 erhï¿½ht. Bei wei genau so.
     function vote(uint8 milestoneId, address donor_add,votePosition vp) public {
         require(time>0);
         if(donors[donor_add].getWantsToVote(milestoneId) && (donors[donor_add].getDonatedAmountPerMilestone(milestoneId) >= milestones[milestoneId].minDonation) 
@@ -89,30 +89,28 @@ contract Project is Ownable{
     event Donate(uint256 amount, uint8 milestoneId, address donor_add,bool wantsToVote);
 
     
-    //für bestimmten milestone spenden
-    //spenden auf nicht existierende milestones möglich
+    //fï¿½r bestimmten milestone spenden
+    //spenden auf nicht existierende milestones mï¿½glich
     //wer kann diese Funktion aufrufen?
-    function donateAndVote(uint256 amount,uint8 milestoneId,address donor_add) onlyOwner payable public {
-        require(msg.value == amount);
-        donors[donor_add].setDonatedAmountPerMilestone(milestoneId,amount);
-        milestones[milestoneId].donatedAmount += amount;
+    function donateAndVote(uint8 milestoneId,address donor_add) onlyOwner payable public {
+        donors[donor_add].setDonatedAmountPerMilestone(milestoneId,msg.value);
+        milestones[milestoneId].donatedAmount += msg.value;
         donors[donor_add].setWantsToVote(milestoneId);
-        emit Donate(amount,milestoneId,donor_add,true);
+        emit Donate(msg.value,milestoneId,donor_add,true);
         
     }
     
-    function donateDontVote(uint256 amount,uint8 milestoneId,address donor_add) onlyOwner payable public {
-       require(msg.value == amount);
-        donors[donor_add].setDonatedAmountPerMilestone(milestoneId,amount);
-        milestones[milestoneId].donatedAmount += amount;
+    function donateDontVote(uint8 milestoneId,address donor_add) onlyOwner payable public {
+        donors[donor_add].setDonatedAmountPerMilestone(milestoneId,msg.value);
+        milestones[milestoneId].donatedAmount += msg.value;
         donors[donor_add].setWantsToVote(milestoneId);
-        emit Donate(amount,milestoneId,donor_add,false);
+        emit Donate(msg.value,milestoneId,donor_add,false);
     }
   
    event AddMilestone(bytes _name, uint256 _minDonation, uint128 _neededVotes,uint128 _minDonToVote,uint32 positiveVotes,uint32 negativeVotes);
    
-   //fügt einen neuen Meilenstein hinzu. Prüft ob das Ziel höher ist als beim letzten (beim ersten nicht)
-   // um wie viel muss es größer sein?
+   //fï¿½gt einen neuen Meilenstein hinzu. Prï¿½ft ob das Ziel hï¿½her ist als beim letzten (beim ersten nicht)
+   // um wie viel muss es grï¿½ï¿½er sein?
    function addMilestone(bytes memory _name, uint256 _minDonation, uint128 _neededVotes,uint128 _minDonToVote) onlyOwner public {
         if (_name.length != 0) {
             if(milestonesCounter == 0){
@@ -134,7 +132,7 @@ contract Donor is Ownable{
     Project project;
     
     
-    //Spender mit bestimmten Projekt verbinden, er muss die Adresse (öffentlich abrufbar) des Projects eingeben
+    //Spender mit bestimmten Projekt verbinden, er muss die Adresse (ï¿½ffentlich abrufbar) des Projects eingeben
     constructor(address ProjectAddress) public{
         project = Project(ProjectAddress);
     }
