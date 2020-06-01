@@ -2,7 +2,7 @@
 from flask import Blueprint, request, jsonify
 from backend.database.db import DB_SESSION
 from backend.database.model import Project
-
+from backend.database.model import Milestone
 
 BP = Blueprint('projects', __name__, url_prefix='/api/projects')
 
@@ -48,16 +48,53 @@ def projects_get():
 
 
 @BP.route('/<id>', methods=['GET'])
-def projects_id(id):  # pylint:disable=invalid-name,redefined-builtin
+def projects_id(id):  # noqa
     """
     Handles GET for resource <base>/api/projects/<id> .
 
-    :param id: id of a project
+    :parameter ID of a project
     :return: Project and all it's milestones
     """
-    # ToDo: Implement GET /projects/<id>
 
-    return jsonify({'status': str(id)})
+    id_project = id
+
+    try:
+        if id_project:
+            int(id_project)
+    except ValueError:
+        return jsonify({"error": "bad argument"}), 400
+
+    session = DB_SESSION()
+    results = session.query(Project)
+
+    if id_project:
+        results = results.filter(Project.idProject == id_project).one()
+
+    milestoneresults = session.query(Milestone).filter(Milestone.project_id == id_project)
+
+    json_ms = []
+    json_names = ['id', 'idProjekt', 'goal', 'requiredVotes', 'currentVotes', "until"]
+    for row in milestoneresults:
+        json_ms.append(dict(zip(json_names, [
+            row.idMilestone,
+            row.goalMilestone,
+            row.requiredVotesMilestone,
+            row.currentVotesMilestone,
+            row.untilBlockMilestone,
+        ])))
+
+    json_data = []
+    json_names = ['id', 'name', 'webpage', 'idsmartcontract', 'idinstitution', "milestones"]
+    json_data.append(dict(zip(json_names, [
+        results.idProject,
+        results.nameProject,
+        results.webpageProject,
+        results.smartcontract_id,
+        results.institution_id,
+        json_ms
+    ])))
+
+    return jsonify(json_data)
 
 
 @BP.route('', methods=['POST'])
