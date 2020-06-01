@@ -7,7 +7,7 @@ contract Project is Ownable{
   
     // wie sinnvoll ist es geld abzuheben? -> minimum voting betrag wird sinnlos
   
-    // negative votes nötig?
+    // negative votes noetig?
  
     // Viele Methoden noch unsicher! Jeder kann sie aufrufen -> welche? (vor allem setter)
  
@@ -26,11 +26,11 @@ contract Project is Ownable{
     enum votePosition{ POSITIVE_VOTE, NEGATIVE_VOTE}
     
     struct Milestone {
-        bytes name;             // muss in hex übergeben werden
+        bytes name;             // muss in hex uebergeben werden
         uint256 donatedAmount;  // bereits gespendet
-        uint256 minDonation;    // benötigte Spenden zum erreichen des Meilensteins, nicht im Pflichtenheft
+        uint256 minDonation;    // benoetigte Spenden zum erreichen des Meilensteins, nicht im Pflichtenheft
         uint128 neededVotes;    // Vom ersteller festgelegt? gibt es ein minimum?
-        uint128 minDonToVote;   // min. gespendeter Betrag zum wählen
+        uint128 minDonToVote;   // min. gespendeter Betrag zum waehlen
         uint32 positiveVotes;
         uint32 negativeVotes;
         bool payoutPart;
@@ -70,9 +70,9 @@ contract Project is Ownable{
 
   
     // if durch require ersetzen?  
-    // ToDo: überprüfen ob der aufrufer der Donor der addresse ist! -> wie?
-    // erhöht den wahl counter des projects(positiv oder negativ).
-    // Problem: wenn man in remix value auf 5 ether stellt und 5 zahlt wird counter um 5 erhöht. Bei wei genau so.
+    // ToDo: ueberpruefen ob der aufrufer der Donor der addresse ist! -> wie?
+    // erhoeht den wahl counter des projects(positiv oder negativ).
+    // Problem: wenn man in remix value auf 5 ether stellt und 5 zahlt wird counter um 5 erhoeht. Bei wei genau so.
     function vote(uint8 milestoneId, address donor_add,votePosition vp) public {
         require(time>0);
         if(donors[donor_add].getWantsToVote(milestoneId) && (donors[donor_add].getDonatedAmountPerMilestone(milestoneId) >= milestones[milestoneId].minDonation) 
@@ -87,8 +87,8 @@ contract Project is Ownable{
         }
     }    
     
-    // für bestimmten milestone spenden
-    // spenden auf nicht existierende milestones möglich
+    // fuer bestimmten milestone spenden
+    // spenden auf nicht existierende milestones moeglich
     // wer kann diese Funktion aufrufen?
     function donateAndVote(uint8 milestoneId,address donor_add) onlyOwner payable public {
         donors[donor_add].setDonatedAmountPerMilestone(milestoneId,msg.value);
@@ -105,8 +105,8 @@ contract Project is Ownable{
         emit Donate(msg.value,milestoneId,donor_add,false);
     }
   
-    // fügt einen neuen Meilenstein hinzu. Prüft ob das Ziel höher ist als beim letzten (beim ersten nicht)
-    // um wie viel muss es größer sein?
+    // fuegt einen neuen Meilenstein hinzu. Prueft ob das Ziel hoeher ist als beim letzten (beim ersten nicht)
+    // um wie viel muss es groeßer sein?
     function addMilestone(bytes memory _name, uint256 _minDonation, uint128 _neededVotes,uint128 _minDonToVote) onlyOwner public {
         if (_name.length != 0) {
             if(milestonesCounter == 0){
@@ -127,7 +127,7 @@ contract Donor is Ownable{
     Project project;
     
     
-    // Spender mit bestimmten Projekt verbinden, er muss die Adresse (öffentlich abrufbar) des Projects eingeben
+    // Spender mit bestimmten Projekt verbinden, er muss die Adresse (oeffentlich abrufbar) des Projects eingeben
     constructor(address ProjectAddress) public{
         project = Project(ProjectAddress);
     }
