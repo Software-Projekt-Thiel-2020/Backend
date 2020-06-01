@@ -42,26 +42,25 @@ def institutions_post():
     """
     auth_token = request.headers.get('authToken')
     name = request.headers.get('name')
-    webpage = request.headers.get('webpage')
+    web = request.headers.get('webpage')
 
     session = DB_SESSION()
     results = session.query(Institution)
 
-    #TODO real check
-    #check if logged in
-    if not authToken:
+    # check if logged in TODO real check
+    if not auth_token:
         return jsonify({'status': 'Nicht eingeloggt'}), 403
 
-    #check if name is already taken
+    # check if name is already taken
     for result in results:
         if name == result.nameInstitution:
             return jsonify({'status': 'Name bereits vergeben'}), 403
 
-    #TODO uuid refactor + smartcontract_id
+    # TODO uuid refactor + smartcontract_id
     try:
-        session.add(Institution(idInstitution = 5, nameInstitution = name, webpageInstitution = webpage ,smartcontract_id = "666"))
+        session.add(Institution(idInstitution=5, nameInstitution=name, webpageInstitution=web, smartcontract_id="666"))
         session.commit()
     except exc.SQLAlchemyError:
         return jsonify({'status': 'Commit error'}), 400
-    
+
     return jsonify({'status': 'Institution wurde erstellt'}), 200
