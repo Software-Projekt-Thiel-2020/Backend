@@ -106,7 +106,7 @@ contract Project is Ownable{
     }
   
     // fuegt einen neuen Meilenstein hinzu. Prueft ob das Ziel hoeher ist als beim letzten (beim ersten nicht)
-    // um wie viel muss es groeﬂer sein?
+    // um wie viel muss es groesser sein?
     function addMilestone(bytes memory _name, uint256 _minDonation, uint128 _neededVotes,uint128 _minDonToVote) onlyOwner public {
         if (_name.length != 0) {
             if(milestonesCounter == 0){
