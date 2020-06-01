@@ -118,7 +118,7 @@ def test_projects_id_get_bad_value(client):
 def test_projects_id_get_big_value(client):
     """get for project id with very big int as id"""
     res = client.get('/api/projects/' + "1" * 200)
-    assert res._status_code == 200
+    assert res._status_code == 404
     assert len(res.json) == 0
 
 # ToDo: test_projects_post_
