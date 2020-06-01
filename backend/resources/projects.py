@@ -67,8 +67,11 @@ def projects_id(id):  # noqa
     session = DB_SESSION()
     results = session.query(Project)
 
-    if id_project:
-        results = results.filter(Project.idProject == id_project).one()
+    try: 
+       if id_project:
+            results = results.filter(Project.idProject == id_project).one()
+    except:
+        return jsonify(), 200
 
     milestoneresults = session.query(Milestone).filter(Milestone.project_id == id_project)
 
@@ -94,7 +97,7 @@ def projects_id(id):  # noqa
         json_ms
     ])))
 
-    return jsonify(json_data)
+    return jsonify(json_data), 200
 
 
 @BP.route('', methods=['POST'])
