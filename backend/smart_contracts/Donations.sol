@@ -3,16 +3,16 @@ pragma solidity ^0.6.0;
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
 contract Project is Ownable{
   
-    //anstatt import ownable eigenen modifier?  
+    // anstatt import ownable eigenen modifier?  
   
     // wenn man geld abhebt darf man eventuell nicht mehr voten
   
-    //man spendet f�r Ziel nicht f�r milestone.
+    // man spendet fuer Ziel nicht fuer milestone.
     
     // Viele Methoden noch unsicher! Jeder kann sie aufrufen -> welche? (vor allem setter)
  
     
-    // @param partial_payment in Prozent
+    // @param partial_payment in Prozent von 0-100
     constructor(uint8 _partial_payment) public {
         require(_partial_payment>0);
         require(_partial_payment<100);
@@ -22,16 +22,20 @@ contract Project is Ownable{
     mapping(uint8 => Milestone) public milestones;
     mapping(address => Donor) public donors;
     uint8 milestonesCounter = 0;
-
-    uint time;   // wie lange darf noch gevoted werden? Auf Projekt oder auf Milestone bezogen?
+    
+    uint time;                  // wie lange darf noch gevoted werden? Auf Projekt oder auf Milestone bezogen?
+    uint256 donated_amount;     // Insgesamt gespendeter Betrag
+    uint256 minDonation;        // min. gespendeter Betrag zum waehlen -> fuer ziel und nicht fuer meilenstein?
+    uint256 already_withdrawn;
+    uint8 activeMilestone;
+    uint8 partial_payment;
  
     enum votePosition{ POSITIVE_VOTE, NEGATIVE_VOTE}
     
     struct Milestone {
         bytes name;             // muss in hex uebergeben werden
-        uint256 donatedAmount;  // bereits gespendet
-        uint256 minDonation;    // benoetigte Spenden zum erreichen des Meilensteins, nicht im Pflichtenheft
-        uint128 minDonToVote;   // min. gespendeter Betrag zum waehlen -> fuer ziel und nicht fuer meilenstein?
+        uint256 targetAmount;   // Ziel fuer den Meilenstein
+        uint32 voteableUntil;   // Unixtime, es darf abgestimmt werden bis zu diesem Zeitpunkt
         uint32 positiveVotes;
         uint32 negativeVotes;
         bool payoutPart;
@@ -42,7 +46,7 @@ contract Project is Ownable{
     event PayingOutAll(uint8 milestoneId);
     event Donate(uint256 amount, uint8 milestoneId, address donor_add,bool wantsToVote);
     event Vote(uint8 milestoneId, address donor_add,votePosition vp);
-    event AddMilestone(bytes _name, uint256 _minDonation,uint128 _minDonToVote,uint32 positiveVotes,uint32 negativeVotes);
+    event AddMilestone(bytes _name, uint256 _amount, uint256 _minDonation,uint128 _minDonToVote,uint32 positiveVotes,uint32 negativeVotes);
   
     function getAddress() view public returns (address){
         return address(this);
@@ -51,17 +55,20 @@ contract Project is Ownable{
     // was bei nicht existierenden milestones?
     // wenn spendenziel erreicht prozentsatz -> wie viel? 
     // wenn voting ziel erreicht alles
-    function payingOut(uint8 milestoneId) onlyOwner public {
+    function payingOutActiveMilestone(uint8 milestoneId) onlyOwner public {
         if(milestones[milestoneId].positiveVotes < milestones[milestoneId].negativeVotes){
-            if(milestones[milestoneId].donatedAmount >= milestones[milestoneId].minDonation && (milestones[milestoneId].payoutPart == false)){
-                uint amount = (milestones[milestoneId].donatedAmount / 100) * partial_payment;  // partial_payment auszahlen
+            if(donated_amount >= milestones[milestoneId].targetAmount && (milestones[milestoneId].payoutPart == false)){
+                uint256 amount= ((milestones[milestoneId].targetAmount - milestones[milestoneId-1].targetAmount) * partial_payment)/100;  // partial_payment auszahlen;
                 msg.sender.transfer(amount);                 
-                milestones[milestoneId].donatedAmount -= amount;
                 milestones[milestoneId].payoutPart = true;
                 emit PayingOutPart(milestoneId,amount);
         }
         } else if(milestones[milestoneId].positiveVotes >= milestones[milestoneId].negativeVotes && (milestones[milestoneId].payoutAll == false)){
-            msg.sender.transfer(milestones[milestoneId].donatedAmount);
+            uint256 amount= (milestones[milestoneId].targetAmount - milestones[milestoneId-1].targetAmount);  // partial_payment auszahlen;
+            if(milestones[milestoneId].payoutPart){
+                amount=amount - ((amount* partial_payment)/100);
+            }
+            msg.sender.transfer(amount);
             milestones[milestoneId].payoutPart = true;
             milestones[milestoneId].payoutAll = true;
             emit PayingOutAll(milestoneId);
@@ -76,7 +83,7 @@ contract Project is Ownable{
     // Problem: wenn man in remix value auf 5 ether stellt und 5 zahlt wird counter um 5 erhoeht. Bei wei genau so.
     function vote(uint8 milestoneId, address donor_add,votePosition vp) public {
         require(time>now);
-        if(donors[donor_add].getWantsToVote(milestoneId) && (donors[donor_add].getDonatedAmountPerMilestone(milestoneId) >= milestones[milestoneId].minDonation) 
+        if(donors[donor_add].getWantsToVote(milestoneId) 
         && (donors[donor_add].getVotedMilestones(milestoneId) == false)){
             if(vp == votePosition.POSITIVE_VOTE){
                 milestones[milestoneId].positiveVotes++;
@@ -93,7 +100,7 @@ contract Project is Ownable{
     // wer kann diese Funktion aufrufen?
     function donateAndVote(uint8 milestoneId,address donor_add) onlyOwner payable public {
         donors[donor_add].setDonatedAmountPerMilestone(milestoneId,msg.value);
-        milestones[milestoneId].donatedAmount += msg.value;
+        donated_amount += msg.value;
         donors[donor_add].setWantsToVote(milestoneId);
         emit Donate(msg.value,milestoneId,donor_add,true);
         
@@ -101,26 +108,21 @@ contract Project is Ownable{
     
     function donateDontVote(uint8 milestoneId,address donor_add) onlyOwner payable public {
         donors[donor_add].setDonatedAmountPerMilestone(milestoneId,msg.value);
-        milestones[milestoneId].donatedAmount += msg.value;
+        donated_amount += msg.value;
         emit Donate(msg.value,milestoneId,donor_add,false);
     }
   
-    // fuegt einen neuen Meilenstein hinzu. Prueft ob das Ziel hoeher ist als beim letzten (beim ersten nicht)
-    // um wie viel muss es groesser sein?
-    function addMilestone(bytes memory _name, uint256 _minDonation,uint128 _minDonToVote) onlyOwner public {
-        if (_name.length != 0) {
-            if(milestonesCounter == 0){
-                milestones[milestonesCounter] = Milestone(_name,0,_minDonation,_minDonToVote,0,0,false,false);
-                milestonesCounter ++;
-                emit AddMilestone(_name,_minDonation,_minDonToVote,0,0);
-            }else if(milestones[milestonesCounter].minDonation < _minDonation)
-                milestones[milestonesCounter] = Milestone(_name,0,_minDonation,_minDonToVote,0,0,false,false);
-                milestonesCounter ++;
-                emit AddMilestone(_name,_minDonation,_minDonToVote,0,0);
+    // Meilensteine duerfen kleiner ausfallen als das Projektziel aber nicht kleiner als der bis dahin hoechste Meilenstein
+    function addMilestone(bytes memory _name,uint _amount, uint256 _minDonation,uint128 _minDonToVote, uint32 _voteableUntil) onlyOwner public {
+        require (_name.length > 0);
+        if(milestonesCounter>0){
+            require(milestones[milestonesCounter].targetAmount < _amount);
         }
+        milestones[milestonesCounter] = Milestone(_name,_amount,_voteableUntil,0,0,false,false);
+        milestonesCounter ++;
+        emit AddMilestone(_name,_amount,_minDonation,_minDonToVote,0,0);
     }
 }
-
 
 contract Donor is Ownable{
     
