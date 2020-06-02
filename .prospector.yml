@@ -50,9 +50,6 @@ pep257:
   enable:
     - D213
 
-mccabe:
-  run: true
-
 dodgy:
   run: true
 
