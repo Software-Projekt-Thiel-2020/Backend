@@ -65,8 +65,8 @@ contract Project is Ownable{
     event AddMilestone(bytes _name, uint256 _amount, uint256 _minDonation,uint128 _minDonToVote,uint32 positiveVotes,uint32 negativeVotes);
     event PayingOutProject(uint256 _amount);
   
-    function getAddress() view public returns (address){
-        return address(this);
+     /// @param partial_payment Teilauszahlung in Prozent von 0-100
+    constructor(uint8 _partial_payment,bytes memory _projectTargetName, uint256 _projectTargetAmount) public {
     }
   
     // was bei nicht existierenden milestones?
