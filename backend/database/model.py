@@ -238,10 +238,10 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
     milestones[6].project = projects[0]
 
     donations: List[Donation] = [
-        Donation(idDonation=1, amountDonation=100),
-        Donation(idDonation=2, amountDonation=100),
+        Donation(idDonation=1, amountDonation=300),
+        Donation(idDonation=2, amountDonation=200),
         Donation(idDonation=3, amountDonation=100),
-        Donation(idDonation=4, amountDonation=100),
+        Donation(idDonation=4, amountDonation=400),
     ]
     # set Milestone to Donation
     donations[0].milestone = milestones[0]
