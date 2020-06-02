@@ -46,6 +46,7 @@ contract Project is Ownable{
     event Vote(uint8 milestoneId, address donor_add,votePosition vp);
     event AddMilestone(bytes _name, uint256 _amount, uint256 _minDonation,uint128 _minDonToVote,uint32 positiveVotes,uint32 negativeVotes);
     event PayingOutProject(uint256 _amount);
+    event Retract(uint256 amount, uint8 milestoneId, address donor);
   
      /// @param partial_payment Teilauszahlung in Prozent von 0-100
     constructor(uint8 _partial_payment,bytes memory _projectTargetName, uint256 _projectTargetAmount) public {
@@ -158,7 +159,27 @@ contract Project is Ownable{
         donors[msg.sender]=d;
         emit Donate(msg.value, activeMilestone, msg.sender, _wantsToVote);
     }
-  
+    
+    function retract() public {
+        Donor memory d=donors[msg.sender];
+        require(d.exists);
+        require(d.donated_for_milestone == activeMilestone);
+        Milestone memory m = milestones[activeMilestone];
+        require(m.payoutPart == false);
+        require(m.payoutAll == false);
+        require(m.targetAmount > donated_amount);
+        if(m.voteableUntil <= block.timestamp){
+            require(m.positiveVotes < m.negativeVotes);
+        }
+        msg.sender.transfer(d.donated_for_milestone);
+        
+        emit Retract(d.donated_for_milestone, activeMilestone, msg.sender);
+        
+        donated_amount -= d.donated_for_milestone;
+        d.donated_for_milestone = 0;
+        donors[msg.sender]=d;
+    }
+    
     // Meilensteine duerfen  nicht kleiner als der bis dahin hoechste Meilenstein sein
     function addMilestone(bytes memory _name,uint _amount, uint256 _minDonation,uint128 _minDonToVote, uint32 _voteableUntil) onlyOwner public {
         require(_name.length > 0);
