@@ -7,15 +7,16 @@ contract Project is Ownable{
   
     // wenn man geld abhebt darf man eventuell nicht mehr voten
   
-    //man spendet f¸r Ziel nicht f¸r milestone.
+    //man spendet fÔøΩr Ziel nicht fÔøΩr milestone.
     
     // Viele Methoden noch unsicher! Jeder kann sie aufrufen -> welche? (vor allem setter)
  
     
- 
-    constructor(uint256 _timeInSeconds) public {
-        require(_timeInSeconds >= 86400); // mindestens ein Tag!
-        time = _timeInSeconds + now;
+    // @param partial_payment in Prozent
+    constructor(uint8 _partial_payment) public {
+        require(_partial_payment>0);
+        require(_partial_payment<100);
+        partial_payment=_partial_payment;
     }
   
     mapping(uint8 => Milestone) public milestones;
@@ -53,7 +54,7 @@ contract Project is Ownable{
     function payingOut(uint8 milestoneId) onlyOwner public {
         if(milestones[milestoneId].positiveVotes < milestones[milestoneId].negativeVotes){
             if(milestones[milestoneId].donatedAmount >= milestones[milestoneId].minDonation && (milestones[milestoneId].payoutPart == false)){
-                uint amount = milestones[milestoneId].donatedAmount /10;  // 10% auszahlen -> stattdessen von allen Spendern gleichmaeﬂig 10% des gesamtbetrags
+                uint amount = (milestones[milestoneId].donatedAmount / 100) * partial_payment;  // partial_payment auszahlen
                 msg.sender.transfer(amount);                 
                 milestones[milestoneId].donatedAmount -= amount;
                 milestones[milestoneId].payoutPart = true;
