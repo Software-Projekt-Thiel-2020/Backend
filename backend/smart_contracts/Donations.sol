@@ -13,17 +13,20 @@ contract Project is Ownable{
  
     
     // @param partial_payment in Prozent von 0-100
-    constructor(uint8 _partial_payment) public {
+    constructor(uint8 _partial_payment,bytes memory _projectTargetName, uint256 _projectTargetAmount) public {
         require(_partial_payment>0);
         require(_partial_payment<100);
+        require(_projectTargetName.length>0);
+        require(_projectTargetAmount>0);
         partial_payment=_partial_payment;
+        projectTarget=ProjectTarget(_projectTargetName, _projectTargetAmount);
     }
   
     mapping(uint8 => Milestone) public milestones;
     mapping(address => Donor) public donors;
     uint8 milestonesCounter = 0;
     
-    uint time;                  // wie lange darf noch gevoted werden? Auf Projekt oder auf Milestone bezogen?
+    ProjectTarget projectTarget;
     uint256 donated_amount;     // Insgesamt gespendeter Betrag
     uint256 minDonation;        // min. gespendeter Betrag zum waehlen -> fuer ziel und nicht fuer meilenstein?
     uint256 already_withdrawn;
@@ -41,12 +44,18 @@ contract Project is Ownable{
         bool payoutPart;
         bool payoutAll;
     }
+    
+    struct ProjectTarget {
+        bytes name;             // muss in hex uebergeben werden
+        uint256 amount;         // Ziel fuer das Projektziel
+    }
   
     event PayingOutPart(uint8 milestoneId,uint amount);
     event PayingOutAll(uint8 milestoneId);
     event Donate(uint256 amount, uint8 milestoneId, address donor_add,bool wantsToVote);
     event Vote(uint8 milestoneId, address donor_add,votePosition vp);
     event AddMilestone(bytes _name, uint256 _amount, uint256 _minDonation,uint128 _minDonToVote,uint32 positiveVotes,uint32 negativeVotes);
+    event PayingOutProject(uint256 _amount);
   
     function getAddress() view public returns (address){
         return address(this);
@@ -58,7 +67,7 @@ contract Project is Ownable{
     function payingOutActiveMilestone(uint8 milestoneId) onlyOwner public {
         if(milestones[milestoneId].positiveVotes < milestones[milestoneId].negativeVotes){
             if(donated_amount >= milestones[milestoneId].targetAmount && (milestones[milestoneId].payoutPart == false)){
-                uint256 amount= ((milestones[milestoneId].targetAmount - milestones[milestoneId-1].targetAmount) * partial_payment)/100;  // partial_payment auszahlen;
+                uint256 amount = ((milestones[milestoneId].targetAmount - milestones[milestoneId-1].targetAmount) * partial_payment)/100;  // partial_payment auszahlen;
                 msg.sender.transfer(amount);                 
                 milestones[milestoneId].payoutPart = true;
                 emit PayingOutPart(milestoneId,amount);
@@ -74,15 +83,22 @@ contract Project is Ownable{
             emit PayingOutAll(milestoneId);
         }
     }
-  
-
+    
+    // wenn das Projektziel erreicht wurde darf der Besitzer jederzeit das gesamte Geld abheben
+    function payingOutProject() onlyOwner public {
+        require(projectTarget.amount<=donated_amount);
+        uint256 amount=address(this).balance;
+        msg.sender.transfer(amount); 
+        emit PayingOutProject(amount);
+    }
+    
   
     // if durch require ersetzen?  
     // ToDo: ueberpruefen ob der aufrufer der Donor der addresse ist! -> wie?
     // erhoeht den wahl counter des projects(positiv oder negativ).
     // Problem: wenn man in remix value auf 5 ether stellt und 5 zahlt wird counter um 5 erhoeht. Bei wei genau so.
     function vote(uint8 milestoneId, address donor_add,votePosition vp) public {
-        require(time>now);
+        require(milestones[milestoneId].voteableUntil > block.timestamp);
         if(donors[donor_add].getWantsToVote(milestoneId) 
         && (donors[donor_add].getVotedMilestones(milestoneId) == false)){
             if(vp == votePosition.POSITIVE_VOTE){
@@ -112,9 +128,11 @@ contract Project is Ownable{
         emit Donate(msg.value,milestoneId,donor_add,false);
     }
   
-    // Meilensteine duerfen kleiner ausfallen als das Projektziel aber nicht kleiner als der bis dahin hoechste Meilenstein
+    // Meilensteine duerfen  nicht kleiner als der bis dahin hoechste Meilenstein sein
     function addMilestone(bytes memory _name,uint _amount, uint256 _minDonation,uint128 _minDonToVote, uint32 _voteableUntil) onlyOwner public {
-        require (_name.length > 0);
+        require(_name.length > 0);
+        require(_amount < projectTarget.amount);
+        require(_voteableUntil >= block.timestamp + 1 days);
         if(milestonesCounter>0){
             require(milestones[milestonesCounter].targetAmount < _amount);
         }
