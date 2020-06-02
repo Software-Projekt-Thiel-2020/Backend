@@ -2,38 +2,20 @@ pragma solidity ^0.6.0;
 // pragma experimental ABIEncoderV2;
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
 contract Project is Ownable{
-  
-    // anstatt import ownable eigenen modifier?  
-  
-    // wenn man geld abhebt darf man eventuell nicht mehr voten
-  
-    // man spendet fuer Ziel nicht fuer milestone.
-    
-    // Viele Methoden noch unsicher! Jeder kann sie aufrufen -> welche? (vor allem setter)
- 
-    
-    // @param partial_payment in Prozent von 0-100
-    constructor(uint8 _partial_payment,bytes memory _projectTargetName, uint256 _projectTargetAmount) public {
-        require(_partial_payment>0);
-        require(_partial_payment<100);
-        require(_projectTargetName.length>0);
-        require(_projectTargetAmount>0);
-        partial_payment=_partial_payment;
-        projectTarget=ProjectTarget(_projectTargetName, _projectTargetAmount);
-    }
-  
-    mapping(uint8 => Milestone) public milestones;
-    mapping(address => Donor) public donors;
-    uint8 milestonesCounter = 0;
     
     ProjectTarget projectTarget;
+    
+    enum votePosition{ POSITIVE_VOTE, NEGATIVE_VOTE}
+    
+    mapping(uint8 => Milestone) public milestones;
+    mapping(address => Donor) public donors;
+    
     uint256 donated_amount;     // Insgesamt gespendeter Betrag
     uint256 minDonation;        // min. gespendeter Betrag zum waehlen -> fuer ziel und nicht fuer meilenstein?
     uint256 already_withdrawn;
+    uint8 milestonesCounter = 0;
     uint8 activeMilestone;
     uint8 partial_payment;
- 
-    enum votePosition{ POSITIVE_VOTE, NEGATIVE_VOTE}
     
     struct Milestone {
         bytes name;             // muss in hex uebergeben werden
@@ -67,6 +49,12 @@ contract Project is Ownable{
   
      /// @param partial_payment Teilauszahlung in Prozent von 0-100
     constructor(uint8 _partial_payment,bytes memory _projectTargetName, uint256 _projectTargetAmount) public {
+        require(_partial_payment>0);
+        require(_partial_payment<100);
+        require(_projectTargetName.length>0);
+        require(_projectTargetAmount>0);
+        partial_payment=_partial_payment;
+        projectTarget=ProjectTarget(_projectTargetName, _projectTargetAmount);
     }
   
     // was bei nicht existierenden milestones?
@@ -100,7 +88,6 @@ contract Project is Ownable{
         emit PayingOutProject(amount);
     }
     
-  
     // erhoeht den wahl counter des projects(positiv oder negativ).
     function vote(uint8 milestoneId, votePosition vp) public {
         require(milestoneId<milestonesCounter);
