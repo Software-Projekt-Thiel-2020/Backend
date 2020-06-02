@@ -125,7 +125,7 @@ def projects_post():
     if auth_token is None:  # ToDo: real auth-token check
         return jsonify({'error': 'Not logged in'}), 403
 
-    if name is None or goal is None or required_votes is None or until is None:
+    if None in [name, goal, required_votes, until]:
         return jsonify({'error': 'Missing parameter'}), 403
 
     session = DB_SESSION()
