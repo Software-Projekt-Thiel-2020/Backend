@@ -40,8 +40,8 @@ contract Project is Ownable{
         bool exists;
     }
   
-    event PayingOutPart(uint8 milestoneId,uint amount);
-    event PayingOutAll(uint8 milestoneId);
+    event PayingOutPart(uint8 milestoneId, uint256 amount);
+    event PayingOutAll(uint8 milestoneId, uint256 amount);
     event Donate(uint256 amount, uint8 milestoneId, address donor_add,bool wantsToVote);
     event Vote(uint8 milestoneId, address donor_add,votePosition vp);
     event AddMilestone(bytes _name, uint256 _amount, uint256 _minDonation,uint128 _minDonToVote,uint32 positiveVotes,uint32 negativeVotes);
@@ -49,41 +49,69 @@ contract Project is Ownable{
   
      /// @param partial_payment Teilauszahlung in Prozent von 0-100
     constructor(uint8 _partial_payment,bytes memory _projectTargetName, uint256 _projectTargetAmount) public {
-        require(_partial_payment>0);
-        require(_partial_payment<100);
-        require(_projectTargetName.length>0);
-        require(_projectTargetAmount>0);
-        partial_payment=_partial_payment;
-        projectTarget=ProjectTarget(_projectTargetName, _projectTargetAmount);
+        require(_partial_payment > 0);
+        require(_partial_payment < 100);
+        require(_projectTargetName.length > 0);
+        require(_projectTargetAmount > 0);
+        partial_payment =_partial_payment;
+        projectTarget = ProjectTarget(_projectTargetName, _projectTargetAmount);
     }
   
     // was bei nicht existierenden milestones?
     // wenn spendenziel erreicht prozentsatz -> wie viel? 
     // wenn voting ziel erreicht alles
-    function payingOutActiveMilestone(uint8 milestoneId) onlyOwner public {
-        if(milestones[milestoneId].positiveVotes < milestones[milestoneId].negativeVotes){
-            if(donated_amount >= milestones[milestoneId].targetAmount && (milestones[milestoneId].payoutPart == false)){
-                uint256 amount = ((milestones[milestoneId].targetAmount - milestones[milestoneId-1].targetAmount) * partial_payment)/100;  // partial_payment auszahlen;
-                msg.sender.transfer(amount);                 
-                milestones[milestoneId].payoutPart = true;
-                emit PayingOutPart(milestoneId,amount);
+    function payingOutActiveMilestonePart(uint8 milestoneId) onlyOwner public {
+        Milestone memory m = milestones[milestoneId];
+        require(m.payoutPart == false);
+        require(m.payoutAll == false);
+        require(m.voteableUntil <= block.timestamp);
+        require(m.positiveVotes > m.negativeVotes);
+        uint256 amount;
+        if(milestoneId > 0){
+            amount = ((m.targetAmount - already_withdrawn) / 100) * partial_payment;
+        }else{
+            amount = (m.targetAmount / 100) * partial_payment ;
         }
-        } else if(milestones[milestoneId].positiveVotes >= milestones[milestoneId].negativeVotes && (milestones[milestoneId].payoutAll == false)){
-            uint256 amount= (milestones[milestoneId].targetAmount - milestones[milestoneId-1].targetAmount);  // partial_payment auszahlen;
-            if(milestones[milestoneId].payoutPart){
-                amount=amount - ((amount* partial_payment)/100);
-            }
-            msg.sender.transfer(amount);
-            milestones[milestoneId].payoutPart = true;
-            milestones[milestoneId].payoutAll = true;
-            emit PayingOutAll(milestoneId);
+        if(amount > address(this).balance){
+            amount = address(this).balance;
         }
+        already_withdrawn += amount;
+        msg.sender.transfer(amount);
+        m.payoutPart = true;
+        milestones[milestoneId] = m;
+        activeMilestone++;
+        emit PayingOutPart(milestoneId,amount);
+    }
+    
+    function payingOutActiveMilestoneAll(uint8 milestoneId) onlyOwner public {
+        Milestone memory m = milestones[milestoneId];
+        require(m.payoutAll == false);
+        require(m.targetAmount > donated_amount);
+        uint256 amount;
+        if(milestoneId > 0){
+            amount = m.targetAmount - already_withdrawn;
+        }else{
+            amount = m.targetAmount;
+        }
+        if(m.payoutPart){
+            amount = amount - (( amount / 100 ) * partial_payment);
+        }
+        if(amount > address(this).balance){
+            amount = address(this).balance;
+        }
+        already_withdrawn += amount;
+        msg.sender.transfer(amount);
+        m.payoutAll = true;
+        milestones[milestoneId] = m;
+        activeMilestone++;
+        emit PayingOutAll(milestoneId,amount);
     }
     
     // wenn das Projektziel erreicht wurde darf der Besitzer jederzeit das gesamte Geld abheben
     function payingOutProject() onlyOwner public {
-        require(projectTarget.amount<=donated_amount);
-        uint256 amount=address(this).balance;
+        require(projectTarget.amount <= donated_amount);
+        uint256 amount = address(this).balance;
+        already_withdrawn += amount;
         msg.sender.transfer(amount); 
         emit PayingOutProject(amount);
     }
