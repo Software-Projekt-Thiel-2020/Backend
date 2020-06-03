@@ -80,29 +80,24 @@ def donations_post():
 
     session = DB_SESSION()
     results = session.query(Login)
-    try:
-        results = results.filter(Login.authToken == auth_token).one()
-    except NoResultFound:
-        return jsonify({'error': 'Not logged in'}), 403
-    except SQLAlchemyError:
-        return jsonify({'status': 'Database error'}), 400
 
     if session.query(Milestone).get(idmilestone) is None:
         return jsonify({'error': 'Milestone not found'}), 400
 
     try:
+        try:
+            results = results.filter(Login.authToken == auth_token).one()
+        except NoResultFound:
+            return jsonify({'error': 'Not logged in'}), 403
         donations_inst = Donation(
             amountDonation=amount,
             user_id=results.user_id,
             milestone_id=idmilestone
         )
-    except SQLAlchemyError:
-        return jsonify({'status': 'Database error'}), 400
 
-    try:
         session.add(donations_inst)
         session.commit()
     except SQLAlchemyError:
-        return jsonify({'status': 'Commit error!'}), 400
+        return jsonify({'status': 'Database error'}), 400
 
     return jsonify({'status': 'Spende wurde verbucht'}), 201
