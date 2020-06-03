@@ -14,9 +14,16 @@ def projects_get():
 
     :return: json data of projects
     """
-    args = request.args
-    id_project = args.get('id', type=int)
-    id_institution = args.get('idinstitution')
+    id_project = request.args.get('id')
+    id_institution = request.args.get('idinstitution')
+
+    try:
+        if id_project:
+            int(id_project)
+        if id_institution:
+            int(id_institution)
+    except ValueError:
+        return jsonify({"error": "bad argument"}), 400
 
     session = DB_SESSION()
     results = session.query(Project)
