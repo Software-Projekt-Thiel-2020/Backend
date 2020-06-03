@@ -5,22 +5,22 @@ contract Project is Ownable{
     
     ProjectTarget projectTarget;
     
-    enum votePosition{ POSITIVE_VOTE, NEGATIVE_VOTE}
+    enum votePosition{POSITIVE_VOTE, NEGATIVE_VOTE}
     
     mapping(uint8 => Milestone) public milestones;
     mapping(address => Donor) public donors;
     
     uint256 donated_amount;     // Insgesamt gespendeter Betrag
-    uint256 minDonation;        // min. gespendeter Betrag zum waehlen -> fuer ziel und nicht fuer meilenstein?
+    uint256 minDonation;        // min. gespendeter Betrag zum waehlen
     uint256 already_withdrawn;
     uint8 milestonesCounter = 0;
     uint8 activeMilestone;
     uint8 partial_payment;
     
     struct Milestone {
-        bytes name;             // muss in hex uebergeben werden
-        uint256 targetAmount;   // Ziel fuer den Meilenstein
-        uint32 voteableUntil;   // Unixtime, es darf abgestimmt werden bis zu diesem Zeitpunkt
+        bytes name;
+        uint256 targetAmount;
+        uint32 voteableUntil;
         uint32 positiveVotes;
         uint32 negativeVotes;
         bool payoutPart;
@@ -28,8 +28,8 @@ contract Project is Ownable{
     }
     
     struct ProjectTarget {
-        bytes name;             // muss in hex uebergeben werden
-        uint256 amount;         // Ziel fuer das Projektziel
+        bytes name;
+        uint256 amount;
     }
   
     struct Donor {
@@ -42,14 +42,16 @@ contract Project is Ownable{
   
     event PayingOutPart(uint8 milestoneId, uint256 amount);
     event PayingOutAll(uint8 milestoneId, uint256 amount);
-    event Donate(uint256 amount, uint8 milestoneId, address donor_add,bool wantsToVote);
-    event Vote(uint8 milestoneId, address donor_add,votePosition vp);
+    event Donate(uint256 amount, uint8 milestoneId, address donor_add, bool wantsToVote);
+    event Vote(uint8 milestoneId, address donor_add, votePosition vp);
     event AddMilestone(bytes _name, uint256 _amount);
     event PayingOutProject(uint256 _amount);
     event Retract(uint256 amount, uint8 milestoneId, address donor);
   
-     /// @param partial_payment Teilauszahlung in Prozent von 0-100
+     /// @param _partial_payment Teilauszahlung in Prozent von 0-100
      /// @param _projectTargetName Name des Projektziels in hex
+     /// @param _projectTargetAmount das Projektziels in Wei
+     /// @param _minDonation Mindestbetrag einer Spende um Stimmbereichtigt zu sein
     constructor(uint8 _partial_payment,bytes memory _projectTargetName, uint256 _projectTargetAmount, uint256 _minDonation) public {
         require(_partial_payment > 0);
         require(_partial_payment < 100);
@@ -60,9 +62,9 @@ contract Project is Ownable{
         minDonation = _minDonation;
     }
   
-    // was bei nicht existierenden milestones?
-    // wenn spendenziel erreicht prozentsatz -> wie viel? 
-    // wenn voting ziel erreicht alles
+    /// @notice Fuert eine Teilauszahlung des Meilensteins aus,
+    /// @notice wenn die Abstimmzeit abgelaufen ist und mehr positive als negative Stimmen gesammelt wurden
+    /// @param milestoneId ID des Meilensteins der ausgezahlt werden soll
     function payingOutActiveMilestonePart(uint8 milestoneId) onlyOwner public {
         Milestone memory m = milestones[milestoneId];
         require(m.payoutPart == false);
@@ -86,6 +88,8 @@ contract Project is Ownable{
         emit PayingOutPart(milestoneId,amount);
     }
     
+    /// @notice Fuert eine volle Auszahlung des Meilensteins aus, wenn das Spendenziel erreicht wurde
+    /// @param milestoneId ID des Meilensteins der ausgezahlt werden soll
     function payingOutActiveMilestoneAll(uint8 milestoneId) onlyOwner public {
         Milestone memory m = milestones[milestoneId];
         require(m.payoutAll == false);
@@ -110,7 +114,7 @@ contract Project is Ownable{
         emit PayingOutAll(milestoneId,amount);
     }
     
-    // wenn das Projektziel erreicht wurde darf der Besitzer jederzeit das gesamte Geld abheben
+    /// @notice Auszahlung der kompletten Summe bei Erreichung des Projektziels
     function payingOutProject() onlyOwner public {
         require(projectTarget.amount <= donated_amount);
         uint256 amount = address(this).balance;
@@ -119,7 +123,9 @@ contract Project is Ownable{
         emit PayingOutProject(amount);
     }
     
-    // erhoeht den wahl counter des projects(positiv oder negativ).
+    /// @notice Funktion zum Abstimmen ueber Meilensteine
+    /// @param milestoneId ID des Meilensteines ueber den abgestimmt werden soll
+    /// @param vp Stimme für oder gegen den Meilentein als "POSITIVE_VOTE" oder  "NEGATIVE_VOTE"
     function vote(uint8 milestoneId, votePosition vp) public {
         require(milestoneId<milestonesCounter);
         require(milestones[milestoneId].voteableUntil > block.timestamp);
@@ -163,6 +169,7 @@ contract Project is Ownable{
         emit Donate(msg.value, activeMilestone, msg.sender, _wantsToVote);
     }
     
+    /// @notice Funktion zum Zurückziehen der Spende
     function retract() public {
         Donor memory d=donors[msg.sender];
         require(d.exists);
@@ -188,8 +195,11 @@ contract Project is Ownable{
         donors[msg.sender]=d;
     }
     
-    // Meilensteine duerfen  nicht kleiner als der bis dahin hoechste Meilenstein sein
+    /// @notice fuegt neue Meilensteine hinzu
     /// @notice das Ziel des neuen Meilensteins darf nicht kleiner als das Ziel des letzten Meilensteins
+    /// @param _name Name des Meilensteins in hex
+    /// @param _targetAmount Spendenziel des Meilensteins
+    /// @param _voteableUntil Unixtime bis zu der abgestimmt werden kann
     function addMilestone(bytes memory _name,uint _targetAmount, uint32 _voteableUntil) onlyOwner public {
         require(_name.length > 0);
         require(_targetAmount < projectTarget.amount);
