@@ -165,17 +165,22 @@ contract Project is Ownable{
         require(d.exists);
         require(d.donated_for_milestone == activeMilestone);
         Milestone memory m = milestones[activeMilestone];
-        require(m.payoutPart == false);
         require(m.payoutAll == false);
         require(m.targetAmount > donated_amount);
         if(m.voteableUntil <= block.timestamp){
             require(m.positiveVotes < m.negativeVotes);
         }
-        msg.sender.transfer(d.donated_for_milestone);
+        uint256 amount;
+        if(m.payoutPart){
+            amount = d.donated_for_milestone-((d.donated_for_milestone / 100) * partial_payment);
+        }else{
+            amount = d.donated_for_milestone;
+        }
+        msg.sender.transfer(amount);
         
-        emit Retract(d.donated_for_milestone, activeMilestone, msg.sender);
+        emit Retract(amount, activeMilestone, msg.sender);
         
-        donated_amount -= d.donated_for_milestone;
+        donated_amount -= amount;
         d.donated_for_milestone = 0;
         donors[msg.sender]=d;
     }
