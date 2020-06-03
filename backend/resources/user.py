@@ -43,7 +43,7 @@ def users_get():
 
 
 @BP.route('/<id>', methods=['GET'])
-def user_id(id):
+def user_id(id):    # noqa
     """
     Handles GET for resource <base>/api/users/<id> .
     :parameter id of a User
