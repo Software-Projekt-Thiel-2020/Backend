@@ -44,7 +44,7 @@ contract Project is Ownable{
     event PayingOutAll(uint8 milestoneId, uint256 amount);
     event Donate(uint256 amount, uint8 milestoneId, address donor_add,bool wantsToVote);
     event Vote(uint8 milestoneId, address donor_add,votePosition vp);
-    event AddMilestone(bytes _name, uint256 _amount, uint256 _minDonation,uint128 _minDonToVote,uint32 positiveVotes,uint32 negativeVotes);
+    event AddMilestone(bytes _name, uint256 _amount);
     event PayingOutProject(uint256 _amount);
     event Retract(uint256 amount, uint8 milestoneId, address donor);
   
@@ -133,8 +133,9 @@ contract Project is Ownable{
         }
     }    
     
-    function donate(uint8 milestoneId, bool _wantsToVote) payable public {
-        require(milestoneId <= activeMilestone);    // Es darf nur maximal auf den aktuellen Meilenstein gespendet werden 
+    /// @notice Funktion zum Spenden
+    /// @param _wantsToVote wenn der Spender abstimmen moechte true ansonsten false
+    function donate(bool _wantsToVote) payable public {
         Donor memory d;
         d=donors[msg.sender];
         if(_wantsToVote){
@@ -186,15 +187,16 @@ contract Project is Ownable{
     }
     
     // Meilensteine duerfen  nicht kleiner als der bis dahin hoechste Meilenstein sein
-    function addMilestone(bytes memory _name,uint _amount, uint256 _minDonation,uint128 _minDonToVote, uint32 _voteableUntil) onlyOwner public {
+    /// @notice das Ziel des neuen Meilensteins darf nicht kleiner als das Ziel des letzten Meilensteins
+    function addMilestone(bytes memory _name,uint _targetAmount, uint32 _voteableUntil) onlyOwner public {
         require(_name.length > 0);
-        require(_amount < projectTarget.amount);
+        require(_targetAmount < projectTarget.amount);
         require(_voteableUntil >= block.timestamp + 1 days);
-        if(milestonesCounter>0){
-            require(milestones[milestonesCounter].targetAmount < _amount);
+        if(milestonesCounter > 0){
+            require(milestones[milestonesCounter].targetAmount < _targetAmount);
         }
-        milestones[milestonesCounter] = Milestone(_name,_amount,_voteableUntil,0,0,false,false);
-        milestonesCounter ++;
-        emit AddMilestone(_name,_amount,_minDonation,_minDonToVote,0,0);
+        milestones[milestonesCounter] = Milestone(_name,_targetAmount,_voteableUntil,0,0,false,false);
+        milestonesCounter++;
+        emit AddMilestone(_name,_targetAmount);
     }
 }
