@@ -96,6 +96,8 @@ class User(BASE):
 
     transactions = relationship("Transaction", back_populates="user")
 
+    login = relationship("Login", back_populates="user")
+
     vouchers = relationship("Voucher", secondary=VOUCHER_USER_TABLE, back_populates="users")
 
 
@@ -121,6 +123,15 @@ class Transaction(BASE):
 
     user_id = Column(Integer, ForeignKey('User.idUser'))
     user = relationship("User", back_populates="transactions")
+
+
+class Login(BASE):
+    __tablename__ = 'Login'
+    authToken = Column(VARCHAR(256), primary_key=True)
+    timeLogin = Column(TIMESTAMP)
+
+    user_id = Column(Integer, ForeignKey('User.idUser'))
+    user = relationship("User", back_populates="login")
 
 
 def add_sample_data(db_session):  # pylint:disable=too-many-statements
@@ -291,9 +302,17 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
     users[2].vouchers.append(vouchers[0])
     users[3].vouchers.append(vouchers[0])
 
+    login: List[Login] = [
+        Login(authToken="aE45DBb22", timeLogin=datetime.now()),
+        Login(authToken="so45Ma2Sd", timeLogin=datetime.now()),
+    ]
+    # set User to Login
+    login[0].user = users[0]
+    login[1].user = users[1]
+
     # All objects created, Add and commit to DB:
     objects = [*smartcontracts, *users, *institutions, *projects, *milestones, *vouchers, *transactions,
-               *donations]
+               *donations, *login]
 
     for obj in objects:
         session.add(obj)
