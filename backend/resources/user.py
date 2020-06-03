@@ -41,6 +41,7 @@ def users_get():
 
     return jsonify(json_data)
 
+
 @BP.route('/<id>', methods=['GET'])
 def user_id(id):
     """
@@ -48,7 +49,6 @@ def user_id(id):
     :parameter id of a User
     :return: the User
     """
-
     id_user = id
 
     try:
@@ -68,25 +68,24 @@ def user_id(id):
     except SQLAlchemyError:
         return jsonify(), 200
 
-    json_data = []
-    json_data.append({
+    json_data = {
         'id': results.idUser,
         'username': results.usernameUser,
         'firstname': results.firstnameUser,
         'lastname': results.lastnameUser,
         'email': results.emailUser,
         'publickey': results.publickeyUser.decode("utf-8").rstrip("\x00"),
-    })
+    }
 
     return jsonify(json_data), 200
 
+
 @BP.route('', methods=['PUT'])
-def User_post():
+def user_post():
     """
     Handles POST for resource <base>/api/users .
     :return: "{'status': 'Daten wurden geändert'}", 200
     """
-
     args = request.args
 
     auth_token = args.get('authToken', default=None)
