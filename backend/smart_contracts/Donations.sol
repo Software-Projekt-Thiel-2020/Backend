@@ -49,13 +49,15 @@ contract Project is Ownable{
     event Retract(uint256 amount, uint8 milestoneId, address donor);
   
      /// @param partial_payment Teilauszahlung in Prozent von 0-100
-    constructor(uint8 _partial_payment,bytes memory _projectTargetName, uint256 _projectTargetAmount) public {
+     /// @param _projectTargetName Name des Projektziels in hex
+    constructor(uint8 _partial_payment,bytes memory _projectTargetName, uint256 _projectTargetAmount, uint256 _minDonation) public {
         require(_partial_payment > 0);
         require(_partial_payment < 100);
         require(_projectTargetName.length > 0);
         require(_projectTargetAmount > 0);
         partial_payment =_partial_payment;
         projectTarget = ProjectTarget(_projectTargetName, _projectTargetAmount);
+        minDonation = _minDonation;
     }
   
     // was bei nicht existierenden milestones?
