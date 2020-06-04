@@ -91,6 +91,7 @@ class User(BASE):
     emailUser = Column(VARCHAR(45))
     publickeyUser = Column(BINARY(64))
     privatekeyUser = Column(BINARY(128))
+    authToken = Column(VARCHAR(2048))
 
     donations = relationship("Donation", back_populates="user")
 
