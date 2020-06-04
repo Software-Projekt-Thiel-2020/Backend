@@ -1,5 +1,7 @@
 """Tests for resource users."""
 
+from .test_blockstackauth import TOKEN_1
+
 
 def test_users_get(client):
     res = client.get('/api/users?username=LoetkolbenLudwig')
@@ -46,11 +48,17 @@ def test_users_get_w_special(client):
     assert len(res.json) == 0
 
 
-def test_users_id_get_existant_param(client):
+def test_users_id_get(client):
     """get for users id with existant id."""
     res = client.get('/api/users/1')
     assert res._status_code == 200
     assert len(res.json) == 6
+
+    assert res.json["id"] == 1
+    assert res.json["username"] == "LoetkolbenLudwig"
+    assert res.json["firstname"] == "Ludwig"
+    assert res.json["lastname"] == "Loetkolben"
+    assert res.json["email"] == "ll@swp.de"
 
 
 def test_users_id_get_nonexistant_param(client):
@@ -72,3 +80,29 @@ def test_users_id_get_big_value(client):
     res = client.get('/api/users/' + "1" * 200)
     assert res._status_code == 404
     assert len(res.json) == 0
+
+
+def test_users_id_get2(client):
+    res = client.get('/api/users/6')
+    assert res.json["id"] == 6
+    assert res.json["username"] == "sw2020testuser1.id.blockstack"
+    assert res.json["firstname"] == "testuser1"
+    assert res.json["lastname"] == "sw2020"
+    assert res.json["email"] == "testuser1@example.com"
+
+
+def test_users_put(client):
+    headers = {"authToken": TOKEN_1, "firstname": "new_firstname", "lastname": "new_lastname", "email": "a@b.com"}
+    res = client.put('/api/users', headers=headers)
+    assert res._status_code == 200
+
+    res = client.get('/api/users/6')
+    assert res._status_code == 200
+
+    assert res.json["id"] == 6
+    assert res.json["username"] == "sw2020testuser1.id.blockstack"
+    assert res.json["firstname"] == "new_firstname"
+    assert res.json["lastname"] == "new_lastname"
+    assert res.json["email"] == "a@b.com"
+
+# ToDo: more users_put tests
