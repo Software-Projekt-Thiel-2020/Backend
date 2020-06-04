@@ -127,7 +127,7 @@ class BlockstackAuth:
     @classmethod
     def short_jwt(cls, token):
         decoded = jwt.decode(token, verify=False)
-        del decoded["private_key"]
-        del decoded["associationToken"]
-        del decoded["profile"]
+        decoded.pop("private_key", None)
+        decoded.pop("associationToken", None)
+        decoded.pop("profile", None)
         return jwt.encode(decoded, key="").decode('utf-8')
