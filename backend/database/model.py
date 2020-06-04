@@ -125,7 +125,7 @@ class Transaction(BASE):
 
 
 # sw2020testuser1.id.blockstack - shortened
-__TOKEN_1 = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIyNGE1OTFkNS1lOGJiLTQwMzYtYWE0Ni1hNzg5MjU2ZDVjZDYiLCJpYX" \
+TOKEN_1 = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIyNGE1OTFkNS1lOGJiLTQwMzYtYWE0Ni1hNzg5MjU2ZDVjZDYiLCJpYX" \
             "QiOjE1OTEyMjUyMzIsImV4cCI6MTU5MzgxNzIzMiwiaXNzIjoiZGlkOmJ0Yy1hZGRyOjE0Z1N4eFhZdzlXbTNoYWoxaGVKYXQ1ZGdpe" \
             "HF0YVJ3a3MiLCJwdWJsaWNfa2V5cyI6WyIwMzliZWM4NjkxMGViZmVmMGU4ZmE3YmE2OTQ1MWU1ZjljNDU1NjhmZDFhMmY4MDQ5MzM2" \
             "MWFlMzUzOGM2N2Y3YmIiXSwidXNlcm5hbWUiOiJzdzIwMjB0ZXN0dXNlcjEuaWQuYmxvY2tzdGFjayIsImNvcmVfdG9rZW4iOm51bGw" \
@@ -135,7 +135,7 @@ __TOKEN_1 = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIyNGE1OTFkNS1lOGJiLT
             "MSX4ykE6Fdm5-N7yxA60ZI"
 
 # sw2020testuser2.id.blockstack
-__TOKEN_2 = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJqdGkiOiIxZjJiYzcyNy03Y2ZhLTQ5NDEtOTk4ZC03YjIyMGEwOTg2NmYiLCJp" \
+TOKEN_2 = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJqdGkiOiIxZjJiYzcyNy03Y2ZhLTQ5NDEtOTk4ZC03YjIyMGEwOTg2NmYiLCJp" \
             "YXQiOjE1OTEyMjU0OTYsImV4cCI6MTU5MzgxNzQ5NiwiaXNzIjoiZGlkOmJ0Yy1hZGRyOjFIMlQxY0Rmd3lZZFlra1pFUkhmQUh4SkJ" \
             "xaDNieTlWd2kiLCJwcml2YXRlX2tleSI6IjdiMjI2OTc2MjIzYTIyMzAzMTMxMzIzNTY0MzMzMzM1MzMzNDYxNjYzMDM0MzE2NTM1Mz" \
             "czNDMyMzczMjMwNjU2MzM0Mzk2MzMwMzY2NjIyMmMyMjY1NzA2ODY1NmQ2NTcyNjE2YzUwNGIyMjNhMjIzMDMzMzQ2MzM4MzgzNzM4M" \
@@ -215,14 +215,14 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
              emailUser="testuser1@example.com",
              publickeyUser=bytes("14234132", encoding="utf-8"),
              privatekeyUser=bytes("2344322134", encoding="utf-8"),
-             authToken=__TOKEN_1),
+             authToken=TOKEN_1),
         User(idUser=7,
              usernameUser="sw2020testuser2.id.blockstack",
              firstnameUser="testuser2", lastnameUser="sw2020",
              emailUser="testuser2@example.com",
              publickeyUser=bytes("14234132", encoding="utf-8"),
              privatekeyUser=bytes("2344322134", encoding="utf-8"),
-             authToken=__TOKEN_2),
+             authToken=TOKEN_2),
     ]
 
     institutions: List[Institution] = [
