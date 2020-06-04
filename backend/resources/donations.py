@@ -1,12 +1,11 @@
 """Project Resource."""
 from flask import Blueprint, request, jsonify
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm.exc import NoResultFound
 
 from backend.database.db import DB_SESSION
 from backend.database.model import Donation
 from backend.database.model import Milestone
-from backend.resources.helpers import check_params_int
+from backend.resources.helpers import check_params_int, auth_user
 
 BP = Blueprint('donations', __name__, url_prefix='/api/donations')
 
@@ -60,36 +59,28 @@ def donations_get():
 
 
 @BP.route('', methods=['POST'])
-def donations_post():
+@auth_user
+def donations_post(user_inst):
     """
     Handles POST for resource <base>/api/donations .
     :return: "{'status': 'Spende wurde verbucht'}", 201
     """
-    auth_token = request.args.get('authToken', default=None)
     idmilestone = request.args.get('idmilestone', default=None)
     amount = request.args.get('amount', default=None)
     ether_account_key = request.args.get('etherAccountKey', default=None)  # ToDo: an web3.py ?
-
-    if auth_token is None:
-        return jsonify({'error': 'Not logged in'}), 403
 
     if None in [idmilestone, amount, ether_account_key]:
         return jsonify({'error': 'Missing parameter'}), 403
 
     session = DB_SESSION()
-    results = session.query(Login)
 
     if session.query(Milestone).get(idmilestone) is None:
         return jsonify({'error': 'Milestone not found'}), 400
 
     try:
-        try:
-            results = results.filter(Login.authToken == auth_token).one()
-        except NoResultFound:
-            return jsonify({'error': 'Not logged in'}), 403
         donations_inst = Donation(
             amountDonation=amount,
-            user_id=results.user_id,
+            user=user_inst,
             milestone_id=idmilestone
         )
 
