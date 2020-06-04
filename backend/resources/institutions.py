@@ -45,7 +45,6 @@ def institutions_post():
     web = request.headers.get('webpage')
 
     session = DB_SESSION()
-    results = session.query(Institution)
 
     # check if logged in TODO real check
     if not auth_token:
@@ -53,9 +52,9 @@ def institutions_post():
 
     # check if name is already taken
     name_exist = session.query(Institution).filter(Institution.nameInstitution == name).first()
-    if name_exist :
+    if name_exist:
         return jsonify({'status': 'Name bereits vergeben'}), 200
-  
+
     # Todo: idInstitution and smartcontract_id
     try:
         session.add(Institution(idInstitution=6, nameInstitution=name, webpageInstitution=web, smartcontract_id=666))
