@@ -87,17 +87,9 @@ def user_put(user_inst):
     Handles POST for resource <base>/api/users .
     :return: "{'status': 'Daten wurden geändert'}", 200
     """
-    args = request.args
-
-    auth_token = args.get('authToken', default=None)
-    firstname = args.get('firstname', default=None)
-    lastname = args.get('lastname', default=None)
-    email = args.get('email', default=None)
-
-    if auth_token is None:
-        return jsonify({'error': 'Not logged in'}), 403
-
-    session = DB_SESSION()
+    firstname = request.headers.get('firstname', default=None)
+    lastname = request.headers.get('lastname', default=None)
+    email = request.headers.get('email', default=None)
 
     try:
         if firstname is not None:
@@ -105,9 +97,8 @@ def user_put(user_inst):
         if lastname is not None:
             user_inst.lastnameUser = lastname
         if email is not None:
-            user_inst.emailUser = email
-        session.commit()
+            user_inst.emailUser = email  # ToDo: validate email
     except SQLAlchemyError:
-        return jsonify(), 200
+        return jsonify({'error': 'Database error'}), 500
 
-    return jsonify('Daten wurden geändert'), 200
+    return jsonify({'status': 'Daten wurden geändert'}), 200
