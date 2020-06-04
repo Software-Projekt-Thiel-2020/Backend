@@ -55,9 +55,9 @@ def institutions_post():
     if name_exist:
         return jsonify({'status': 'Name bereits vergeben'}), 200
 
-    # Todo: idInstitution and smartcontract_id
+    # Todo: smartcontract_id
     try:
-        session.add(Institution(idInstitution=6, nameInstitution=name, webpageInstitution=web, smartcontract_id=666))
+        session.add(Institution(nameInstitution=name, webpageInstitution=web, smartcontract_id=666))
         session.commit()
     except exc.SQLAlchemyError:
         return jsonify({'status': 'Commit error'}), 400
