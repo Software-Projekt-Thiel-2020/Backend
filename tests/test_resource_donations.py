@@ -1,4 +1,5 @@
 """Tests for resource donations."""
+from tests.test_blockstackauth import TOKEN_1
 
 
 def test_donations_get(client):
@@ -147,3 +148,24 @@ def test_donations_get_w_project_nonexistant(client):
 def test_donations_get_w_project_bad_value(client):
     res = client.get('/api/donations?idproject=abcdefg')
     assert res._status_code == 400
+
+
+def test_donations_post(client):
+    headers = {"authToken": TOKEN_1, "idmilestone": 1, "amount": 1337, "etherAccountKey": "89354joiternjkfsdhiu4378z"}
+    res = client.post('/api/donations', headers=headers)
+
+    assert res._status_code == 201
+    assert len(res.json) == 1
+
+    assert res.json["status"] == "Spende wurde verbucht"
+
+    res = client.get('/api/donations?iduser=6')
+    assert res._status_code == 200
+    assert len(res.json) == 1
+
+    assert res.json[0]["id"] == 5
+    assert res.json[0]["amount"] == 1337
+    assert res.json[0]["userid"] == 6
+    assert res.json[0]["milestoneid"] == 1
+
+# ToDo: add more donations_post tests
