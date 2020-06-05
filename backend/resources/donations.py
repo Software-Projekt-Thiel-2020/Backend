@@ -65,9 +65,9 @@ def donations_post(user_inst):
     Handles POST for resource <base>/api/donations .
     :return: "{'status': 'Spende wurde verbucht'}", 201
     """
-    idmilestone = request.args.get('idmilestone', default=None)
-    amount = request.args.get('amount', default=None)
-    ether_account_key = request.args.get('etherAccountKey', default=None)  # ToDo: an web3.py ?
+    idmilestone = request.headers.get('idmilestone', default=None)
+    amount = request.headers.get('amount', default=None)
+    ether_account_key = request.headers.get('etherAccountKey', default=None)  # ToDo: an web3.py ?
 
     if None in [idmilestone, amount, ether_account_key]:
         return jsonify({'error': 'Missing parameter'}), 403
