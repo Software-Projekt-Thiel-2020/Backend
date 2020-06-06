@@ -33,9 +33,9 @@ contract Project is Ownable{
     }
   
     struct Donor {
+        bool[256] votedMilestones; 
         uint256 donated_amount;
         uint8 donated_for_milestone;
-        bool[256] votedMilestones; 
         bool wantsToVote;
         bool exists;
     }
@@ -141,31 +141,28 @@ contract Project is Ownable{
         }
     }    
     
+    function register() public{
+        require(!donors[msg.sender].exists);
+        Donor memory d;
+        d.exists = true;
+        donors[msg.sender] = d;
+    }
+    
     /// @notice Funktion zum Spenden
     /// @param _wantsToVote wenn der Spender abstimmen moechte true ansonsten false
     function donate(bool _wantsToVote) payable public {
-        Donor memory d;
-        d=donors[msg.sender];
+        require(donors[msg.sender].exists);
         if(_wantsToVote){
             require(msg.value >= minDonation);
-            d.wantsToVote = true;
-        }else{
-            d.wantsToVote = false;
+            donors[msg.sender].wantsToVote = true;
         }
-        if(d.exists){
-            if(d.donated_for_milestone < activeMilestone){
-                d.donated_amount = msg.value;
-                d.donated_for_milestone = activeMilestone;
-            }else{
-               d.donated_amount += msg.value; 
-            }
+        if(donors[msg.sender].donated_for_milestone < activeMilestone){
+            donors[msg.sender].donated_amount = msg.value;
+            donors[msg.sender].donated_for_milestone = activeMilestone;
         }else{
-            d.donated_amount = msg.value;
-            d.donated_for_milestone = activeMilestone;
-            d.exists = true;
+           donors[msg.sender].donated_amount += msg.value; 
         }
         donated_amount += msg.value;
-        donors[msg.sender]=d;
         emit Donate(msg.value, activeMilestone, msg.sender, _wantsToVote);
     }
     
