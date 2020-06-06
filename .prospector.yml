@@ -31,6 +31,7 @@ pylint:
     - missing-docstring
     - star-args
     - import-error
+    - too-many-return-statements
 
 pep8:
   full: true
@@ -51,7 +52,7 @@ pep257:
     - D213
 
 mccabe:
-  run: true
+  run: false
 
 dodgy:
   run: true

@@ -1,8 +1,10 @@
 """Institution Resource."""
 from flask import Blueprint, request, jsonify
-from sqlalchemy import exc
+from sqlalchemy.exc import SQLAlchemyError
+
 from backend.database.db import DB_SESSION
 from backend.database.model import Institution
+from backend.resources.helpers import auth_user
 
 BP = Blueprint('institutions', __name__, url_prefix='/api/institutions')  # set blueprint name and resource path
 
@@ -34,21 +36,16 @@ def institutions_get():
 
 
 @BP.route('', methods=['POST'])
-def institutions_post():
+@auth_user
+def institutions_post(user_inst):  # pylint:disable=unused-argument
     """
     Handles POST for resource <base>/api/institutions .
-
     :return: json response
     """
-    auth_token = request.headers.get('authToken')
     name = request.headers.get('name')
     web = request.headers.get('webpage')
 
     session = DB_SESSION()
-
-    # check if logged in TODO real check
-    if not auth_token:
-        return jsonify({'status': 'Nicht eingeloggt'}), 403
 
     # check if name is already taken
     name_exist = session.query(Institution).filter(Institution.nameInstitution == name).first()
@@ -59,7 +56,7 @@ def institutions_post():
     try:
         session.add(Institution(nameInstitution=name, webpageInstitution=web, smartcontract_id=666))
         session.commit()
-    except exc.SQLAlchemyError:
+    except SQLAlchemyError:
         return jsonify({'status': 'Commit error'}), 400
 
     return jsonify({'status': 'Institution wurde erstellt'}), 200
