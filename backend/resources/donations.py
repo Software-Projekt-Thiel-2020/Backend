@@ -70,7 +70,7 @@ def donations_post(user_inst):
     ether_account_key = request.headers.get('etherAccountKey', default=None)  # ToDo: an web3.py ?
 
     if None in [idmilestone, amount, ether_account_key]:
-        return jsonify({'error': 'Missing parameter'}), 403
+        return jsonify({'error': 'Missing parameter'}), 400
 
     session = DB_SESSION()
 
