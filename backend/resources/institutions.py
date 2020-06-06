@@ -37,7 +37,7 @@ def institutions_get():
 
 @BP.route('', methods=['POST'])
 @auth_user
-def institutions_post(user_inst):
+def institutions_post(user_inst):  # pylint:disable=unused-argument
     """
     Handles POST for resource <base>/api/institutions .
     :return: json response
