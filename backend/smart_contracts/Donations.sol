@@ -2,181 +2,213 @@ pragma solidity ^0.6.0;
 // pragma experimental ABIEncoderV2;
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
 contract Project is Ownable{
-  
-    //anstatt import ownable eigenen modifier?  
-  
-    // wenn man geld abhebt darf man eventuell nicht mehr voten
-  
-    //man spendet für Ziel nicht für milestone.
     
-    // Viele Methoden noch unsicher! Jeder kann sie aufrufen -> welche? (vor allem setter)
- 
+    ProjectTarget projectTarget;
     
- 
-    constructor(uint256 _timeInSeconds) public {
-        require(_timeInSeconds >= 86400); // mindestens ein Tag!
-        time = _timeInSeconds + now;
-    }
-  
+    enum votePosition{POSITIVE_VOTE, NEGATIVE_VOTE}
+    
     mapping(uint8 => Milestone) public milestones;
     mapping(address => Donor) public donors;
+    
+    uint256 donated_amount;     // Insgesamt gespendeter Betrag
+    uint256 minDonation;        // min. gespendeter Betrag zum waehlen
+    uint256 already_withdrawn;
     uint8 milestonesCounter = 0;
-
-    uint time;   // wie lange darf noch gevoted werden? Auf Projekt oder auf Milestone bezogen?
- 
-    enum votePosition{ POSITIVE_VOTE, NEGATIVE_VOTE}
+    uint8 activeMilestone;
+    uint8 partial_payment;
     
     struct Milestone {
-        bytes name;             // muss in hex uebergeben werden
-        uint256 donatedAmount;  // bereits gespendet
-        uint256 minDonation;    // benoetigte Spenden zum erreichen des Meilensteins, nicht im Pflichtenheft
-        uint128 minDonToVote;   // min. gespendeter Betrag zum waehlen -> fuer ziel und nicht fuer meilenstein?
+        bytes name;
+        uint256 targetAmount;
+        uint32 voteableUntil;
         uint32 positiveVotes;
         uint32 negativeVotes;
         bool payoutPart;
         bool payoutAll;
     }
-  
-    event PayingOutPart(uint8 milestoneId,uint amount);
-    event PayingOutAll(uint8 milestoneId);
-    event Donate(uint256 amount, uint8 milestoneId, address donor_add,bool wantsToVote);
-    event Vote(uint8 milestoneId, address donor_add,votePosition vp);
-    event AddMilestone(bytes _name, uint256 _minDonation,uint128 _minDonToVote,uint32 positiveVotes,uint32 negativeVotes);
-  
-    function getAddress() view public returns (address){
-        return address(this);
+    
+    struct ProjectTarget {
+        bytes name;
+        uint256 amount;
     }
   
-    // was bei nicht existierenden milestones?
-    // wenn spendenziel erreicht prozentsatz -> wie viel? 
-    // wenn voting ziel erreicht alles
-    function payingOut(uint8 milestoneId) onlyOwner public {
-        if(milestones[milestoneId].positiveVotes < milestones[milestoneId].negativeVotes){
-            if(milestones[milestoneId].donatedAmount >= milestones[milestoneId].minDonation && (milestones[milestoneId].payoutPart == false)){
-                uint amount = milestones[milestoneId].donatedAmount /10;  // 10% auszahlen -> stattdessen von allen Spendern gleichmaeßig 10% des gesamtbetrags
-                msg.sender.transfer(amount);                 
-                milestones[milestoneId].donatedAmount -= amount;
-                milestones[milestoneId].payoutPart = true;
-                emit PayingOutPart(milestoneId,amount);
-        }
-        } else if(milestones[milestoneId].positiveVotes >= milestones[milestoneId].negativeVotes && (milestones[milestoneId].payoutAll == false)){
-            msg.sender.transfer(milestones[milestoneId].donatedAmount);
-            milestones[milestoneId].payoutPart = true;
-            milestones[milestoneId].payoutAll = true;
-            emit PayingOutAll(milestoneId);
-        }
+    struct Donor {
+        uint256 donated_amount;
+        uint8 donated_for_milestone;
+        bool[256] votedMilestones; 
+        bool wantsToVote;
+        bool exists;
     }
   
-
+    event PayingOutPart(uint8 milestoneId, uint256 amount);
+    event PayingOutAll(uint8 milestoneId, uint256 amount);
+    event Donate(uint256 amount, uint8 milestoneId, address donor_add, bool wantsToVote);
+    event Vote(uint8 milestoneId, address donor_add, votePosition vp);
+    event AddMilestone(bytes _name, uint256 _amount);
+    event PayingOutProject(uint256 _amount);
+    event Retract(uint256 amount, uint8 milestoneId, address donor);
   
-    // if durch require ersetzen?  
-    // ToDo: ueberpruefen ob der aufrufer der Donor der addresse ist! -> wie?
-    // erhoeht den wahl counter des projects(positiv oder negativ).
-    // Problem: wenn man in remix value auf 5 ether stellt und 5 zahlt wird counter um 5 erhoeht. Bei wei genau so.
-    function vote(uint8 milestoneId, address donor_add,votePosition vp) public {
-        require(time>now);
-        if(donors[donor_add].getWantsToVote(milestoneId) && (donors[donor_add].getDonatedAmountPerMilestone(milestoneId) >= milestones[milestoneId].minDonation) 
-        && (donors[donor_add].getVotedMilestones(milestoneId) == false)){
+     /// @param _partial_payment Teilauszahlung in Prozent von 0-100
+     /// @param _projectTargetName Name des Projektziels in hex
+     /// @param _projectTargetAmount das Projektziels in Wei
+     /// @param _minDonation Mindestbetrag einer Spende um Stimmbereichtigt zu sein
+    constructor(uint8 _partial_payment,bytes memory _projectTargetName, uint256 _projectTargetAmount, uint256 _minDonation) public {
+        require(_partial_payment > 0);
+        require(_partial_payment < 100);
+        require(_projectTargetName.length > 0);
+        require(_projectTargetAmount > 0);
+        partial_payment =_partial_payment;
+        projectTarget = ProjectTarget(_projectTargetName, _projectTargetAmount);
+        minDonation = _minDonation;
+    }
+  
+    /// @notice Fuert eine Teilauszahlung des Meilensteins aus,
+    /// @notice wenn die Abstimmzeit abgelaufen ist und mehr positive als negative Stimmen gesammelt wurden
+    /// @param milestoneId ID des Meilensteins der ausgezahlt werden soll
+    function payingOutActiveMilestonePart(uint8 milestoneId) onlyOwner public {
+        Milestone memory m = milestones[milestoneId];
+        require(m.payoutPart == false);
+        require(m.payoutAll == false);
+        require(m.voteableUntil <= block.timestamp);
+        require(m.positiveVotes > m.negativeVotes);
+        uint256 amount;
+        if(milestoneId > 0){
+            amount = ((m.targetAmount - already_withdrawn) / 100) * partial_payment;
+        }else{
+            amount = (m.targetAmount / 100) * partial_payment ;
+        }
+        if(amount > address(this).balance){
+            amount = address(this).balance;
+        }
+        already_withdrawn += amount;
+        msg.sender.transfer(amount);
+        m.payoutPart = true;
+        milestones[milestoneId] = m;
+        activeMilestone++;
+        emit PayingOutPart(milestoneId,amount);
+    }
+    
+    /// @notice Fuert eine volle Auszahlung des Meilensteins aus, wenn das Spendenziel erreicht wurde
+    /// @param milestoneId ID des Meilensteins der ausgezahlt werden soll
+    function payingOutActiveMilestoneAll(uint8 milestoneId) onlyOwner public {
+        Milestone memory m = milestones[milestoneId];
+        require(m.payoutAll == false);
+        require(m.targetAmount > donated_amount);
+        uint256 amount;
+        if(milestoneId > 0){
+            amount = m.targetAmount - already_withdrawn;
+        }else{
+            amount = m.targetAmount;
+        }
+        if(m.payoutPart){
+            amount = amount - (( amount / 100 ) * partial_payment);
+        }
+        if(amount > address(this).balance){
+            amount = address(this).balance;
+        }
+        already_withdrawn += amount;
+        msg.sender.transfer(amount);
+        m.payoutAll = true;
+        milestones[milestoneId] = m;
+        activeMilestone++;
+        emit PayingOutAll(milestoneId,amount);
+    }
+    
+    /// @notice Auszahlung der kompletten Summe bei Erreichung des Projektziels
+    function payingOutProject() onlyOwner public {
+        require(projectTarget.amount <= donated_amount);
+        uint256 amount = address(this).balance;
+        already_withdrawn += amount;
+        msg.sender.transfer(amount); 
+        emit PayingOutProject(amount);
+    }
+    
+    /// @notice Funktion zum Abstimmen ueber Meilensteine
+    /// @param milestoneId ID des Meilensteines ueber den abgestimmt werden soll
+    /// @param vp Stimme fÃ¼r oder gegen den Meilentein als "POSITIVE_VOTE" oder  "NEGATIVE_VOTE"
+    function vote(uint8 milestoneId, votePosition vp) public {
+        require(milestoneId<milestonesCounter);
+        require(milestones[milestoneId].voteableUntil > block.timestamp);
+        if(donors[msg.sender].wantsToVote
+        && (donors[msg.sender].votedMilestones[milestoneId] == false)){
             if(vp == votePosition.POSITIVE_VOTE){
                 milestones[milestoneId].positiveVotes++;
             } else if(vp == votePosition.NEGATIVE_VOTE){
                 milestones[milestoneId].negativeVotes++;
             }
-            donors[donor_add].setVotedMilestones(milestoneId);
-            emit Vote(milestoneId,donor_add,vp);
+            donors[msg.sender].votedMilestones[milestoneId] = true;
+            emit Vote(milestoneId,msg.sender,vp);
         }
     }    
     
-    // fuer bestimmten milestone spenden
-    // spenden auf nicht existierende milestones moeglich
-    // wer kann diese Funktion aufrufen?
-    function donateAndVote(uint8 milestoneId,address donor_add) onlyOwner payable public {
-        donors[donor_add].setDonatedAmountPerMilestone(milestoneId,msg.value);
-        milestones[milestoneId].donatedAmount += msg.value;
-        donors[donor_add].setWantsToVote(milestoneId);
-        emit Donate(msg.value,milestoneId,donor_add,true);
-        
-    }
-    
-    function donateDontVote(uint8 milestoneId,address donor_add) onlyOwner payable public {
-        donors[donor_add].setDonatedAmountPerMilestone(milestoneId,msg.value);
-        milestones[milestoneId].donatedAmount += msg.value;
-        emit Donate(msg.value,milestoneId,donor_add,false);
-    }
-  
-    // fuegt einen neuen Meilenstein hinzu. Prueft ob das Ziel hoeher ist als beim letzten (beim ersten nicht)
-    // um wie viel muss es groesser sein?
-    function addMilestone(bytes memory _name, uint256 _minDonation,uint128 _minDonToVote) onlyOwner public {
-        if (_name.length != 0) {
-            if(milestonesCounter == 0){
-                milestones[milestonesCounter] = Milestone(_name,0,_minDonation,_minDonToVote,0,0,false,false);
-                milestonesCounter ++;
-                emit AddMilestone(_name,_minDonation,_minDonToVote,0,0);
-            }else if(milestones[milestonesCounter].minDonation < _minDonation)
-                milestones[milestonesCounter] = Milestone(_name,0,_minDonation,_minDonToVote,0,0,false,false);
-                milestonesCounter ++;
-                emit AddMilestone(_name,_minDonation,_minDonToVote,0,0);
+    /// @notice Funktion zum Spenden
+    /// @param _wantsToVote wenn der Spender abstimmen moechte true ansonsten false
+    function donate(bool _wantsToVote) payable public {
+        Donor memory d;
+        d=donors[msg.sender];
+        if(_wantsToVote){
+            require(msg.value >= minDonation);
+            d.wantsToVote = true;
+        }else{
+            d.wantsToVote = false;
         }
-    }
-}
-
-
-contract Donor is Ownable{
-    
-    Project project;
-    
-    
-    // Spender mit bestimmten Projekt verbinden, er muss die Adresse (oeffentlich abrufbar) des Projects eingeben
-    constructor(address ProjectAddress) public{
-        project = Project(ProjectAddress);
-    }
-    
-    mapping(uint8 => uint256) public donatedAmountPerMilestone;
-
-    bool[128] votedMilestones; // mapping immer besser?
-    bool[128] wantsToVote;
-    
-    event Withdraw(uint256 amount, uint8 milestoneId);
-    
-    function getVotedMilestones(uint8 milestoneId) public view returns (bool) {
-        return votedMilestones[milestoneId];
+        if(d.exists){
+            if(d.donated_for_milestone < activeMilestone){
+                d.donated_amount = msg.value;
+                d.donated_for_milestone = activeMilestone;
+            }else{
+               d.donated_amount += msg.value; 
+            }
+        }else{
+            d.donated_amount = msg.value;
+            d.donated_for_milestone = activeMilestone;
+            d.exists = true;
+        }
+        donated_amount += msg.value;
+        donors[msg.sender]=d;
+        emit Donate(msg.value, activeMilestone, msg.sender, _wantsToVote);
     }
     
-    function setVotedMilestones(uint8 milestoneId) public {
-        votedMilestones[milestoneId] = true;
-    }
-    
-    function getWantsToVote(uint8 milestoneId) public view returns (bool) {
-        return wantsToVote[milestoneId];
-    }
-    
-    function setWantsToVote(uint8 milestoneId)public {
-        wantsToVote[milestoneId] = true;
-    }
-
-    function getDonatedAmountPerMilestone(uint8 milestoneId) public view returns(uint256) {
-        return donatedAmountPerMilestone[milestoneId];
-    }
-    
-    function setDonatedAmountPerMilestone(uint8 milestoneId,uint256 amount) public {
-        donatedAmountPerMilestone[milestoneId] += amount;
-    }
-    
-    function getBalance() public view returns (uint256) {
-        return address(this).balance;
-    }
-
-    // bestimmten betrag von bestimmten Milestone abheben (nur wenn vorher auch so viel gespendet)
-    function withdraw(uint256 amount,uint8 milestoneId) onlyOwner payable public {
-        require(donatedAmountPerMilestone[milestoneId] >= amount);
-        donatedAmountPerMilestone[milestoneId] -= amount;
+    /// @notice Funktion zum ZurÃ¼ckziehen der Spende
+    function retract() public {
+        Donor memory d=donors[msg.sender];
+        require(d.exists);
+        require(d.donated_for_milestone == activeMilestone);
+        Milestone memory m = milestones[activeMilestone];
+        require(m.payoutAll == false);
+        require(m.targetAmount > donated_amount);
+        if(m.voteableUntil <= block.timestamp){
+            require(m.positiveVotes < m.negativeVotes);
+        }
+        uint256 amount;
+        if(m.payoutPart){
+            amount = d.donated_for_milestone-((d.donated_for_milestone / 100) * partial_payment);
+        }else{
+            amount = d.donated_for_milestone;
+        }
         msg.sender.transfer(amount);
-        emit Withdraw(amount, milestoneId);
         
+        emit Retract(amount, activeMilestone, msg.sender);
+        
+        donated_amount -= amount;
+        d.donated_for_milestone = 0;
+        donors[msg.sender]=d;
     }
     
-    // onlyOwner ??
-    function getBalanceInMilestone(uint8 milestoneId) view public returns (uint256) {
-        return donatedAmountPerMilestone[milestoneId];
+    /// @notice fuegt neue Meilensteine hinzu
+    /// @notice das Ziel des neuen Meilensteins darf nicht kleiner als das Ziel des letzten Meilensteins
+    /// @param _name Name des Meilensteins in hex
+    /// @param _targetAmount Spendenziel des Meilensteins
+    /// @param _voteableUntil Unixtime bis zu der abgestimmt werden kann
+    function addMilestone(bytes memory _name,uint _targetAmount, uint32 _voteableUntil) onlyOwner public {
+        require(_name.length > 0);
+        require(_targetAmount < projectTarget.amount);
+        require(_voteableUntil >= block.timestamp + 1 days);
+        if(milestonesCounter > 0){
+            require(milestones[milestonesCounter].targetAmount < _targetAmount);
+        }
+        milestones[milestonesCounter] = Milestone(_name,_targetAmount,_voteableUntil,0,0,false,false);
+        milestonesCounter++;
+        emit AddMilestone(_name,_targetAmount);
     }
 }
