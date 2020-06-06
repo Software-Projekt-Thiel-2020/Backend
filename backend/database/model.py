@@ -126,40 +126,23 @@ class Transaction(BASE):
 
 # sw2020testuser1.id.blockstack - shortened
 TOKEN_1 = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIyNGE1OTFkNS1lOGJiLTQwMzYtYWE0Ni1hNzg5MjU2ZDVjZDYiLCJpYX" \
-            "QiOjE1OTEyMjUyMzIsImV4cCI6MTU5MzgxNzIzMiwiaXNzIjoiZGlkOmJ0Yy1hZGRyOjE0Z1N4eFhZdzlXbTNoYWoxaGVKYXQ1ZGdpe" \
-            "HF0YVJ3a3MiLCJwdWJsaWNfa2V5cyI6WyIwMzliZWM4NjkxMGViZmVmMGU4ZmE3YmE2OTQ1MWU1ZjljNDU1NjhmZDFhMmY4MDQ5MzM2" \
-            "MWFlMzUzOGM2N2Y3YmIiXSwidXNlcm5hbWUiOiJzdzIwMjB0ZXN0dXNlcjEuaWQuYmxvY2tzdGFjayIsImNvcmVfdG9rZW4iOm51bGw" \
-            "sImVtYWlsIjpudWxsLCJwcm9maWxlX3VybCI6Imh0dHBzOi8vZ2FpYS5ibG9ja3N0YWNrLm9yZy9odWIvMTRnU3h4WFl3OVdtM2hhaj" \
-            "FoZUphdDVkZ2l4cXRhUndrcy9wcm9maWxlLmpzb24iLCJodWJVcmwiOiJodHRwczovL2h1Yi5ibG9ja3N0YWNrLm9yZyIsImJsb2Nrc" \
-            "3RhY2tBUElVcmwiOiJodHRwczovL2NvcmUuYmxvY2tzdGFjay5vcmciLCJ2ZXJzaW9uIjoiMS4zLjEifQ.5Nhd7TWhXhwkkkNOZCHUc" \
-            "MSX4ykE6Fdm5-N7yxA60ZI"
+          "QiOjE1OTEyMjUyMzIsImV4cCI6MTU5MzgxNzIzMiwiaXNzIjoiZGlkOmJ0Yy1hZGRyOjE0Z1N4eFhZdzlXbTNoYWoxaGVKYXQ1ZGdpe" \
+          "HF0YVJ3a3MiLCJwdWJsaWNfa2V5cyI6WyIwMzliZWM4NjkxMGViZmVmMGU4ZmE3YmE2OTQ1MWU1ZjljNDU1NjhmZDFhMmY4MDQ5MzM2" \
+          "MWFlMzUzOGM2N2Y3YmIiXSwidXNlcm5hbWUiOiJzdzIwMjB0ZXN0dXNlcjEuaWQuYmxvY2tzdGFjayIsImNvcmVfdG9rZW4iOm51bGw" \
+          "sImVtYWlsIjpudWxsLCJwcm9maWxlX3VybCI6Imh0dHBzOi8vZ2FpYS5ibG9ja3N0YWNrLm9yZy9odWIvMTRnU3h4WFl3OVdtM2hhaj" \
+          "FoZUphdDVkZ2l4cXRhUndrcy9wcm9maWxlLmpzb24iLCJodWJVcmwiOiJodHRwczovL2h1Yi5ibG9ja3N0YWNrLm9yZyIsImJsb2Nrc" \
+          "3RhY2tBUElVcmwiOiJodHRwczovL2NvcmUuYmxvY2tzdGFjay5vcmciLCJ2ZXJzaW9uIjoiMS4zLjEifQ.5Nhd7TWhXhwkkkNOZCHUc" \
+          "MSX4ykE6Fdm5-N7yxA60ZI"
 
 # sw2020testuser2.id.blockstack
-TOKEN_2 = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJqdGkiOiIxZjJiYzcyNy03Y2ZhLTQ5NDEtOTk4ZC03YjIyMGEwOTg2NmYiLCJp" \
-            "YXQiOjE1OTEyMjU0OTYsImV4cCI6MTU5MzgxNzQ5NiwiaXNzIjoiZGlkOmJ0Yy1hZGRyOjFIMlQxY0Rmd3lZZFlra1pFUkhmQUh4SkJ" \
-            "xaDNieTlWd2kiLCJwcml2YXRlX2tleSI6IjdiMjI2OTc2MjIzYTIyMzAzMTMxMzIzNTY0MzMzMzM1MzMzNDYxNjYzMDM0MzE2NTM1Mz" \
-            "czNDMyMzczMjMwNjU2MzM0Mzk2MzMwMzY2NjIyMmMyMjY1NzA2ODY1NmQ2NTcyNjE2YzUwNGIyMjNhMjIzMDMzMzQ2MzM4MzgzNzM4M" \
-            "zczNTM1MzAzMjM2MzI2MTM3MzI2NjMyNjE2MzY0MzUzMTMxNjY2NjM5MzczNTM3NjMzMTYzNjU2NDM3NjUzNjY2NjU2MjMzNjYzOTMy" \
-            "MzQzNTY0MzQ2NjMxNjIzMjYxMzE2MTM0Mzk2MzM0MzMzNjMxMzAyMjJjMjI2MzY5NzA2ODY1NzI1NDY1Nzg3NDIyM2EyMjM5NjYzNzY" \
-            "0MzMzNTM0NjQ2NTM3MzAzNjYzMzM2NjY0MzMzODM0MzAzNTY2MzUzOTY1NjMzODM5MzAzMTM3MzIzMjMwMzE2NDY2MzEzMTYzMzc2NT" \
-            "M4MzczMzM4NjUzNzY1MzA2NjMyNjUzNzY1MzM2MjM1NjQzOTMzNjE2MTMxNjQ2MzYyMzgzNDYzMzA2NTM2NjY2NDYyNjY2MTM2NjIzM" \
-            "DMyNjEzNTMzMzYzMTY2NjYzODYzNjUzMjYxNjQ2MTYyNjYzMjM5MzM2NTMzMzEzOTM0MzQzOTM5NjM2NDYzNjQzNDMxNjQzMjY2Mzkz" \
-            "MjM4MzA2MzY1MzEzNDY2NjEzOTYzNjE2MzY0NjYzNzM1NjUzNzMwNjM2NjYzNjY2MzYxNjQzNDY1MzgzMjM4NjQzNjMwMzAzNzM0NjQ" \
-            "2MTM4MjIyYzIyNmQ2MTYzMjIzYTIyMzczMDMwNjMzMjY1MzgzMjMzMzE2MzM2NjIzNTYzMzM2MjYxNjIzMTYzMzczNTM2MzUzNjM1Nj" \
-            "E2NDYzMzU2MjYxNjYzMzMxMzczODY0MzY2MTYxMzEzNTM4MzUzNjY2MzkzNDM3MzA2MzYzNjM2MzY2NjYzOTMwMzUzNjM2NjMyMjJjM" \
-            "jI3NzYxNzM1Mzc0NzI2OTZlNjcyMjNhNzQ3Mjc1NjU3ZCIsInB1YmxpY19rZXlzIjpbIjAzODM0YTYxMjc1NzQ3OGIyOWEwZTRmMDE1" \
-            "N2IyNzBhOTc5NTM3NzUxNWE2MmQwYTYzYTI1ZDU2MGYwODE4ZTk1YiJdLCJwcm9maWxlIjpudWxsLCJ1c2VybmFtZSI6InN3MjAyMHR" \
-            "lc3R1c2VyMi5pZC5ibG9ja3N0YWNrIiwiY29yZV90b2tlbiI6bnVsbCwiZW1haWwiOm51bGwsInByb2ZpbGVfdXJsIjoiaHR0cHM6Ly" \
-            "9nYWlhLmJsb2Nrc3RhY2sub3JnL2h1Yi8xSDJUMWNEZnd5WWRZa2taRVJIZkFIeEpCcWgzYnk5VndpL3Byb2ZpbGUuanNvbiIsImh1Y" \
-            "lVybCI6Imh0dHBzOi8vaHViLmJsb2Nrc3RhY2sub3JnIiwiYmxvY2tzdGFja0FQSVVybCI6Imh0dHBzOi8vY29yZS5ibG9ja3N0YWNr" \
-            "Lm9yZyIsImFzc29jaWF0aW9uVG9rZW4iOiJleUowZVhBaU9pSktWMVFpTENKaGJHY2lPaUpGVXpJMU5rc2lmUS5leUpqYUdsc1pGUnZ" \
-            "RWE56YjJOcFlYUmxJam9pTURNd1lUY3dPV1E1WVRFMk1tUXdaV0kxTmpsbFltRTFZbVExTUdNeE0yWTJOak00T0RFNE9UbG1OV1ZrT1" \
-            "RBMVlXUmxNamcwWm1JNVpXUTFOemRpTnpZM0lpd2lhWE56SWpvaU1ETTRNelJoTmpFeU56VTNORGM0WWpJNVlUQmxOR1l3TVRVM1lqS" \
-            "TNNR0U1TnprMU16YzNOVEUxWVRZeVpEQmhOak5oTWpWa05UWXdaakE0TVRobE9UVmlJaXdpWlhod0lqb3hOakl5TnpZeE5EazJMak0z" \
-            "TVN3aWFXRjBJam94TlRreE1qSTFORGsyTGpNM01Td2ljMkZzZENJNklqY3paR0ZqTVdZMU9UVXhZbU0wWmpNeVl6UTBNamN5TXpKall" \
-            "UUmhORGN4SW4wLkxvZlFacFlSaktxd0tuOXQ2VFNEdGVlUUxWSlYyZzA1Nm9NVXBVSEtQUXUxSGg4TGlUU29JaUNBV05qbV9idTJhYm" \
-            "NVLThla2dpUU5NUy15VUVVRUVBIiwidmVyc2lvbiI6IjEuMy4xIn0.BhUkt3dAOPkO9xiHAflynVuAtmyoSVGb4TUxFlNhL-6Mc4sVw" \
-            "N1yiP2_cyxJlzKBeYumqtNLnWTmlOV8XhrtXQ"
+TOKEN_2 = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxZjJiYzcyNy03Y2ZhLTQ5NDEtOTk4ZC03YjIyMGEwOTg2NmYiLCJpYXQi" \
+          "OjE1OTEyMjU0OTYsImV4cCI6MTU5MzgxNzQ5NiwiaXNzIjoiZGlkOmJ0Yy1hZGRyOjFIMlQxY0Rmd3lZZFlra1pFUkhmQUh4SkJxaDNie" \
+          "TlWd2kiLCJwdWJsaWNfa2V5cyI6WyIwMzgzNGE2MTI3NTc0NzhiMjlhMGU0ZjAxNTdiMjcwYTk3OTUzNzc1MTVhNjJkMGE2M2EyNWQ1Nj" \
+          "BmMDgxOGU5NWIiXSwidXNlcm5hbWUiOiJzdzIwMjB0ZXN0dXNlcjIuaWQuYmxvY2tzdGFjayIsImNvcmVfdG9rZW4iOm51bGwsImVtYWl" \
+          "sIjpudWxsLCJwcm9maWxlX3VybCI6Imh0dHBzOi8vZ2FpYS5ibG9ja3N0YWNrLm9yZy9odWIvMUgyVDFjRGZ3eVlkWWtrWkVSSGZBSHhK" \
+          "QnFoM2J5OVZ3aS9wcm9maWxlLmpzb24iLCJodWJVcmwiOiJodHRwczovL2h1Yi5ibG9ja3N0YWNrLm9yZyIsImJsb2Nrc3RhY2tBUElVc" \
+          "mwiOiJodHRwczovL2NvcmUuYmxvY2tzdGFjay5vcmciLCJ2ZXJzaW9uIjoiMS4zLjEifQ.GLsCrvh3jxopSwHTQeFA57AQ-eeL_ZbXto8" \
+          "RtzioxMw"
 
 
 def add_sample_data(db_session):  # pylint:disable=too-many-statements
