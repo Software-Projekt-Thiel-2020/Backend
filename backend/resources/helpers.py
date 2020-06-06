@@ -60,9 +60,11 @@ def auth_user(func):
         except NoResultFound:
             # User needs to register
             abort(404)
-        except (KeyError, ):
+        except (KeyError,):
             abort(401)
         else:
-            return func(user_inst, *args, **kws)
+            tmp = func(user_inst, *args, **kws)
+            session.commit()
+            return tmp
 
     return decorated_function
