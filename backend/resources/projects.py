@@ -10,6 +10,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from backend.database.db import DB_SESSION
 from backend.database.model import Milestone, Institution
 from backend.database.model import Project
+from backend.resources.helpers import auth_user
 
 BP = Blueprint('projects', __name__, url_prefix='/api/projects')
 
@@ -33,6 +34,7 @@ def projects_get():
         return jsonify({"error": "bad argument"}), 400
 
     session = DB_SESSION()
+
     results = session.query(Project)
 
     if id_project:
@@ -107,7 +109,8 @@ def projects_id(id):  # noqa
 
 
 @BP.route('', methods=['POST'])
-def projects_post():
+@auth_user
+def projects_post(user_inst):
     """
     Handles POST for resource <base>/api/projects .
 
@@ -172,7 +175,8 @@ def projects_post():
 
 
 @BP.route('/<id>', methods=['PATCH'])
-def projects_patch(id):  # pylint:disable=invalid-name,redefined-builtin
+@auth_user
+def projects_patch(user_inst, id):  # pylint:disable=invalid-name,redefined-builtin
     """
     Handles PATCH for resource <base>/api/projects/<id> .
 
@@ -181,9 +185,6 @@ def projects_patch(id):  # pylint:disable=invalid-name,redefined-builtin
     auth_token = request.headers.get('authToken', default=None)
     webpage = request.headers.get('webpage', default=None)
     milestones = request.headers.get('milestones', default="[]")
-
-    if auth_token is None:  # ToDo: real auth-token check
-        return jsonify({'error': 'Not logged in'}), 403
 
     session = DB_SESSION()
     project_inst: Project = session.query(Project).get(id)
