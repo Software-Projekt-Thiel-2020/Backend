@@ -3,6 +3,7 @@ import validators
 from flask import Blueprint, request, jsonify
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.sql import func
 
 from backend.database.db import DB_SESSION
 from backend.database.model import User
@@ -85,7 +86,7 @@ def user_id(id):  # noqa
 @auth_user
 def user_put(user_inst):
     """
-    Handles POST for resource <base>/api/users .
+    Handles PUT for resource <base>/api/users .
     :return: "{'status': 'Daten wurden geändert'}", 200
     """
     firstname = request.headers.get('firstname', default=None)
@@ -106,3 +107,47 @@ def user_put(user_inst):
         return jsonify({'error': 'Database error'}), 500
 
     return jsonify({'status': 'Daten wurden geändert'}), 200
+
+
+@BP.route('', methods=['POST'])
+@auth_user
+def user_post(user_inst):
+    """
+    Handles POST for resource <base>/api/users .
+    :return: "{'status': 'User registered'}", 200
+    """
+    username = request.headers.get('username', default=None)
+    firstname = request.headers.get('firstname', default=None)
+    lastname = request.headers.get('lastname', default=None)
+    email = request.headers.get('email', default=None)
+    publickey = request.headers.get('publickey', default=None)
+    privatekey = request.headers.get('privatekey', default=None)
+    auth_token = request.headers.get('authToken', default=None)
+
+    if None in [username, firstname, lastname, email, publickey, privatekey]:
+        return jsonify({'error': 'Missing parameter'}), 403
+
+    session = DB_SESSION()
+    results = session.query(func.max(User.idUser).label("max_id"))
+
+    id_user = int(results.one().max_id)
+
+    try:
+        user_inst = User(idUser=id_user + 1,
+            usernameUser=username,
+            firstnameUser=firstname,
+            lastnameUser=lastname,
+            emailUser=email,
+            publickeyUser=bytes(publickey, encoding="utf-8"),
+            privatekeyUser=bytes(privatekey, encoding="utf-8"),
+            authToken=auth_token)
+    except SQLAlchemyError:
+        return jsonify({'status': 'Database error'}), 400
+
+    try:
+        session.add(user_inst)
+        session.commit()
+    except SQLAlchemyError:
+        return jsonify({'status': 'Commit error!'}), 400
+
+    return jsonify({'status': 'User registered'}), 201
