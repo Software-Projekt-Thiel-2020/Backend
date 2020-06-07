@@ -1,4 +1,5 @@
 """User Resource."""
+import validators
 from flask import Blueprint, request, jsonify
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.exc import NoResultFound
@@ -24,7 +25,7 @@ def users_get():
     results = session.query(User)
 
     if name_user:
-        results = results.filter(User.usernameUser == name_user)  # ToDo: too narrow?
+        results = results.filter(User.usernameUser.contains(name_user))
     else:
         return jsonify({'error': 'missing Argument'}), 400
 
@@ -43,7 +44,7 @@ def users_get():
 
 
 @BP.route('/<id>', methods=['GET'])
-def user_id(id):    # noqa
+def user_id(id):  # noqa
     """
     Handles GET for resource <base>/api/users/<id> .
     :parameter id of a User
@@ -91,13 +92,16 @@ def user_put(user_inst):
     lastname = request.headers.get('lastname', default=None)
     email = request.headers.get('email', default=None)
 
+    if email is not None and not validators.email(email):
+        return jsonify({'error': 'email is not a valid email'}), 400
+
     try:
         if firstname is not None:
             user_inst.firstnameUser = firstname
         if lastname is not None:
             user_inst.lastnameUser = lastname
         if email is not None:
-            user_inst.emailUser = email  # ToDo: validate email
+            user_inst.emailUser = email
     except SQLAlchemyError:
         return jsonify({'error': 'Database error'}), 500
 
