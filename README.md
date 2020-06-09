@@ -93,7 +93,7 @@ Parameter | Beschreibung
 # Raspberry Testumgebung
 Der Zugriff ist nur mittels Schlüssel basierter Authentifikation möglich. Wer Zugriff haben möchte kann mir seinen öffentlichen Schlüssel schicken. Bei Fragen bitte an CrappyAlgorithm (Sebastian Steinmeyer) wenden.
 
-## ssh Zugriff 
+## SSH Zugriff 
 - falls nicht vorhanden SSH Client installieren (für Windows z.B. Putty)
 Verbindungsdaten:
 ```
@@ -122,22 +122,43 @@ Unter Authentifizierung müssen die localen Nutzerdaten für den Datenbankzugrif
 
 Anschließend können wir über "Verbindung testen" die erfolgreiche Einrichtung der Verbindung validieren und bei Erfolg die Einrichtung mit "OK" abschließen.
 
-## Backend starten
-- Virtual Enviroment wie oben erklärt starten
-- fall nötig mit folgendem Befehl die Datenbank bereinigen
-```sh
-$ flask init-db
-```
-- Flask starten:
-```sh
-$ flask run -h 192.168.178.50 
-```
-- Das Backend ist nun unter folgenden Verbindungsdaten erreichbar:
+## Backend
+Ein Neustart ist nur notwendig, um eine neue Version zu deployen oder die Datenbank neu zu initialisieren.
+
+Das Backend ist unter folgenden Verbindungsdaten erreichbar:
 ```
 IP: 84.118.2.15
 Port: 80
 ```
 
+### Neue Version Deployen
+
+- gunicorn beenden
+```sh
+$ pkill gunicorn3
+```
+- neue Backend Version pullen
+```sh
+$ cd ~/Backend/
+$ git stash      // um die Modifikationen zurückzusetzen
+$ git pull
+```
+- Konfiguration wiederherstellen
+```sh
+$ cp ~/backend_configs/backend_config.ini ~/Backend/backend_config.ini
+```
+- den Secret Key unter ~/backend_configs/secret_key in der Datei ~/Backend/backend/__init__.py setzen
+- falls gewünscht kann die Datenbank neu initialisiert werden
+```sh
+$ cd ~/Backend
+export FLASK_APP=backend
+flask init-db
+```
+- Server starten
+```sh
+$ cd ~/Backend
+$ gunicorn3 -w 4 -b 192.168.178.50:5000 "backend:create_app()"
+```
 
 # Code linting, Statische Analyse und testing
 - Zum testen vor einem PR bitte mit:
