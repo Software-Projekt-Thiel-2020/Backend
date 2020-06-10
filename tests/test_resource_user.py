@@ -1,6 +1,6 @@
 """Tests for resource users."""
 
-from .test_blockstackauth import TOKEN_1
+from .test_blockstackauth import TOKEN_1, TOKEN_3
 
 
 def test_users_get(client):
@@ -148,3 +148,27 @@ def test_users_put_wo_auth(client):
     assert res.json["firstname"] == "testuser1"
     assert res.json["lastname"] == "sw2020"
     assert res.json["email"] == "testuser1@example.com"
+
+
+def test_user_post(client):
+    headers = {"authToken": TOKEN_3, "username": "sw2020testuser1337.id.blockstack", "firstname": "Peter",
+               "lastname": "Maffay", "email": "sw2020testuser1337@re-gister.com"}
+    res = client.post('/api/users', headers=headers)
+    assert res._status_code == 201
+    assert res.json["status"] == "User registered"
+
+
+def test_user_post_existing(client):
+    headers = {"authToken": TOKEN_1, "username": "sw2020testuser1.id.blockstack", "firstname": "Peter",
+               "lastname": "Maffay", "email": "sw2020testuser1@re-gister.com"}
+    res = client.post('/api/users', headers=headers)
+    assert res._status_code == 400
+    assert res.json["status"] == "User is already registered"
+
+
+def test_user_post_bad_token(client):
+    headers = {"authToken": "badToken", "username": "sw2020testuser1.id.blockstack", "firstname": "Peter",
+               "lastname": "Maffay", "email": "sw2020testuser1@re-gister.com"}
+    res = client.post('/api/users', headers=headers)
+    assert res._status_code == 400
+    assert res.json["status"] == "Invalid JWT"

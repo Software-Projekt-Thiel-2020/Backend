@@ -1,10 +1,11 @@
 """User Resource."""
 import validators
 from flask import Blueprint, request, jsonify
+from jwt import DecodeError
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy.sql import func
 
+from backend.blockstack_auth import BlockstackAuth
 from backend.database.db import DB_SESSION
 from backend.database.model import User
 from backend.resources.helpers import auth_user
@@ -110,8 +111,7 @@ def user_put(user_inst):
 
 
 @BP.route('', methods=['POST'])
-@auth_user
-def user_post(user_inst):
+def user_post():
     """
     Handles POST for resource <base>/api/users .
     :return: "{'status': 'User registered'}", 200
@@ -120,30 +120,30 @@ def user_post(user_inst):
     firstname = request.headers.get('firstname', default=None)
     lastname = request.headers.get('lastname', default=None)
     email = request.headers.get('email', default=None)
-    publickey = request.headers.get('publickey', default=None)
-    privatekey = request.headers.get('privatekey', default=None)
     auth_token = request.headers.get('authToken', default=None)
 
-    if None in [username, firstname, lastname, email, publickey, privatekey]:
+    if None in [username, firstname, lastname, email, auth_token]:
         return jsonify({'error': 'Missing parameter'}), 403
 
     session = DB_SESSION()
-    results = session.query(func.max(User.idUser).label("max_id"))
-
-    id_user = int(results.one().max_id)
 
     try:
-        user_inst = User(idUser=id_user + 1,
-            usernameUser=username,
-            firstnameUser=firstname,
-            lastnameUser=lastname,
-            emailUser=email,
-            publickeyUser=bytes(publickey, encoding="utf-8"),
-            privatekeyUser=bytes(privatekey, encoding="utf-8"),
-            authToken=auth_token)
+        shortened_token = BlockstackAuth.short_jwt(auth_token)
+        # username = BlockstackAuth.get_username_from_token(shortened_token)
+
+        res = session.query(User).filter(User.usernameUser == username).one_or_none()
+        if res is not None:
+            return jsonify({'status': 'User is already registered'}), 400
+
+        user_inst = User(usernameUser=username,
+                         firstnameUser=firstname,
+                         lastnameUser=lastname,
+                         emailUser=email,
+                         authToken=shortened_token)
     except SQLAlchemyError:
         return jsonify({'status': 'Database error'}), 400
-
+    except (KeyError, ValueError, DecodeError):  # jwt decode errors
+        return jsonify({'status': 'Invalid JWT'}), 400
     try:
         session.add(user_inst)
         session.commit()
