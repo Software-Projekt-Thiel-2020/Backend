@@ -10,6 +10,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from backend.database.db import DB_SESSION
 from backend.database.model import Milestone, Institution
 from backend.database.model import Project
+from backend.resources.helpers import auth_user, check_params_int
 
 BP = Blueprint('projects', __name__, url_prefix='/api/projects')
 
@@ -107,26 +108,27 @@ def projects_id(id):  # noqa
 
 
 @BP.route('', methods=['POST'])
-def projects_post():
+@auth_user
+def projects_post(user_inst):  # pylint:disable=unused-argument
     """
     Handles POST for resource <base>/api/projects .
 
     :return: "{'status': 'ok'}", 200
     """
-    auth_token = request.headers.get('authToken', default=None)
-    name = request.headers.get('name', default=None)
-    webpage = request.headers.get('webpage', default=None)
-    id_institution = request.headers.get('idInstitution', default=None)
-    goal = request.headers.get('goal', default=None)
-    required_votes = request.headers.get('requiredVotes', default=None)
-    until = request.headers.get('until', default=None)
+    name = request.headers.get('name')
+    webpage = request.headers.get('webpage')
+    id_institution = request.headers.get('idInstitution')
+    goal = request.headers.get('goal')
+    required_votes = request.headers.get('requiredVotes')
+    until = request.headers.get('until')
     milestones = request.headers.get('milestones', default="[]")
-
-    if auth_token is None:  # ToDo: real auth-token check
-        return jsonify({'error': 'Not logged in'}), 403
 
     if None in [name, goal, required_votes, until]:
         return jsonify({'error': 'Missing parameter'}), 403
+    try:
+        check_params_int([id_institution, goal, required_votes, until])
+    except ValueError:
+        return jsonify({"error": "bad argument"}), 400
 
     session = DB_SESSION()
 
@@ -142,6 +144,7 @@ def projects_post():
             webpageProject=webpage,
             smartcontract_id=1,
             institution_id=id_institution
+            # ToDo: add user as project owner
         )
     except SQLAlchemyError:
         return jsonify({'status': 'Database error'}), 400
@@ -172,18 +175,16 @@ def projects_post():
 
 
 @BP.route('/<id>', methods=['PATCH'])
-def projects_patch(id):  # pylint:disable=invalid-name,redefined-builtin
+@auth_user
+def projects_patch(user_inst, id):  # pylint:disable=invalid-name,redefined-builtin,unused-argument
     """
     Handles PATCH for resource <base>/api/projects/<id> .
 
     :return: "{'status': 'ok'}", 200
     """
-    auth_token = request.headers.get('authToken', default=None)
     webpage = request.headers.get('webpage', default=None)
     milestones = request.headers.get('milestones', default="[]")
-
-    if auth_token is None:  # ToDo: real auth-token check
-        return jsonify({'error': 'Not logged in'}), 403
+    # ToDo: is this user allowed to patch this project?
 
     session = DB_SESSION()
     project_inst: Project = session.query(Project).get(id)

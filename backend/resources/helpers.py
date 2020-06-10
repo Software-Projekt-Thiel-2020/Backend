@@ -2,6 +2,7 @@ from functools import wraps
 from typing import List
 
 from flask import request, abort
+from jwt import DecodeError
 from sqlalchemy.orm.exc import NoResultFound
 
 from backend.blockstack_auth import BlockstackAuth
@@ -60,9 +61,11 @@ def auth_user(func):
         except NoResultFound:
             # User needs to register
             abort(404)
-        except (KeyError, ):
+        except (KeyError, ValueError, DecodeError):  # jwt decode errors
             abort(401)
         else:
-            return func(user_inst, *args, **kws)
+            tmp = func(user_inst, *args, **kws)
+            session.commit()
+            return tmp
 
     return decorated_function
