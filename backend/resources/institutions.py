@@ -22,26 +22,25 @@ def institutions_get():
     results = session.query(Institution)
 
     json_data = []
-    json_names = ["id", "name", "webpage"]
 
     if id_institution:
         institution = results.filter(Institution.idInstitution == id_institution).first()
         if not institution:
             return jsonify({'error': 'Institution does not exist'}), 400
 
-        json_data.append(dict(zip(json_names, [
-            institution.idInstitution,
-            institution.nameInstitution,
-            institution.webpageInstitution,
-        ])))
+        json_data.append({
+            "id": institution.idInstitution,
+            "name": institution.nameInstitution,
+            "webpage": institution.webpageInstitution,
+        })
         return jsonify(json_data)
 
     for result in results:
-        json_data.append(dict(zip(json_names, [
-            result.idInstitution,
-            result.nameInstitution,
-            result.webpageInstitution,
-        ])))
+        json_data.append({
+            "id": result.idInstitution,
+            "name": result.nameInstitution,
+            "webpage": result.webpageInstitution,
+        })
 
     return jsonify(json_data)
 
@@ -75,7 +74,7 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
 
 @BP.route('', methods=['PATCH'])
 @auth_user
-def institutions_patch(user_inst):  # pylint:disable=unused-argument
+def institutions_patch(user_inst):
     """
     Handles PATCH for resource <base>/api/institutions .
     :return: json response
