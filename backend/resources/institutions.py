@@ -3,7 +3,6 @@ from datetime import datetime
 
 import validators
 from flask import Blueprint, request, jsonify
-from sqlalchemy.exc import SQLAlchemyError
 
 from backend.database.db import DB_SESSION
 from backend.database.model import Institution, Transaction
@@ -65,17 +64,14 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
         return jsonify({'error': 'name already exists'}), 400
 
     # Todo: smartcontract_id
-    try:
-        institution_inst = Institution(nameInstitution=name, webpageInstitution=webpage, addressInstitution=address,
-                                       smartcontract_id=2)
-        transaction_inst = Transaction(dateTransaction=datetime.now(), smartcontract_id=2, user=user_inst)
+    institution_inst = Institution(nameInstitution=name, webpageInstitution=webpage, addressInstitution=address,
+                                   smartcontract_id=2)
+    transaction_inst = Transaction(dateTransaction=datetime.now(), smartcontract_id=2, user=user_inst)
 
-        session.add_all([institution_inst, transaction_inst])
-        session.commit()
+    session.add_all([institution_inst, transaction_inst])
+    session.commit()
 
-        return jsonify({'status': 'Institution wurde erstellt'}), 201
-    except SQLAlchemyError:
-        return jsonify({'error': 'Database error!'}), 400
+    return jsonify({'status': 'Institution wurde erstellt'}), 201
 
 
 @BP.route('', methods=['PATCH'])
@@ -111,15 +107,13 @@ def institutions_patch(user_inst):
 
     if owner is None:
         return jsonify({'error': 'no permission'}), 403
-    try:
-        if name:
-            institution.nameInstitution = name
-        if address:
-            institution.addressInstitution = address
-        if webpage:
-            institution.webpageInstitution = webpage
 
-        session.commit()
-        return jsonify({'status': 'Institution wurde bearbeitet'}), 201
-    except SQLAlchemyError:
-        return jsonify({'error': 'Database error!'}), 400
+    if name:
+        institution.nameInstitution = name
+    if address:
+        institution.addressInstitution = address
+    if webpage:
+        institution.webpageInstitution = webpage
+
+    session.commit()
+    return jsonify({'status': 'Institution wurde bearbeitet'}), 201

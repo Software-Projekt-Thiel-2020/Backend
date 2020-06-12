@@ -2,7 +2,6 @@
 import validators
 from flask import Blueprint, request, jsonify
 from jwt import DecodeError
-from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.exc import NoResultFound
 
 from backend.blockstack_auth import BlockstackAuth
@@ -46,7 +45,7 @@ def users_get():
 
 
 @BP.route('/<id>', methods=['GET'])
-def user_id(id):  # noqa
+def user_id(id):  # pylint:disable=redefined-builtin,invalid-name
     """
     Handles GET for resource <base>/api/users/<id> .
     :parameter id of a User
@@ -58,7 +57,7 @@ def user_id(id):  # noqa
         if id_user:
             int(id_user)
     except ValueError:
-        return jsonify({"error": "bad argument"}), 400
+        return jsonify({'error': 'bad argument'}), 400
 
     session = DB_SESSION()
     results = session.query(User)
@@ -67,9 +66,7 @@ def user_id(id):  # noqa
         if id_user:
             results = results.filter(User.idUser == id_user).one()
     except NoResultFound:
-        return jsonify(), 404
-    except SQLAlchemyError:
-        return jsonify(), 200
+        return jsonify({'error': 'User not found'}), 404
 
     json_data = {
         'id': results.idUser,
@@ -79,7 +76,6 @@ def user_id(id):  # noqa
         'email': results.emailUser,
         'publickey': results.publickeyUser.decode("utf-8").rstrip("\x00"),
     }
-
     return jsonify(json_data), 200
 
 
@@ -95,19 +91,16 @@ def user_put(user_inst):
     email = request.headers.get('email', default=None)
 
     if email is not None and not validators.email(email):
-        return jsonify({'error': 'email is not a valid email'}), 400
+        return jsonify({'error': 'email is not valid'}), 400
 
-    try:
-        if firstname is not None:
-            user_inst.firstnameUser = firstname
-        if lastname is not None:
-            user_inst.lastnameUser = lastname
-        if email is not None:
-            user_inst.emailUser = email
-    except SQLAlchemyError:
-        return jsonify({'error': 'Database error'}), 500
+    if firstname is not None:
+        user_inst.firstnameUser = firstname
+    if lastname is not None:
+        user_inst.lastnameUser = lastname
+    if email is not None:
+        user_inst.emailUser = email
 
-    return jsonify({'status': 'Daten wurden geändert'}), 200
+    return jsonify({'status': 'changed'}), 200
 
 
 @BP.route('', methods=['POST'])
@@ -123,13 +116,15 @@ def user_post():
     auth_token = request.headers.get('authToken', default=None)
 
     if None in [username, firstname, lastname, email, auth_token]:
-        return jsonify({'error': 'Missing parameter'}), 403
+        return jsonify({'error': 'Missing parameter'}), 400
 
     session = DB_SESSION()
 
     try:
         shortened_token = BlockstackAuth.short_jwt(auth_token)
-        # username = BlockstackAuth.get_username_from_token(shortened_token)
+        username_token = BlockstackAuth.get_username_from_token(shortened_token)
+        if username_token != username:
+            return jsonify({'error': 'username in token doesnt match username'}), 400
 
         res = session.query(User).filter(User.usernameUser == username).one_or_none()
         if res is not None:
@@ -140,14 +135,9 @@ def user_post():
                          lastnameUser=lastname,
                          emailUser=email,
                          authToken=shortened_token)
-    except SQLAlchemyError:
-        return jsonify({'status': 'Database error'}), 400
     except (KeyError, ValueError, DecodeError):  # jwt decode errors
         return jsonify({'status': 'Invalid JWT'}), 400
-    try:
-        session.add(user_inst)
-        session.commit()
-    except SQLAlchemyError:
-        return jsonify({'status': 'Commit error!'}), 400
 
+    session.add(user_inst)
+    session.commit()
     return jsonify({'status': 'User registered'}), 201
