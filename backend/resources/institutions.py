@@ -1,4 +1,7 @@
 """Institution Resource."""
+from datetime import datetime
+
+import validators
 from flask import Blueprint, request, jsonify
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -24,22 +27,14 @@ def institutions_get():
     json_data = []
 
     if id_institution:
-        institution = results.filter(Institution.idInstitution == id_institution).first()
-        if not institution:
-            return jsonify({'error': 'Institution does not exist'}), 400
-
-        json_data.append({
-            "id": institution.idInstitution,
-            "name": institution.nameInstitution,
-            "webpage": institution.webpageInstitution,
-        })
-        return jsonify(json_data)
+        results = results.filter(Institution.idInstitution == id_institution)
 
     for result in results:
         json_data.append({
             "id": result.idInstitution,
             "name": result.nameInstitution,
             "webpage": result.webpageInstitution,
+            "address": result.addressInstitution,
         })
 
     return jsonify(json_data)
@@ -53,7 +48,14 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
     :return: json response
     """
     name = request.headers.get('name')
-    web = request.headers.get('webpage')
+    webpage = request.headers.get('webpage')
+    address = request.headers.get('address')
+
+    if None in [name, address]:
+        return jsonify({'error': 'Missing parameter'}), 400
+
+    if webpage is not None and not validators.url(webpage):
+        return jsonify({'error': 'webpage is not a valid url'}), 400
 
     session = DB_SESSION()
 
@@ -64,12 +66,16 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
 
     # Todo: smartcontract_id
     try:
-        session.add(Institution(nameInstitution=name, webpageInstitution=web, smartcontract_id=1))
+        institution_inst = Institution(nameInstitution=name, webpageInstitution=webpage, addressInstitution=address,
+                                       smartcontract_id=2)
+        transaction_inst = Transaction(dateTransaction=datetime.now(), smartcontract_id=2, user=user_inst)
+
+        session.add_all([institution_inst, transaction_inst])
         session.commit()
+
+        return jsonify({'status': 'Institution wurde erstellt'}), 201
     except SQLAlchemyError:
         return jsonify({'error': 'Database error!'}), 400
-
-    return jsonify({'status': 'Institution wurde erstellt'}), 201
 
 
 @BP.route('', methods=['PATCH'])
@@ -79,40 +85,41 @@ def institutions_patch(user_inst):
     Handles PATCH for resource <base>/api/institutions .
     :return: json response
     """
-    name = request.headers.get('name')
-    web = request.headers.get('webpage')
     institution_id = request.headers.get('id')
+    name = request.headers.get('name')
+    webpage = request.headers.get('webpage')
+    address = request.headers.get('address')
 
-    if web is None and name is None:
-        return jsonify({'error': 'missing patch argument'}), 400
+    if institution_id is None:
+        return jsonify({'error': 'Missing parameter'}), 400
 
     session = DB_SESSION()
+
+    if name:  # check if name is already taken
+        name_exist = session.query(Institution).filter(Institution.nameInstitution == name).one_or_none()
+        if name_exist:
+            return jsonify({'error': 'name already exists'}), 400
+
+    institution = session.query(Institution).get(institution_id)
+    if institution is None:
+        return jsonify({'error': 'Institution does not exist'}), 404
 
     # check user permission
     owner = session.query(Institution)
     owner = owner.join(Transaction, Institution.smartcontract_id == Transaction.smartcontract_id)
     owner = owner.filter(Transaction.user_id == user_inst.idUser, Institution.idInstitution == institution_id).first()
 
-    if owner:
-        # check if name is already taken
-        name_exist = session.query(Institution).filter(Institution.nameInstitution == name).first()
+    if owner is None:
+        return jsonify({'error': 'no permission'}), 403
+    try:
+        if name:
+            institution.nameInstitution = name
+        if address:
+            institution.addressInstitution = address
+        if webpage:
+            institution.webpageInstitution = webpage
 
-        institution = session.query(Institution).get(institution_id)
-        if institution is None:
-            return jsonify({'error': 'Institution does not exist'}), 404
-
-        try:
-            if web is not None:
-                institution.webpageInstitution = web
-            if not name_exist:
-                institution.nameInstitution = name
-            else:
-                return jsonify({'error': 'name already exists'}), 400
-
-            session.commit()
-            return jsonify({'status': 'Institution wurde bearbeitet'}), 201
-
-        except SQLAlchemyError:
-            return jsonify({'error': 'Database error!'}), 400
-
-    return jsonify({'error': 'no permission'}), 404
+        session.commit()
+        return jsonify({'status': 'Institution wurde bearbeitet'}), 201
+    except SQLAlchemyError:
+        return jsonify({'error': 'Database error!'}), 400
