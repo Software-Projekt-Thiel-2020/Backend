@@ -53,6 +53,7 @@ class Institution(BASE):
     idInstitution = Column(Integer, primary_key=True)
     nameInstitution = Column(VARCHAR(256))
     webpageInstitution = Column(VARCHAR(256))
+    addressInstitution = Column(VARCHAR(256))
 
     projects = relationship("Project", back_populates="institution")
 
@@ -211,16 +212,20 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
     institutions: List[Institution] = [
         Institution(idInstitution=1,
                     nameInstitution="MSGraphic",
-                    webpageInstitution="www.msgraphic.com"),
+                    webpageInstitution="www.msgraphic.com",
+                    addressInstitution="Address1"),
         Institution(idInstitution=2,
                     nameInstitution="SWP",
-                    webpageInstitution="www.swp.com"),
+                    webpageInstitution="www.swp.com",
+                    addressInstitution="Address2"),
         Institution(idInstitution=3,
                     nameInstitution="Asgard Inc.",
-                    webpageInstitution="www.asgard.as"),
+                    webpageInstitution="www.asgard.as",
+                    addressInstitution="Address3"),
         Institution(idInstitution=4,
                     nameInstitution="Blackhole",
-                    webpageInstitution="127.0.0.1"),
+                    webpageInstitution="127.0.0.1",
+                    addressInstitution="Address4"),
     ]
     # set SmartContract to Institution
     institutions[0].smartcontract = smartcontracts[0]
