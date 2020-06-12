@@ -48,6 +48,26 @@ def test_projects_get_w_institution(client):
     assert res.json[1]["webpage"] == "www.swp.de"
 
 
+def test_projects_get_w_id(client):
+    """get with id_institution."""
+    res = client.get('/api/projects?id=2')
+    assert res._status_code == 200
+    assert len(res.json) == 1
+
+    assert res.json[0]["id"] == 2
+    assert res.json[0]["idinstitution"] == 3
+    assert res.json[0]["idsmartcontract"] == 2
+    assert res.json[0]["name"] == "Rangaroek verteidigen"
+    assert res.json[0]["webpage"] == "www.asgard.as"
+
+
+def test_projects_get_w_bad_id(client):
+    """get with id_institution."""
+    res = client.get('/api/projects?id=' + '1'*200)
+    assert res._status_code == 200
+    assert len(res.json) == 0
+
+
 def test_projects_get_w_non_existant_institution(client):
     """get with non existant id_institution."""
     res = client.get('/api/projects?idinstitution=1337')
@@ -163,6 +183,14 @@ def test_projects_post_w_auth_wo_params(client):
     res = client.post('/api/projects', headers={"authToken": TOKEN_1})
     assert res._status_code == 403
     assert res.json["error"] == "Missing parameter"
+
+
+def test_projects_post_w_auth_bad_params(client):
+    headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
+               "idInstitution": "abc"}
+    res = client.post('/api/projects', headers=headers)
+    assert res._status_code == 400
+    assert res.json["error"] == "bad argument"
 
 
 def test_projects_post_required_params(client):

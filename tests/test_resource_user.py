@@ -78,7 +78,8 @@ def test_users_id_get_nonexistant_param(client):
     """get for users id with invalid id"""
     res = client.get('/api/users/1337')
     assert res._status_code == 404
-    assert len(res.json) == 0
+    assert len(res.json) == 1
+    assert res.json["error"] == "User not found"
 
 
 def test_users_id_get_bad_value(client):
@@ -92,7 +93,8 @@ def test_users_id_get_big_value(client):
     """get for users id with very big int as id"""
     res = client.get('/api/users/' + "1" * 200)
     assert res._status_code == 404
-    assert len(res.json) == 0
+    assert len(res.json) == 1
+    assert res.json["error"] == "User not found"
 
 
 def test_users_id_get2(client):
@@ -123,7 +125,7 @@ def test_users_put_invalid_email(client):
     headers = {"authToken": TOKEN_1, "firstname": "new_firstname", "lastname": "new_lastname", "email": "dennis"}
     res = client.put('/api/users', headers=headers)
     assert res._status_code == 400
-    assert res.json["error"] == "email is not a valid email"
+    assert res.json["error"] == "email is not valid"
 
     res = client.get('/api/users/6')
     assert res._status_code == 200
@@ -172,3 +174,19 @@ def test_user_post_bad_token(client):
     res = client.post('/api/users', headers=headers)
     assert res._status_code == 400
     assert res.json["status"] == "Invalid JWT"
+
+
+def test_user_post_missing_param(client):
+    headers = {"authToken": TOKEN_3, "username": "sw2020testuser1337.id.blockstack", "firstname": "Peter",
+               "lastname": "Maffay"}
+    res = client.post('/api/users', headers=headers)
+    assert res._status_code == 400
+    assert res.json["error"] == "Missing parameter"
+
+
+def test_user_post_username_mismatch(client):
+    headers = {"authToken": TOKEN_3, "username": "mismatch.id.blockstack", "firstname": "Peter",
+               "lastname": "Maffay", "email": "sw2020testuser1337@re-gister.com"}
+    res = client.post('/api/users', headers=headers)
+    assert res._status_code == 400
+    assert res.json["error"] == "username in token doesnt match username"
