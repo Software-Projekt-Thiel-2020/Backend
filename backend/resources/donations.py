@@ -1,6 +1,5 @@
 """Project Resource."""
 from flask import Blueprint, request, jsonify
-from sqlalchemy.exc import SQLAlchemyError
 
 from backend.database.db import DB_SESSION
 from backend.database.model import Donation
@@ -77,16 +76,13 @@ def donations_post(user_inst):
     if session.query(Milestone).get(idmilestone) is None:
         return jsonify({'error': 'Milestone not found'}), 400
 
-    try:
-        donations_inst = Donation(
-            amountDonation=amount,
-            user=user_inst,
-            milestone_id=idmilestone
-        )
+    donations_inst = Donation(
+        amountDonation=amount,
+        user=user_inst,
+        milestone_id=idmilestone
+    )
 
-        session.add(donations_inst)
-        session.commit()
-    except SQLAlchemyError:
-        return jsonify({'status': 'Database error'}), 400
+    session.add(donations_inst)
+    session.commit()
 
     return jsonify({'status': 'Spende wurde verbucht'}), 201

@@ -28,6 +28,23 @@ def test_donations_get(client):
     assert res.json[3]["milestoneid"] == 4
 
 
+def test_donations_get_w_id(client):
+    res = client.get('/api/donations?id=4')
+    assert res._status_code == 200
+    assert len(res.json) == 1
+
+    assert res.json[0]["id"] == 4
+    assert res.json[0]["amount"] == 400
+    assert res.json[0]["userid"] == 4
+    assert res.json[0]["milestoneid"] == 4
+
+
+def test_donations_get_w_bad_id(client):
+    res = client.get('/api/donations?id=' + '1'*200)
+    assert res._status_code == 200
+    assert len(res.json) == 0
+
+
 def test_donations_get_w_minamount(client):
     res = client.get('/api/donations?minamount=400')
     assert res._status_code == 200

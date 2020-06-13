@@ -4,7 +4,6 @@ from typing import List
 
 import validators
 from flask import Blueprint, request, jsonify
-from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.exc import NoResultFound
 
 from backend.database.db import DB_SESSION
@@ -26,10 +25,7 @@ def projects_get():
     id_institution = request.args.get('idinstitution')
 
     try:
-        if id_project:
-            int(id_project)
-        if id_institution:
-            int(id_institution)
+        check_params_int([id_project, id_institution])
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
@@ -79,8 +75,6 @@ def projects_id(id):  # noqa
             results = results.filter(Project.idProject == id_project).one()
     except NoResultFound:
         return jsonify(), 404
-    except SQLAlchemyError:
-        return jsonify(), 200
 
     milestoneresults = session.query(Milestone).filter(Milestone.project_id == id_project)
 
@@ -132,22 +126,19 @@ def projects_post(user_inst):  # pylint:disable=unused-argument
 
     session = DB_SESSION()
 
-    if id_institution is not None and session.query(Institution).get(id_institution) is None:
+    if id_institution and session.query(Institution).get(id_institution) is None:
         return jsonify({'error': 'Institution not found'}), 400
 
-    if webpage is not None and not validators.url(webpage):
+    if webpage and not validators.url(webpage):
         return jsonify({'error': 'webpage is not a valid url'}), 400
 
-    try:
-        project_inst = Project(
-            nameProject=name,
-            webpageProject=webpage,
-            smartcontract_id=1,
-            institution_id=id_institution
-            # ToDo: add user as project owner
-        )
-    except SQLAlchemyError:
-        return jsonify({'status': 'Database error'}), 400
+    project_inst = Project(
+        nameProject=name,
+        webpageProject=webpage,
+        smartcontract_id=1,
+        institution_id=id_institution
+        # ToDo: add user as project owner
+    )
 
     try:
         milestones_inst: List[Milestone] = []
@@ -158,19 +149,13 @@ def projects_post(user_inst):  # pylint:disable=unused-argument
                 currentVotesMilestone=0,
                 untilBlockMilestone=milestone['until'],
             ))
-    except SQLAlchemyError:
-        return jsonify({'status': 'Database error!'}), 400
     except (KeyError, json.JSONDecodeError):
         return jsonify({'status': 'invalid json'}), 400
 
-    try:
-        project_inst.milestones.extend(milestones_inst)
-        session.add_all(milestones_inst)
-        session.add(project_inst)
-        session.commit()
-    except SQLAlchemyError:
-        return jsonify({'status': 'Commit error!'}), 400
-
+    project_inst.milestones.extend(milestones_inst)
+    session.add_all(milestones_inst)
+    session.add(project_inst)
+    session.commit()
     return jsonify({'status': 'ok', 'id': project_inst.idProject}), 201
 
 
@@ -194,11 +179,8 @@ def projects_patch(user_inst, id):  # pylint:disable=invalid-name,redefined-buil
     if webpage is not None and not validators.url(webpage):
         return jsonify({'error': 'webpage is not a valid url'}), 400
 
-    try:
-        if webpage is not None:
-            project_inst.webpageProject = webpage
-    except SQLAlchemyError:
-        return jsonify({'status': 'Database error!'}), 400
+    if webpage is not None:
+        project_inst.webpageProject = webpage
 
     try:
         milestones_inst: List[Milestone] = []
@@ -209,15 +191,10 @@ def projects_patch(user_inst, id):  # pylint:disable=invalid-name,redefined-buil
                 currentVotesMilestone=0,
                 untilBlockMilestone=milestone['until'],
             ))
-    except SQLAlchemyError:
-        return jsonify({'status': 'Database error!'}), 400
     except (KeyError, json.JSONDecodeError):
         return jsonify({'status': 'invalid json'}), 400
 
-    try:
-        project_inst.milestones.extend(milestones_inst)
-        session.add_all(milestones_inst)
-        session.commit()
-    except SQLAlchemyError:
-        return jsonify({'status': 'Commit error!'}), 400
+    project_inst.milestones.extend(milestones_inst)
+    session.add_all(milestones_inst)
+    session.commit()
     return jsonify({'status': 'ok'}), 201
