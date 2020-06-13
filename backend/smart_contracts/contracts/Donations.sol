@@ -1,7 +1,11 @@
-pragma solidity ^0.6.0;
-// pragma experimental ABIEncoderV2;
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
-contract Project is Ownable{
+﻿pragma solidity ^0.5.0;
+
+contract Project {
+    
+     modifier onlyOwner(){
+      require(msg.sender == owner);
+      _;
+     }
     
     ProjectTarget projectTarget;
     
@@ -16,6 +20,7 @@ contract Project is Ownable{
     uint8 milestonesCounter = 0;
     uint8 activeMilestone;
     uint8 partial_payment;
+    address owner;
     
     struct Milestone {
         bytes name;
@@ -61,6 +66,7 @@ contract Project is Ownable{
         partial_payment =_partial_payment;
         projectTarget = ProjectTarget(_projectTargetName, _projectTargetAmount);
         minDonation = _minDonation;
+        owner = msg.sender;
     }
   
     /// @notice Fuert eine Teilauszahlung des Meilensteins aus,
