@@ -2,7 +2,7 @@ const Project = artifacts.require("Project");
 const truffleAssert = require('truffle-assertions');
 const helper = require("../helpers/truffleTestHelper");
 
-const days = (24*60*60);
+const days = (24 * 60 * 60);
 
 
 contract('Project', (accounts) => {
@@ -52,7 +52,7 @@ contract('Project', (accounts) => {
         const test_name = "TestString";
         const test_target_amount = 50000;
 
-        let result = await uut.addMilestone(web3.utils.fromAscii(test_name), test_target_amount, timestamp_now+1*days, {from: owner});
+        let result = await uut.addMilestone(web3.utils.fromAscii(test_name), test_target_amount, timestamp_now + 2 * days, {from: owner});
 
         truffleAssert.eventEmitted(result, 'AddMilestone', (ev) => {
             assert.equal(web3.utils.toAscii(ev._name).replace(/\0/g, ''), test_name, 'event AddMilestone: name');
@@ -68,14 +68,16 @@ contract('Project', (accounts) => {
         const test_target_amount = 50000;
         const test_target_amount2 = 75000;
 
-        let result = await uut.addMilestone(web3.utils.fromAscii(test_name), test_target_amount, timestamp_now+1*days, {from: owner});
+        let result = await uut.addMilestone(web3.utils.fromAscii(test_name), test_target_amount, timestamp_now + 2 * days, {from: owner});
         truffleAssert.eventEmitted(result, 'AddMilestone', (ev) => {
             assert.equal(web3.utils.toAscii(ev._name).replace(/\0/g, ''), test_name, 'event AddMilestone: name');
             assert.equal(ev._amount, test_target_amount, 'event AddMilestone: targetAmount');
             return true;
         });
 
-        result = await uut.addMilestone(web3.utils.fromAscii(test_name2), test_target_amount2, timestamp_now+1*days, {from: owner});
+        await helper.advanceTimeAndBlock(1);
+
+        result = await uut.addMilestone(web3.utils.fromAscii(test_name2), test_target_amount2, timestamp_now + 2 * days, {from: owner});
         truffleAssert.eventEmitted(result, 'AddMilestone', (ev) => {
             assert.equal(web3.utils.toAscii(ev._name).replace(/\0/g, ''), test_name2, 'event AddMilestone: name');
             assert.equal(ev._amount, test_target_amount2, 'event AddMilestone: targetAmount');
