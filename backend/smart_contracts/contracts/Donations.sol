@@ -59,7 +59,6 @@ contract Project {
      /// @param _projectTargetAmount das Projektziels in Wei
      /// @param _minDonation Mindestbetrag einer Spende um Stimmbereichtigt zu sein
     constructor(uint8 _partial_payment,bytes memory _projectTargetName, uint256 _projectTargetAmount, uint256 _minDonation) public {
-        require(_partial_payment > 0);
         require(_partial_payment < 100);
         require(_projectTargetName.length > 0);
         require(_projectTargetAmount > 0);
