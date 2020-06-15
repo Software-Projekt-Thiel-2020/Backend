@@ -202,7 +202,6 @@ contract Project {
 
     /// @notice Funktion zum Zurückziehen der Spende
     function retract() public {
-           function retract() public {
         Donor memory d = donors[msg.sender];
         require(d.exists);
         require(d.donated_for_milestone == activeMilestone);
