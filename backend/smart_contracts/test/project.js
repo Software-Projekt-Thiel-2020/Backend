@@ -215,6 +215,51 @@ contract('Project', (accounts) => {
     });
 
 
+       /* it('project should be able to vote', async () => {
+        const test_name = "TestString";
+        const test_target_amount = 50000;
+	const test_name2 = "TestString2";
+	const test_target_amount2 = 75000;
+
+        let result = await uut.addMilestone(web3.utils.fromAscii(test_name), test_target_amount, timestamp_now + 2 * days, {from: owner});
+        truffleAssert.eventEmitted(result, 'AddMilestone', (ev) => {
+            assert.equal(web3.utils.toAscii(ev._name).replace(/\0/g, ''), test_name, 'event AddMilestone: name');
+            assert.equal(ev._amount, test_target_amount, 'event AddMilestone: targetAmount');
+            return true;
+        });
+
+        result = await uut.addMilestone(web3.utils.fromAscii(test_name2), test_target_amount2, timestamp_now + 2 * days, {from: owner});
+        truffleAssert.eventEmitted(result, 'AddMilestone', (ev) => {
+            assert.equal(web3.utils.toAscii(ev._name).replace(/\0/g, ''), test_name2, 'event AddMilestone: name');
+            assert.equal(ev._amount, test_target_amount2, 'event AddMilestone: targetAmount');
+            return true;
+        });
+
+        /////////////////////////////////////////
+
+        await uut.register({from: accounts[1]});
+        await uut.donate(true, {from: accounts[1], value: test_target_amount});
+
+
+        result = await uut.vote(0,0, {from: accounts[1]});	
+
+        truffleAssert.eventEmitted(result, 'Vote', (ev) => {
+            assert.equal(ev.milestoneId, 0, 'event Vote: milestoneId');
+	    //assert.equal(ev.votePosition,0,'event Vote: votePosition'); //enums können 
+            return true;
+        });
+
+	//funktioniert nicht ??
+	//let temp = uut.milestones.call(0);
+	//let milestoneVote = temp[3];
+	//assert.equal(milestoneVote,1);
+	//milestoneVote = temp[4];
+	//assert.equal(milestoneVote,0);
+	
+    });*/
+  
+
+
     it('project should be able to payingOutActiveMilestonePart if more positive votes', async () => {
         const test_name = "TestString";
         const test_name2 = "TestString2";
@@ -414,6 +459,48 @@ contract('Project', (accounts) => {
         });
     });
 
+  it('project should not be able to payingOutProject two times', async () => {
+        const test_name = "TestString";
+        const test_name2 = "TestString2";
+        const test_target_amount = 50000;
+        const test_target_amount2 = 75000;
+
+        let result = await uut.addMilestone(web3.utils.fromAscii(test_name), test_target_amount, timestamp_now + 2 * days, {from: owner});
+        truffleAssert.eventEmitted(result, 'AddMilestone', (ev) => {
+            assert.equal(web3.utils.toAscii(ev._name).replace(/\0/g, ''), test_name, 'event AddMilestone: name');
+            assert.equal(ev._amount, test_target_amount, 'event AddMilestone: targetAmount');
+            return true;
+        });
+
+        result = await uut.addMilestone(web3.utils.fromAscii(test_name2), test_target_amount2, timestamp_now + 2 * days, {from: owner});
+        truffleAssert.eventEmitted(result, 'AddMilestone', (ev) => {
+            assert.equal(web3.utils.toAscii(ev._name).replace(/\0/g, ''), test_name2, 'event AddMilestone: name');
+            assert.equal(ev._amount, test_target_amount2, 'event AddMilestone: targetAmount');
+            return true;
+        });
+        /////////////////////////////////////////
+
+        await uut.register({from: accounts[1]});
+        await uut.donate(true, {from: accounts[1], value: 100000});
+	await uut.vote(0,0, {from: accounts[1]});
+	
+	result = await uut.payingOutProject({from: owner});
+	truffleAssert.eventEmitted(result, 'PayingOutProject', (ev) => {
+	  assert.equal(ev._amount, 100000, 'event PayingOutProject: amount');
+	  return true;
+        });
+
+	result = await uut.payingOutProject({from: owner});
+	truffleAssert.eventEmitted(result, 'PayingOutProject', (ev) => {
+	  assert.equal(ev._amount, 0, 'event PayingOutProject: amount');
+	  return true;
+        });
+
+
+
+	
+    });
+
   it('project only owner should be able to payingOutProject', async () => {
         const test_name = "TestString";
         const test_name2 = "TestString2";
@@ -443,5 +530,44 @@ contract('Project', (accounts) => {
 	);
 		
     });
+
+  it('project should be able to retract', async () => {
+        const test_name = "TestString";
+        const test_name2 = "TestString2";
+        const test_target_amount = 50000;
+	const test_target_amount2 = 75000;
+
+
+        let result = await uut.addMilestone(web3.utils.fromAscii(test_name), test_target_amount, timestamp_now + 2 * days, {from: owner});
+        truffleAssert.eventEmitted(result, 'AddMilestone', (ev) => {
+            assert.equal(web3.utils.toAscii(ev._name).replace(/\0/g, ''), test_name, 'event AddMilestone: name');
+            assert.equal(ev._amount, test_target_amount, 'event AddMilestone: targetAmount');
+            return true;
+        });
+
+        result = await uut.addMilestone(web3.utils.fromAscii(test_name2), test_target_amount2, timestamp_now + 2 * days, {from: owner});
+        truffleAssert.eventEmitted(result, 'AddMilestone', (ev) => {
+            assert.equal(web3.utils.toAscii(ev._name).replace(/\0/g, ''), test_name2, 'event AddMilestone: name');
+            assert.equal(ev._amount, test_target_amount2, 'event AddMilestone: targetAmount');
+            return true;
+        });
+	////////////////////////////////////////
+
+	await uut.register({from: accounts[1]});
+	await uut.donate(true, {from: accounts[1], value: 10000});
+
+        result = await uut.retract({from: accounts[1]});
+  
+   
+	truffleAssert.eventEmitted(result, 'Retract', (ev) => {
+	  assert.equal(ev.amount, 10000, 'event Retract: amount');
+	  assert.equal(ev.milestoneId, 0, 'event Retract: milestoneId');
+	  assert.equal(ev.donor,accounts[1],'event Retract: donor');
+	  return true;
+        });
+
+
+    });
+
 
 });
