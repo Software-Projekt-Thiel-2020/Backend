@@ -103,7 +103,6 @@ def user_put(user_inst):
     if re.match("^[a-zA-Z]+$", firstname) is None or re.match("^[a-zA-Z]+$", lastname) is None:
         return jsonify({'error': 'Firstname and/or lastname must contain only alphanumeric characters'}), 400
 
-
     if firstname is not None:
         user_inst.firstnameUser = firstname
     if lastname is not None:
