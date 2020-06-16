@@ -201,8 +201,9 @@ contract('Project', (accounts) => {
         });
         /////////////////////////////////////////
 
+	const test_donation = 100000;
         await uut.register({from: accounts[1]});
-        await uut.donate(false, {from: accounts[1], value: test_target_amount});
+        await uut.donate(false, {from: accounts[1], value: test_donation});
 
         result = await uut.payingOutActiveMilestoneAll(0, {from: owner});
 
@@ -279,8 +280,9 @@ contract('Project', (accounts) => {
         });
         ////////////////////////////////////////
 
+	const test_donation = 100000;
         await uut.register({from: accounts[1]});
-        await uut.donate(true, {from: accounts[1], value: test_target_amount});
+        await uut.donate(true, {from: accounts[1], value: test_donation});
         await uut.vote(0, 0, {from: accounts[1]});
 
         await helper.advanceTimeAndBlock(4 * days);
@@ -432,8 +434,9 @@ contract('Project', (accounts) => {
         });
         /////////////////////////////////////////
 
+	const test_donation = 100000;
         await uut.register({from: accounts[1]});
-        await uut.donate(true, {from: accounts[1], value: 100000});
+        await uut.donate(true, {from: accounts[1], value: test_donation});
         await uut.vote(0, 0, {from: accounts[1]});
 
         await helper.advanceTimeAndBlock(4 * days);
@@ -441,7 +444,7 @@ contract('Project', (accounts) => {
         result = await uut.payingOutActiveMilestonePart(0, {from: owner});
 
         let expected = (test_target_amount / 100) * 80;
-        let rest = 100000 - expected;
+        let rest = test_donation - expected;
 
         truffleAssert.eventEmitted(result, 'PayingOutPart', (ev) => {
             assert.equal(ev.amount, expected, 'event PayingOutPart: amount');
@@ -605,7 +608,101 @@ contract('Project', (accounts) => {
 
     });
 
+    it('project should not be able to retract after payingOutActiveMilestonePart with positive votes', async () => {
+        const test_name = "TestString";
+        const test_name2 = "TestString2";
+        const test_target_amount = 50000;
+        const test_target_amount2 = 75000;
 
 
+        let result = await uut.addMilestone(web3.utils.fromAscii(test_name), test_target_amount, timestamp_now + 2 * days, {from: owner});
+        truffleAssert.eventEmitted(result, 'AddMilestone', (ev) => {
+            assert.equal(web3.utils.toAscii(ev._name).replace(/\0/g, ''), test_name, 'event AddMilestone: name');
+            assert.equal(ev._amount, test_target_amount, 'event AddMilestone: targetAmount');
+            return true;
+        });
+
+        result = await uut.addMilestone(web3.utils.fromAscii(test_name2), test_target_amount2, timestamp_now + 2 * days, {from: owner});
+        truffleAssert.eventEmitted(result, 'AddMilestone', (ev) => {
+            assert.equal(web3.utils.toAscii(ev._name).replace(/\0/g, ''), test_name2, 'event AddMilestone: name');
+            assert.equal(ev._amount, test_target_amount2, 'event AddMilestone: targetAmount');
+            return true;
+        });
+        ////////////////////////////////////////
+
+	const testDonationAmount = 49999;
+	
+        await uut.register({from: accounts[1]});
+        await uut.donate(true, {from: accounts[1], value: testDonationAmount});
+        await uut.vote(0, 0, {from: accounts[1]});
+
+        await helper.advanceTimeAndBlock(4 * days);
+
+        result = await uut.payingOutActiveMilestonePart(0, {from: owner});
+
+        let expected = (test_target_amount / 100) * 80;
+
+        truffleAssert.eventEmitted(result, 'PayingOutPart', (ev) => {
+            assert.equal(ev.amount, expected, 'event PayingOutPart: amount');
+            assert.equal(ev.milestoneId, 0, 'event PayingOutPart: milestoneId');
+            return true;
+        });
+
+        
+	await truffleAssert.reverts(
+            uut.retract({from: accounts[1]})
+        );
+	
+
+
+    });
+
+    it('project should be able to retract after payingOutActiveMilestonePart with negative votes', async () => {
+        const test_name = "TestString";
+        const test_name2 = "TestString2";
+        const test_target_amount = 50000;
+        const test_target_amount2 = 75000;
+
+
+        let result = await uut.addMilestone(web3.utils.fromAscii(test_name), test_target_amount, timestamp_now + 2 * days, {from: owner});
+        truffleAssert.eventEmitted(result, 'AddMilestone', (ev) => {
+            assert.equal(web3.utils.toAscii(ev._name).replace(/\0/g, ''), test_name, 'event AddMilestone: name');
+            assert.equal(ev._amount, test_target_amount, 'event AddMilestone: targetAmount');
+            return true;
+        });
+
+        result = await uut.addMilestone(web3.utils.fromAscii(test_name2), test_target_amount2, timestamp_now + 2 * days, {from: owner});
+        truffleAssert.eventEmitted(result, 'AddMilestone', (ev) => {
+            assert.equal(web3.utils.toAscii(ev._name).replace(/\0/g, ''), test_name2, 'event AddMilestone: name');
+            assert.equal(ev._amount, test_target_amount2, 'event AddMilestone: targetAmount');
+            return true;
+        });
+        ////////////////////////////////////////
+
+	const testDonationAmount = 49999;
+	
+        await uut.register({from: accounts[1]});
+        await uut.donate(true, {from: accounts[1], value: testDonationAmount});
+        await uut.vote(0, 1, {from: accounts[1]});
+
+        await helper.advanceTimeAndBlock(4 * days);
+
+        let expected = (test_target_amount / 100) * 80;
+
+	await truffleAssert.reverts(
+            uut.payingOutActiveMilestonePart(0,{from: accounts[1]})
+        );
+
+        result = await uut.retract({from: accounts[1]});
+
+        truffleAssert.eventEmitted(result, 'Retract', (ev) => {
+            assert.equal(ev.amount, testDonationAmount, 'event Retract: amount');
+            assert.equal(ev.milestoneId, 0, 'event Retract: milestoneId');
+            assert.equal(ev.donor, accounts[1], 'event Retract: donor');
+            return true;
+        });
+
+
+    });
 
 });
