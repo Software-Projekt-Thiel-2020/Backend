@@ -227,6 +227,7 @@ contract Project {
 
         donated_amount -= amount;
         d.donated_for_milestone = 0;
+        d.donated_amount = 0;
         donors[msg.sender] = d;
     }
 
