@@ -77,7 +77,7 @@ contract Project {
         require(m.payoutPart == false);
         require(m.payoutAll == false);
         require(m.voteableUntil <= block.timestamp);
-        require(m.positiveVotes > m.negativeVotes);
+        require(m.positiveVotes >= m.negativeVotes);
 
         uint256 amount;
         if (milestoneId > 0) {
