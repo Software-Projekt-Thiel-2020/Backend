@@ -107,7 +107,7 @@ def test_users_id_get2(client):
 
 
 def test_users_put(client):
-    headers = {"authToken": TOKEN_1, "firstname": "new_firstname", "lastname": "new_lastname", "email": "a@b.com"}
+    headers = {"authToken": TOKEN_1, "firstname": "newfirstname", "lastname": "newlastname", "email": "a@b.com"}
     res = client.put('/api/users', headers=headers)
     assert res._status_code == 200
 
@@ -116,13 +116,13 @@ def test_users_put(client):
 
     assert res.json["id"] == 6
     assert res.json["username"] == "sw2020testuser1.id.blockstack"
-    assert res.json["firstname"] == "new_firstname"
-    assert res.json["lastname"] == "new_lastname"
+    assert res.json["firstname"] == "newfirstname"
+    assert res.json["lastname"] == "newlastname"
     assert res.json["email"] == "a@b.com"
 
 
 def test_users_put_invalid_email(client):
-    headers = {"authToken": TOKEN_1, "firstname": "new_firstname", "lastname": "new_lastname", "email": "dennis"}
+    headers = {"authToken": TOKEN_1, "firstname": "newfirstname", "lastname": "newlastname", "email": "dennis"}
     res = client.put('/api/users', headers=headers)
     assert res._status_code == 400
     assert res.json["error"] == "email is not valid"
@@ -137,8 +137,56 @@ def test_users_put_invalid_email(client):
     assert res.json["email"] == "testuser1@example.com"
 
 
+def test_users_put_missing_param(client):
+    headers = {"authToken": TOKEN_1, "lastname": "newlastname", "email": "dennis@asd.de"}
+    res = client.put('/api/users', headers=headers)
+    assert res._status_code == 400
+    assert res.json["error"] == "Missing parameter"
+
+    res = client.get('/api/users/6')
+    assert res._status_code == 200
+
+    assert res.json["id"] == 6
+    assert res.json["username"] == "sw2020testuser1.id.blockstack"
+    assert res.json["firstname"] == "testuser1"
+    assert res.json["lastname"] == "sw2020"
+    assert res.json["email"] == "testuser1@example.com"
+
+
+def test_users_put_empty_param(client):
+    headers = {"authToken": TOKEN_1, "firstname": "", "lastname": "newlastname", "email": "a2@b.com"}
+    res = client.put('/api/users', headers=headers)
+    assert res._status_code == 400
+    assert res.json["error"] == "Empty parameter"
+
+    res = client.get('/api/users/6')
+    assert res._status_code == 200
+
+    assert res.json["id"] == 6
+    assert res.json["username"] == "sw2020testuser1.id.blockstack"
+    assert res.json["firstname"] == "testuser1"
+    assert res.json["lastname"] == "sw2020"
+    assert res.json["email"] == "testuser1@example.com"
+
+
+def test_users_put_bad_name(client):
+    headers = {"authToken": TOKEN_1, "firstname": "asd1", "lastname": "newlastname", "email": "a2@b.com"}
+    res = client.put('/api/users', headers=headers)
+    assert res._status_code == 400
+    assert res.json["error"] == "Firstname and/or lastname must contain only alphanumeric characters"
+
+    res = client.get('/api/users/6')
+    assert res._status_code == 200
+
+    assert res.json["id"] == 6
+    assert res.json["username"] == "sw2020testuser1.id.blockstack"
+    assert res.json["firstname"] == "testuser1"
+    assert res.json["lastname"] == "sw2020"
+    assert res.json["email"] == "testuser1@example.com"
+
+
 def test_users_put_wo_auth(client):
-    headers = {"firstname": "new_firstname", "lastname": "new_lastname", "email": "dennis"}
+    headers = {"firstname": "newfirstname", "lastname": "newlastname", "email": "dennis"}
     res = client.put('/api/users', headers=headers)
     assert res._status_code == 401
 
@@ -166,6 +214,22 @@ def test_user_post_existing(client):
     res = client.post('/api/users', headers=headers)
     assert res._status_code == 400
     assert res.json["status"] == "User is already registered"
+
+
+def test_user_post_empty_parameter(client):
+    headers = {"authToken": TOKEN_1, "username": "", "firstname": "Peter",
+               "lastname": "Maffay", "email": "sw2020testuser1@re-gister.com"}
+    res = client.post('/api/users', headers=headers)
+    assert res._status_code == 400
+    assert res.json["error"] == "Empty parameter"
+
+
+def test_user_post_bad_name(client):
+    headers = {"authToken": TOKEN_1, "username": "sw2020testuser1.id.blockstack", "firstname": "Peter",
+               "lastname": "Maffay_", "email": "sw2020testuser1@re-gister.com"}
+    res = client.post('/api/users', headers=headers)
+    assert res._status_code == 400
+    assert res.json["error"] == "Firstname and/or lastname must contain only alphanumeric characters"
 
 
 def test_user_post_bad_token(client):
