@@ -5,7 +5,7 @@ import validators
 from flask import Blueprint, request, jsonify
 
 from backend.database.db import DB_SESSION
-from backend.database.model import Institution, Transaction
+from backend.database.model import Institution, Transaction, User
 from backend.resources.helpers import auth_user
 
 BP = Blueprint('institutions', __name__, url_prefix='/api/institutions')  # set blueprint name and resource path
@@ -49,6 +49,10 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
     name = request.headers.get('name')
     webpage = request.headers.get('webpage')
     address = request.headers.get('address')
+    username = request.headers.get('username')
+
+    if not user_inst.group == "support":
+        return jsonify({'error': 'Forbidden'}), 403
 
     if None in [name, address]:
         return jsonify({'error': 'Missing parameter'}), 400
@@ -57,6 +61,9 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
         return jsonify({'error': 'webpage is not a valid url'}), 400
 
     session = DB_SESSION()
+    owner_inst: User = session.query(User).filter(User.usernameUser == username).one_or_none()
+    if owner_inst is None:
+        return jsonify({'error': 'username not found'}), 400
 
     # check if name is already taken
     name_exist = session.query(Institution).filter(Institution.nameInstitution == name).first()
@@ -66,7 +73,7 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
     # Todo: smartcontract_id
     institution_inst = Institution(nameInstitution=name, webpageInstitution=webpage, addressInstitution=address,
                                    smartcontract_id=2)
-    transaction_inst = Transaction(dateTransaction=datetime.now(), smartcontract_id=2, user=user_inst)
+    transaction_inst = Transaction(dateTransaction=datetime.now(), smartcontract_id=2, user=owner_inst)
 
     session.add_all([institution_inst, transaction_inst])
     session.commit()

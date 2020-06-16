@@ -93,6 +93,7 @@ class User(BASE):
     publickeyUser = Column(BINARY(64))
     privatekeyUser = Column(BINARY(128))
     authToken = Column(VARCHAR(2048))
+    group = Column(VARCHAR(32))
 
     donations = relationship("Donation", back_populates="user")
 
@@ -199,7 +200,8 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
              emailUser="testuser1@example.com",
              publickeyUser=bytes("14234132", encoding="utf-8"),
              privatekeyUser=bytes("2344322134", encoding="utf-8"),
-             authToken=TOKEN_1),
+             authToken=TOKEN_1,
+             group="support"),
         User(idUser=7,
              usernameUser="sw2020testuser2.id.blockstack",
              firstnameUser="testuser2", lastnameUser="sw2020",
