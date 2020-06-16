@@ -165,6 +165,7 @@ contract Project {
 
     function register() public {
         require(!donors[msg.sender].exists);
+	require(msg.sender != owner);
         Donor memory d;
         d.exists = true;
         donors[msg.sender] = d;
