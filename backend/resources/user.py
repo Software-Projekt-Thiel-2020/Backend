@@ -1,6 +1,6 @@
 """User Resource."""
-import validators
 import re
+import validators
 from flask import Blueprint, request, jsonify
 from jwt import DecodeError
 from sqlalchemy.orm.exc import NoResultFound
