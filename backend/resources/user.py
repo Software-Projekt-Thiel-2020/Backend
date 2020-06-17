@@ -1,4 +1,5 @@
 """User Resource."""
+import re
 import validators
 from flask import Blueprint, request, jsonify
 from jwt import DecodeError
@@ -93,6 +94,15 @@ def user_put(user_inst):
     if email is not None and not validators.email(email):
         return jsonify({'error': 'email is not valid'}), 400
 
+    if None in [firstname, lastname, email]:
+        return jsonify({'error': 'Missing parameter'}), 400
+
+    if "" in [firstname, lastname, email]:
+        return jsonify({'error': 'Empty parameter'}), 400
+
+    if re.match("^[a-zA-Z ,.'-]+$", firstname) is None or re.match("^[a-zA-Z ,.'-]+$", lastname) is None:
+        return jsonify({'error': 'Firstname and/or lastname must contain only alphanumeric characters'}), 400
+
     if firstname is not None:
         user_inst.firstnameUser = firstname
     if lastname is not None:
@@ -117,6 +127,12 @@ def user_post():
 
     if None in [username, firstname, lastname, email, auth_token]:
         return jsonify({'error': 'Missing parameter'}), 400
+
+    if "" in [username, firstname, lastname, email, auth_token]:
+        return jsonify({'error': "Empty parameter"}), 400
+
+    if re.match("^[a-zA-Z]+$", firstname) is None or re.match("^[a-zA-Z]+$", lastname) is None:
+        return jsonify({'error': 'Firstname and/or lastname must contain only alphanumeric characters'}), 400
 
     session = DB_SESSION()
 
