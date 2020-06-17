@@ -1,8 +1,8 @@
 """The application factory of the backend."""
 import os
+from pathlib import Path
 from flask import Flask
 from flask_cors import CORS
-from pathlib import Path
 
 from backend.database import db
 from backend.resources import BLUEPRINTS

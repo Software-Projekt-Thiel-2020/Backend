@@ -69,9 +69,9 @@ def file_upload():
 
     session.commit()
 
-    return jsonify({'status':'ok'}), 201
+    return jsonify({'status': 'ok'}), 201
 
 
 @BP.route('/<filename>', methods=['GET'])
 def file_get(filename):
-	return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)
+    return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)
