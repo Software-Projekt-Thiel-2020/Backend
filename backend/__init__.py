@@ -19,8 +19,8 @@ def create_app(test_config=None):
         SECRET_KEY=os.urandom(24),
         DATABASE=os.path.join(app.instance_path, 'backend.sqlite'),
         UPLOAD_FOLDER=os.path.join(app.root_path, '../files'),
-        MAX_CONTETN_LENGTH=5*1024*1024,
-        ALLOWED_EXTENSIONS={'png','jpeg','jpg','gif','bmp'}
+        MAX_CONTETN_LENGTH=5 * 1024 * 1024,
+        ALLOWED_EXTENSIONS={'png', 'jpeg', 'jpg', 'gif', 'bmp'}
     )
     CORS(app)
     # ToDo: for production add real cors-options
