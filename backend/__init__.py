@@ -2,6 +2,7 @@
 import os
 from flask import Flask
 from flask_cors import CORS
+from pathlib import Path
 
 from backend.database import db
 from backend.resources import BLUEPRINTS
@@ -36,6 +37,8 @@ def create_app(test_config=None):
         pass
 
     db.init_app(app)
+
+    Path(app.config['UPLOAD_FOLDER']).mkdir(parents=True, exist_ok=True)
 
     for blueprint in BLUEPRINTS:
         app.register_blueprint(blueprint)
