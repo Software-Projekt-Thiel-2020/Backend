@@ -53,6 +53,7 @@ class Institution(BASE):
     idInstitution = Column(Integer, primary_key=True)
     nameInstitution = Column(VARCHAR(256))
     webpageInstitution = Column(VARCHAR(256))
+    addressInstitution = Column(VARCHAR(256))
 
     projects = relationship("Project", back_populates="institution")
 
@@ -91,12 +92,12 @@ class User(BASE):
     emailUser = Column(VARCHAR(45))
     publickeyUser = Column(BINARY(64))
     privatekeyUser = Column(BINARY(128))
+    authToken = Column(VARCHAR(2048))
+    group = Column(VARCHAR(32))
 
     donations = relationship("Donation", back_populates="user")
 
     transactions = relationship("Transaction", back_populates="user")
-
-    login = relationship("Login", back_populates="user")
 
     vouchers = relationship("Voucher", secondary=VOUCHER_USER_TABLE, back_populates="users")
 
@@ -125,13 +126,25 @@ class Transaction(BASE):
     user = relationship("User", back_populates="transactions")
 
 
-class Login(BASE):
-    __tablename__ = 'Login'
-    authToken = Column(VARCHAR(256), primary_key=True)
-    timeLogin = Column(TIMESTAMP)
+# sw2020testuser1.id.blockstack - shortened
+TOKEN_1 = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIyNGE1OTFkNS1lOGJiLTQwMzYtYWE0Ni1hNzg5MjU2ZDVjZDYiLCJpYX" \
+          "QiOjE1OTEyMjUyMzIsImV4cCI6MTU5MzgxNzIzMiwiaXNzIjoiZGlkOmJ0Yy1hZGRyOjE0Z1N4eFhZdzlXbTNoYWoxaGVKYXQ1ZGdpe" \
+          "HF0YVJ3a3MiLCJwdWJsaWNfa2V5cyI6WyIwMzliZWM4NjkxMGViZmVmMGU4ZmE3YmE2OTQ1MWU1ZjljNDU1NjhmZDFhMmY4MDQ5MzM2" \
+          "MWFlMzUzOGM2N2Y3YmIiXSwidXNlcm5hbWUiOiJzdzIwMjB0ZXN0dXNlcjEuaWQuYmxvY2tzdGFjayIsImNvcmVfdG9rZW4iOm51bGw" \
+          "sImVtYWlsIjpudWxsLCJwcm9maWxlX3VybCI6Imh0dHBzOi8vZ2FpYS5ibG9ja3N0YWNrLm9yZy9odWIvMTRnU3h4WFl3OVdtM2hhaj" \
+          "FoZUphdDVkZ2l4cXRhUndrcy9wcm9maWxlLmpzb24iLCJodWJVcmwiOiJodHRwczovL2h1Yi5ibG9ja3N0YWNrLm9yZyIsImJsb2Nrc" \
+          "3RhY2tBUElVcmwiOiJodHRwczovL2NvcmUuYmxvY2tzdGFjay5vcmciLCJ2ZXJzaW9uIjoiMS4zLjEifQ.5Nhd7TWhXhwkkkNOZCHUc" \
+          "MSX4ykE6Fdm5-N7yxA60ZI"
 
-    user_id = Column(Integer, ForeignKey('User.idUser'))
-    user = relationship("User", back_populates="login")
+# sw2020testuser2.id.blockstack
+TOKEN_2 = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxZjJiYzcyNy03Y2ZhLTQ5NDEtOTk4ZC03YjIyMGEwOTg2NmYiLCJpYXQi" \
+          "OjE1OTEyMjU0OTYsImV4cCI6MTU5MzgxNzQ5NiwiaXNzIjoiZGlkOmJ0Yy1hZGRyOjFIMlQxY0Rmd3lZZFlra1pFUkhmQUh4SkJxaDNie" \
+          "TlWd2kiLCJwdWJsaWNfa2V5cyI6WyIwMzgzNGE2MTI3NTc0NzhiMjlhMGU0ZjAxNTdiMjcwYTk3OTUzNzc1MTVhNjJkMGE2M2EyNWQ1Nj" \
+          "BmMDgxOGU5NWIiXSwidXNlcm5hbWUiOiJzdzIwMjB0ZXN0dXNlcjIuaWQuYmxvY2tzdGFjayIsImNvcmVfdG9rZW4iOm51bGwsImVtYWl" \
+          "sIjpudWxsLCJwcm9maWxlX3VybCI6Imh0dHBzOi8vZ2FpYS5ibG9ja3N0YWNrLm9yZy9odWIvMUgyVDFjRGZ3eVlkWWtrWkVSSGZBSHhK" \
+          "QnFoM2J5OVZ3aS9wcm9maWxlLmpzb24iLCJodWJVcmwiOiJodHRwczovL2h1Yi5ibG9ja3N0YWNrLm9yZyIsImJsb2Nrc3RhY2tBUElVc" \
+          "mwiOiJodHRwczovL2NvcmUuYmxvY2tzdGFjay5vcmciLCJ2ZXJzaW9uIjoiMS4zLjEifQ.GLsCrvh3jxopSwHTQeFA57AQ-eeL_ZbXto8" \
+          "RtzioxMw"
 
 
 def add_sample_data(db_session):  # pylint:disable=too-many-statements
@@ -181,21 +194,40 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
              emailUser="ot@swp.de",
              publickeyUser=bytes("268110268110", encoding="utf-8"),
              privatekeyUser=bytes("011862011862", encoding="utf-8")),
+        User(idUser=6,
+             usernameUser="sw2020testuser1.id.blockstack",
+             firstnameUser="testuser1", lastnameUser="sw2020",
+             emailUser="testuser1@example.com",
+             publickeyUser=bytes("14234132", encoding="utf-8"),
+             privatekeyUser=bytes("2344322134", encoding="utf-8"),
+             authToken=TOKEN_1,
+             group="support"),
+        User(idUser=7,
+             usernameUser="sw2020testuser2.id.blockstack",
+             firstnameUser="testuser2", lastnameUser="sw2020",
+             emailUser="testuser2@example.com",
+             publickeyUser=bytes("14234132", encoding="utf-8"),
+             privatekeyUser=bytes("2344322134", encoding="utf-8"),
+             authToken=TOKEN_2),
     ]
 
     institutions: List[Institution] = [
         Institution(idInstitution=1,
                     nameInstitution="MSGraphic",
-                    webpageInstitution="www.msgraphic.com"),
+                    webpageInstitution="www.msgraphic.com",
+                    addressInstitution="Address1"),
         Institution(idInstitution=2,
                     nameInstitution="SWP",
-                    webpageInstitution="www.swp.com"),
+                    webpageInstitution="www.swp.com",
+                    addressInstitution="Address2"),
         Institution(idInstitution=3,
                     nameInstitution="Asgard Inc.",
-                    webpageInstitution="www.asgard.as"),
+                    webpageInstitution="www.asgard.as",
+                    addressInstitution="Address3"),
         Institution(idInstitution=4,
                     nameInstitution="Blackhole",
-                    webpageInstitution="127.0.0.1"),
+                    webpageInstitution="127.0.0.1",
+                    addressInstitution="Address4"),
     ]
     # set SmartContract to Institution
     institutions[0].smartcontract = smartcontracts[0]
@@ -302,17 +334,9 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
     users[2].vouchers.append(vouchers[0])
     users[3].vouchers.append(vouchers[0])
 
-    login: List[Login] = [
-        Login(authToken="aE45DBb22", timeLogin=datetime.now()),
-        Login(authToken="so45Ma2Sd", timeLogin=datetime.now()),
-    ]
-    # set User to Login
-    login[0].user = users[0]
-    login[1].user = users[1]
-
     # All objects created, Add and commit to DB:
     objects = [*smartcontracts, *users, *institutions, *projects, *milestones, *vouchers, *transactions,
-               *donations, *login]
+               *donations]
 
     for obj in objects:
         session.add(obj)

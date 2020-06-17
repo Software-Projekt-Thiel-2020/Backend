@@ -1,6 +1,8 @@
 """The application factory of the backend."""
 import os
 from flask import Flask
+from flask_cors import CORS
+
 from backend.database import db
 from backend.resources import BLUEPRINTS
 
@@ -17,6 +19,8 @@ def create_app(test_config=None):
         SECRET_KEY=os.urandom(24),
         DATABASE=os.path.join(app.instance_path, 'backend.sqlite'),
     )
+    CORS(app)
+    # ToDo: for production add real cors-options
 
     if test_config is None:
         app.config.from_pyfile('config.py', silent=True)  # load the instance config if exists
