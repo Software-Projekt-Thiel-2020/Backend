@@ -149,19 +149,19 @@ contract Project {
     function vote(uint8 milestoneId, votePosition vp) public {
         require(milestoneId < milestonesCounter);
         require(milestones[milestoneId].voteableUntil > block.timestamp);
+	require(donors[msg.sender].votedMilestones & (1 << uint256(milestoneId)) == 0);
+	require(donors[msg.sender].wantsToVote);
 
-        if (donors[msg.sender].wantsToVote && (donors[msg.sender].votedMilestones & (1 << uint256(milestoneId)) == 0)) {
-            if (vp == votePosition.POSITIVE_VOTE) {
-                milestones[milestoneId].positiveVotes++;
-            } else if (vp == votePosition.NEGATIVE_VOTE) {
-                milestones[milestoneId].negativeVotes++;
-            }
-
-            donors[msg.sender].votedMilestones = donors[msg.sender].votedMilestones | (1 << uint256(milestoneId));
-
-            emit Vote(milestoneId, msg.sender, vp);
+        if (vp == votePosition.POSITIVE_VOTE) {
+            milestones[milestoneId].positiveVotes++;
+        } else if (vp == votePosition.NEGATIVE_VOTE) {
+            milestones[milestoneId].negativeVotes++;
         }
+        donors[msg.sender].votedMilestones = donors[msg.sender].votedMilestones | (1 << uint256(milestoneId));
+
+        emit Vote(milestoneId, msg.sender, vp);   
     }
+
 
     function register() public {
         require(!donors[msg.sender].exists);
