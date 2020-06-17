@@ -25,6 +25,7 @@ def allowed_file(filename):
 
 # TODO satisfy linter
 @BP.route('', methods=['POST'])
+@auth_user
 def file_upload():
     """
     Handles uploading a file for  .
