@@ -14,6 +14,7 @@ def test_users_get(client):
     assert res.json[0]["lastname"] == "Loetkolben"
     assert res.json[0]["publickey"] == "4242424242"
     assert res.json[0]["username"] == "LoetkolbenLudwig"
+    assert res.json[0]["group"] is None
 
 
 def test_users_get2(client):
@@ -27,6 +28,7 @@ def test_users_get2(client):
     assert res.json[0]["lastname"] == "Loetkolben"
     assert res.json[0]["publickey"] == "4242424242"
     assert res.json[0]["username"] == "LoetkolbenLudwig"
+    assert res.json[0]["group"] is None
 
 
 def test_users_get_wo_param(client):

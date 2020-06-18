@@ -39,6 +39,7 @@ def users_get():
             'firstname': result.firstnameUser,
             'lastname': result.lastnameUser,
             'email': result.emailUser,
+            'group': result.group,
             'publickey': result.publickeyUser.decode("utf-8").rstrip("\x00"),
         })
 
