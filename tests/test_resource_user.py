@@ -65,13 +65,28 @@ def test_users_id_get(client):
     """get for users id with existant id."""
     res = client.get('/api/users/1')
     assert res._status_code == 200
-    assert len(res.json) == 6
+    assert len(res.json) == 7
 
     assert res.json["id"] == 1
     assert res.json["username"] == "LoetkolbenLudwig"
     assert res.json["firstname"] == "Ludwig"
     assert res.json["lastname"] == "Loetkolben"
     assert res.json["email"] == "ll@swp.de"
+    assert res.json["group"] is None
+
+
+def test_users_id_get2(client):
+    """get for users id with existant id."""
+    res = client.get('/api/users/6')
+    assert res._status_code == 200
+    assert len(res.json) == 7
+
+    assert res.json["id"] == 6
+    assert res.json["username"] == "sw2020testuser1.id.blockstack"
+    assert res.json["firstname"] == "testuser1"
+    assert res.json["lastname"] == "sw2020"
+    assert res.json["email"] == "testuser1@example.com"
+    assert res.json["group"] == "support"
 
 
 def test_users_id_get_nonexistant_param(client):

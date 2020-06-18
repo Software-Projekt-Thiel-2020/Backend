@@ -75,6 +75,7 @@ def user_id(id):  # pylint:disable=redefined-builtin,invalid-name
         'firstname': results.firstnameUser,
         'lastname': results.lastnameUser,
         'email': results.emailUser,
+        'group': results.group,
         'publickey': results.publickeyUser.decode("utf-8").rstrip("\x00"),
     }
     return jsonify(json_data), 200
