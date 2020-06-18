@@ -1,0 +1,25 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Name | Nickname | GitHub Nick | Rolle ------------ | ------------ | ------------ | ------------ Mathis | Block | vMysterion | Teamleitung Timo | Kohlmeier | Wambo04 | Entwickler Lukas | Hitzemann | Batschko | Entwickler Anestis Lalidis | Mateo | Nesti024 | Entwickler Sebastian | Steinmeyer | CrappyAlgorithm | Entwickler Julian | Wasilewski | JulianWasilewski | Entwickler",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "truffle test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Software-Projekt-Thiel-2020/Backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Software-Projekt-Thiel-2020/Backend/issues"
+  },
+  "homepage": "https://github.com/Software-Projekt-Thiel-2020/Backend#readme",
+  "devDependencies": {
+    "truffle-assertions": "^0.9.2"
+  }
+}

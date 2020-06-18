@@ -3,7 +3,7 @@ name: Python application
 on: [push, pull_request]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
@@ -23,6 +23,9 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: test with pytest
+      run: |
+        pytest -v
 
   prospector:
     runs-on: ubuntu-latest
@@ -71,3 +74,29 @@ jobs:
     - name: check with bandit
       run: |
         bandit -r backend
+
+  smartcontracts:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: backend/smart_contracts
+    strategy:
+      matrix:
+        node-version: [12.x,]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - run: npm install -g truffle
+      - run: npm install
+      - run: npm test
