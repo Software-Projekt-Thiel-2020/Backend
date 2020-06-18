@@ -11,21 +11,29 @@ def test_donations_get(client):
     assert res.json[0]["amount"] == 300
     assert res.json[0]["userid"] == 1
     assert res.json[0]["milestoneid"] == 1
+    assert res.json[0]["projectid"] == 1
+    assert res.json[0]["projectname"] == "Computer malt Bild"
 
     assert res.json[1]["id"] == 2
     assert res.json[1]["amount"] == 200
     assert res.json[1]["userid"] == 2
     assert res.json[1]["milestoneid"] == 2
+    assert res.json[1]["projectid"] == 1
+    assert res.json[1]["projectname"] == "Computer malt Bild"
 
     assert res.json[2]["id"] == 3
     assert res.json[2]["amount"] == 100
     assert res.json[2]["userid"] == 3
     assert res.json[2]["milestoneid"] == 3
+    assert res.json[2]["projectid"] == 1
+    assert res.json[2]["projectname"] == "Computer malt Bild"
 
     assert res.json[3]["id"] == 4
     assert res.json[3]["amount"] == 400
     assert res.json[3]["userid"] == 4
     assert res.json[3]["milestoneid"] == 4
+    assert res.json[3]["projectid"] == 2
+    assert res.json[3]["projectname"] == "Rangaroek verteidigen"
 
 
 def test_donations_get_w_id(client):
@@ -37,6 +45,8 @@ def test_donations_get_w_id(client):
     assert res.json[0]["amount"] == 400
     assert res.json[0]["userid"] == 4
     assert res.json[0]["milestoneid"] == 4
+    assert res.json[0]["projectid"] == 2
+    assert res.json[0]["projectname"] == "Rangaroek verteidigen"
 
 
 def test_donations_get_w_bad_id(client):
@@ -54,6 +64,8 @@ def test_donations_get_w_minamount(client):
     assert res.json[0]["amount"] == 400
     assert res.json[0]["userid"] == 4
     assert res.json[0]["milestoneid"] == 4
+    assert res.json[0]["projectid"] == 2
+    assert res.json[0]["projectname"] == "Rangaroek verteidigen"
 
 
 def test_donations_get_w_minamount_toobig(client):
@@ -76,6 +88,8 @@ def test_donations_get_w_maxamount(client):
     assert res.json[0]["amount"] == 100
     assert res.json[0]["userid"] == 3
     assert res.json[0]["milestoneid"] == 3
+    assert res.json[0]["projectid"] == 1
+    assert res.json[0]["projectname"] == "Computer malt Bild"
 
 
 def test_donations_get_w_maxamount_toosmall(client):
@@ -104,6 +118,8 @@ def test_donations_get_w_user(client):
     assert res.json[0]["amount"] == 400
     assert res.json[0]["userid"] == 4
     assert res.json[0]["milestoneid"] == 4
+    assert res.json[0]["projectid"] == 2
+    assert res.json[0]["projectname"] == "Rangaroek verteidigen"
 
 
 def test_donations_get_w_user_nonexistant(client):
@@ -126,6 +142,8 @@ def test_donations_get_w_milestone(client):
     assert res.json[0]["amount"] == 300
     assert res.json[0]["userid"] == 1
     assert res.json[0]["milestoneid"] == 1
+    assert res.json[0]["projectid"] == 1
+    assert res.json[0]["projectname"] == "Computer malt Bild"
 
 
 def test_donations_get_w_milestone_nonexistant(client):
@@ -148,6 +166,8 @@ def test_donations_get_w_project(client):
     assert res.json[0]["amount"] == 400
     assert res.json[0]["userid"] == 4
     assert res.json[0]["milestoneid"] == 4
+    assert res.json[0]["projectid"] == 2
+    assert res.json[0]["projectname"] == "Rangaroek verteidigen"
 
 
 def test_donations_get_w_project2(client):
