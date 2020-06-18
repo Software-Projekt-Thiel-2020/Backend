@@ -34,6 +34,7 @@ def institutions_get():
             "name": result.nameInstitution,
             "webpage": result.webpageInstitution,
             "address": result.addressInstitution,
+            "picturePath": result.picPathInstitution,
         })
 
     return jsonify(json_data)
