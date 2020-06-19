@@ -58,7 +58,7 @@ contract Project {
     /// @param _projectTargetName Name des Projektziels in hex
     /// @param _projectTargetAmount das Projektziels in Wei
     /// @param _minDonation Mindestbetrag einer Spende um Stimmbereichtigt zu sein
-    constructor(uint8 _partial_payment, bytes memory _projectTargetName, uint256 _projectTargetAmount, uint256 _minDonation) public {
+    constructor(address _owner, uint8 _partial_payment, bytes memory _projectTargetName, uint256 _projectTargetAmount, uint256 _minDonation) public {
         require(_partial_payment < 100);
         require(_projectTargetName.length > 0);
         require(_projectTargetAmount > 0);
@@ -66,7 +66,7 @@ contract Project {
         partial_payment = _partial_payment;
         projectTarget = ProjectTarget(_projectTargetName, _projectTargetAmount);
         minDonation = _minDonation;
-        owner = msg.sender;
+        owner = _owner;
     }
 
     /// @notice Fuert eine Teilauszahlung des Meilensteins aus,
