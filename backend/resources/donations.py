@@ -48,6 +48,8 @@ def donations_get():
 
     json_data = []
     for donation, project in results:
+        pic = session.query(Milestone, Project).filter(Milestone.project_id == Project.idProject)
+        pic = pic.filter(Milestone.idMilestone == result.milestone_id).one()
         json_data.append({
             'id': donation.idDonation,
             'amount': donation.amountDonation,
@@ -55,6 +57,7 @@ def donations_get():
             'milestoneid': donation.milestone_id,
             'projectid': project.idProject,
             'projectname': project.nameProject,
+            'projectpic': pic[1].picPathProject,
         })
 
     return jsonify(json_data)
