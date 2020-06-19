@@ -48,7 +48,8 @@ def donations_get():
 
     json_data = []
     for result in results:
-        pic = session.query(Milestone, Project).filter(Milestone.project_id == Project.idProject).filter(Milestone.idMilestone == result.milestone_id).one()
+        pic = session.query(Milestone, Project).filter(Milestone.project_id == Project.idProject)
+        pic = pic.filter(Milestone.idMilestone == result.milestone_id).one()
         json_data.append({
             'id': result.idDonation,
             'amount': result.amountDonation,
