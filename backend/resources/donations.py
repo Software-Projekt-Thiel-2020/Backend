@@ -55,6 +55,7 @@ def donations_get():
             'milestoneid': donation.milestone_id,
             'projectid': project.idProject,
             'projectname': project.nameProject,
+            'projectpic': project.picPathProject,
         })
 
     return jsonify(json_data)
