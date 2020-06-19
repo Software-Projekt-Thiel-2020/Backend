@@ -4,6 +4,7 @@ from flask import Blueprint, request, jsonify
 from backend.database.db import DB_SESSION
 from backend.database.model import Donation
 from backend.database.model import Milestone
+from backend.database.model import Project
 from backend.resources.helpers import check_params_int, auth_user
 
 BP = Blueprint('donations', __name__, url_prefix='/api/donations')
@@ -47,11 +48,13 @@ def donations_get():
 
     json_data = []
     for result in results:
+        pic = session.query(Milestone, Project).filter(Milestone.project_id == Project.idProject).filter(Milestone.idMilestone == result.milestone_id).one()
         json_data.append({
             'id': result.idDonation,
             'amount': result.amountDonation,
             'userid': result.user_id,
             'milestoneid': result.milestone_id,
+            'picture': pic[1].picPathProject,
         })
 
     return jsonify(json_data)
