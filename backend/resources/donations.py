@@ -31,8 +31,8 @@ def donations_get():
         return jsonify({"error": "bad argument"}), 400
 
     session = DB_SESSION()
-    results = session.query(Donation)
-
+    results = session.query(Donation, Project)
+    results = results.join(Milestone, Donation.milestone).join(Project)
     if id_donation:
         results = results.filter(Donation.idDonation == id_donation)
     if minamount_donation:
@@ -44,17 +44,19 @@ def donations_get():
     if idmilestone_milestone:
         results = results.filter(Donation.milestone_id == idmilestone_milestone)
     if idproject_project:
-        results = results.join(Donation.milestone).filter(Milestone.project_id == idproject_project)
+        results = results.filter(Milestone.project_id == idproject_project)
 
     json_data = []
-    for result in results:
+    for donation, project in results:
         pic = session.query(Milestone, Project).filter(Milestone.project_id == Project.idProject)
         pic = pic.filter(Milestone.idMilestone == result.milestone_id).one()
         json_data.append({
-            'id': result.idDonation,
-            'amount': result.amountDonation,
-            'userid': result.user_id,
-            'milestoneid': result.milestone_id,
+            'id': donation.idDonation,
+            'amount': donation.amountDonation,
+            'userid': donation.user_id,
+            'milestoneid': donation.milestone_id,
+            'projectid': project.idProject,
+            'projectname': project.nameProject,
             'picture': pic[1].picPathProject,
         })
 
