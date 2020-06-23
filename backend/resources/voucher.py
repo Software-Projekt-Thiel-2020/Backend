@@ -22,3 +22,12 @@ def voucher_delete():
     :return: json data of projects
     """
     return jsonify({'status': 'TODO: create route'})
+
+@BP.route('', methods=['POST'])
+def voucher_post():
+    """
+    Handles DELETE for resource <base>/api/voucher .
+
+    :return: json data of projects
+    """
+    return jsonify({'status': 'TODO: create route'})
