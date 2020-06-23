@@ -47,7 +47,6 @@ def users_get():
             balance = web3.eth.getBalance(result.publickeyUser.decode("utf-8"))
             balance = float((web3.fromWei(balance, 'ether')))
         except web3_exceptions.InvalidAddress:
-            balance = -1
             return jsonify({'error': 'given publickey is not valid'}), 400
 
         json_data.append({
