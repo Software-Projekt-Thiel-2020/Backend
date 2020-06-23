@@ -23,6 +23,7 @@ def voucher_delete():
     """
     return jsonify({'status': 'TODO: create route'})
 
+
 @BP.route('', methods=['POST'])
 def voucher_post():
     """
