@@ -133,7 +133,7 @@ def user_post():
     if "" in [username, firstname, lastname, email, auth_token]:
         return jsonify({'error': "Empty parameter"}), 400
 
-    if re.match("^[a-zA-Z]+$", firstname) is None or re.match("^[a-zA-Z]+$", lastname) is None:
+    if re.match("^[a-zA-Z ,.'-]+$", firstname) is None or re.match("^[a-zA-Z ,.'-]+$", lastname) is None:
         return jsonify({'error': 'Firstname and/or lastname must contain only alphanumeric characters'}), 400
 
     session = DB_SESSION()
