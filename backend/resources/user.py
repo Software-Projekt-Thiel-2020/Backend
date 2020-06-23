@@ -9,6 +9,10 @@ from backend.database.db import DB_SESSION
 from backend.database.model import User
 from backend.resources.helpers import auth_user
 
+from web3 import Web3
+from eth_account import Account
+import web3.exceptions as web3_exceptions
+
 BP = Blueprint('user', __name__, url_prefix='/api/users')
 
 
@@ -19,6 +23,7 @@ def users_get():
 
     :return: json data of users
     """
+
     args = request.args
     name_user = args.get('username')
 
@@ -30,15 +35,29 @@ def users_get():
     else:
         return jsonify({'error': 'missing Argument'}), 400
 
+    gnache_url = "HTTP://127.0.0.1:7545"
+    web3 = Web3(Web3.HTTPProvider(gnache_url))
+    
+    if not web3.isConnected():
+        return jsonify({'error': 'cant connect to Blockchain'}), 400
+    
     json_data = []
     for result in results:
+        try:
+            balance = web3.eth.getBalance(result.publickeyUser.decode("utf-8"))
+            balance = float((web3.fromWei(balance, 'ether')))
+        except web3_exceptions.InvalidAddress:
+            balance = -1
+            return jsonify({'error': 'given publickey is not valid'}), 400
+
         json_data.append({
             'id': result.idUser,
             'username': result.usernameUser,
             'firstname': result.firstnameUser,
             'lastname': result.lastnameUser,
             'email': result.emailUser,
-            'publickey': result.publickeyUser.decode("utf-8").rstrip("\x00"),
+            'publickey': result.publickeyUser.decode("utf-8"),
+            'balance': balance,
         })
 
     return jsonify(json_data)
@@ -118,6 +137,13 @@ def user_post():
     if None in [username, firstname, lastname, email, auth_token]:
         return jsonify({'error': 'Missing parameter'}), 400
 
+    gnache_url = "HTTP://127.0.0.1:7545"
+    web3 = Web3(Web3.HTTPProvider(gnache_url))
+    acc = Account.create('ssdasadsa asdsd as das dsad as')
+
+    if not web3.isConnected():
+        return jsonify({'error': 'cant connect to Blockchain'}), 400
+
     session = DB_SESSION()
 
     try:
@@ -134,8 +160,11 @@ def user_post():
                          firstnameUser=firstname,
                          lastnameUser=lastname,
                          emailUser=email,
-                         authToken=shortened_token)
-    except (KeyError, ValueError, DecodeError):  # jwt decode errors
+                         authToken=shortened_token,
+                         publickeyUser=bytes(acc.address, encoding="utf-8"),
+                         privatekeyUser=acc.key)
+    except (KeyError, ValueError, DecodeError) as e:  # jwt decode errors
+        print(e)
         return jsonify({'status': 'Invalid JWT'}), 400
 
     session.add(user_inst)
