@@ -4,14 +4,14 @@ from flask import Blueprint, request, jsonify
 from jwt import DecodeError
 from sqlalchemy.orm.exc import NoResultFound
 
+from web3 import Web3
+from eth_account import Account
+import web3.exceptions as web3_exceptions
+
 from backend.blockstack_auth import BlockstackAuth
 from backend.database.db import DB_SESSION
 from backend.database.model import User
 from backend.resources.helpers import auth_user
-
-from web3 import Web3
-from eth_account import Account
-import web3.exceptions as web3_exceptions
 
 BP = Blueprint('user', __name__, url_prefix='/api/users')
 
@@ -23,7 +23,6 @@ def users_get():
 
     :return: json data of users
     """
-
     args = request.args
     name_user = args.get('username')
 
@@ -37,10 +36,10 @@ def users_get():
 
     gnache_url = "HTTP://127.0.0.1:7545"
     web3 = Web3(Web3.HTTPProvider(gnache_url))
-    
+
     if not web3.isConnected():
         return jsonify({'error': 'cant connect to Blockchain'}), 400
-    
+
     json_data = []
     for result in results:
         try:
@@ -162,8 +161,7 @@ def user_post():
                          authToken=shortened_token,
                          publickeyUser=bytes(acc.address, encoding="utf-8"),
                          privatekeyUser=acc.key)
-    except (KeyError, ValueError, DecodeError) as e:  # jwt decode errors
-        print(e)
+    except (KeyError, ValueError, DecodeError):  # jwt decode errors
         return jsonify({'status': 'Invalid JWT'}), 400
 
     session.add(user_inst)
