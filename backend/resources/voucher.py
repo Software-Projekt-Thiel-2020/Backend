@@ -24,30 +24,10 @@ def voucher_delete():
     return jsonify({'status': 'TODO: create route'})
 
 
-@BP.route('/requests', methods=['GET'])
-def voucher_requests_get():
+@BP.route('', methods=['POST'])
+def voucher_post():
     """
-    Handles GET for resource <base>/api/voucher/requests .
-
-    :return: json data of projects
-    """
-    return jsonify({'status': 'TODO: create route'})
-
-
-@BP.route('/requests', methods=['POST'])
-def voucher_requests_post():
-    """
-    Handles POST for resource <base>/api/voucher/requests .
-
-    :return: json data of projects
-    """
-    return jsonify({'status': 'TODO: create route'})
-
-
-@BP.route('/requests', methods=['DELETE'])
-def voucher_requests_delete():
-    """
-    Handles DELETE for resource <base>/api/voucher/requests .
+    Handles DELETE for resource <base>/api/voucher .
 
     :return: json data of projects
     """
