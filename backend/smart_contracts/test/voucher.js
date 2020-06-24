@@ -6,7 +6,6 @@ const days = (24 * 60 * 60);
 
 
 contract('Institution', (accounts) => {
-    return;
     let uut;
     const owner = accounts[0];
     const test_description = "TestString";
