@@ -2,7 +2,7 @@
 from flask import Blueprint, jsonify, request
 from sqlalchemy.orm.exc import NoResultFound
 from backend.database.db import DB_SESSION
-from backend.database.model import Voucher, User, BASE
+from backend.database.model import Voucher, User, VoucherUser
 
 
 BP = Blueprint('voucher', __name__, url_prefix='/api/voucher')
@@ -70,27 +70,27 @@ def voucher_get_user():
         return jsonify({'error': 'bad argument'}), 400
 
     session = DB_SESSION()
-    user = session.query(User)
+    user = session.query(VoucherUser)
     try:
         if id_user:
-            user = user.filter(User.idUser == id_user).one()
+            user = user.filter(VoucherUser.id_user == id_user).one()
     except NoResultFound:
-        return jsonify({'error': 'User not found'}), 404
+        return jsonify({'error': 'User has no vouchers'}), 404
 
-    voucher = session.query(Voucher)
-    voucher = voucher.join(BASE.metadata.tables['VoucherUser'],
-                           Voucher.idVoucher == BASE.metadata.tables['VoucherUser'].c.idVoucher)
-    voucher = voucher.filter(BASE.metadata.tables['VoucherUser'].c.idUser == id_user).all()
+    voucher = session.query(Voucher, VoucherUser)
+    voucher = voucher.join(VoucherUser,
+                           Voucher.idVoucher == VoucherUser.id_voucher)
+    voucher = voucher.filter(VoucherUser.id_user == id_user).all()
 
     json_data = []
-    for result in voucher:
+    for v, vu in voucher:
         json_data.append({
-            "idVoucher": result.idVoucher,
-            "idInstitution": result.institution_id,
-            "titel": result.titleVoucher,
-            "description": result.descriptionVoucher,
-            "used": result.usedVoucher,
-            "untilBlocK": result.untilBlockVoucher
+            "idVoucher": v.idVoucher,
+            "idInstitution": v.institution_id,
+            "titel": v.titleVoucher,
+            "description": v.descriptionVoucher,
+            "used": vu.usedVoucher,
+            "expires": vu.expires_unixtime
         })
 
     return jsonify(json_data), 200
