@@ -171,7 +171,8 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
              firstnameUser="Ludwig", lastnameUser="Loetkolben",
              emailUser="ll@swp.de",
              publickeyUser='0xB8331Dcd8693F69f091A9E4648A5a8ee89226CE3',
-             privatekeyUser=b'\xf5\x11\xdd\xc9\x17\xb4F\xd7\x1d\x84\x02\xe2\xc1[\x166\xd3\xf5\xd5\xd5\x9a\xcf\xc1Qy\x11\xf9\x93\xbd\n\xfdu'),
+             privatekeyUser=b'\xf5\x11\xdd\xc9\x17\xb4F\xd7\x1d\x84\x02\xe2\xc1[\x166\xd3\xf5\xd5\xd5\x9a\xcf\xc1Q'
+                            b'y\x11\xf9\x93\xbd\n\xfdu'),
         User(idUser=2,
              usernameUser="MSDOSManfred",
              firstnameUser="Manfred", lastnameUser="MSDOS",
@@ -183,7 +184,8 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
              firstnameUser="HansPeter", lastnameUser="Hardware",
              emailUser="hwhp@swp.de",
              publickeyUser='0xCbC8928Cf40b02ed7db3C3c68C1399aD1E464856',
-             privatekeyUser=b'-\xa2\x99\xbdk(\xbd\xfb\xc7\xae8\xcc\xf1\rr\xd1\x88\xb6\x14&\x0f\x92\xf8\x8c:u\xf5D\xe9,\x0b\x86'),
+             privatekeyUser=b'-\xa2\x99\xbdk(\xbd\xfb\xc7\xae8\xcc\xf1\rr\xd1\x88\xb6\x14&\x0f\x92\xf8\x8c:'
+                            b'u\xf5D\xe9,\x0b\x86'),
         User(idUser=4,
              usernameUser="BIOSBernhard",
              firstnameUser="Bernhard", lastnameUser="BIOS",
@@ -209,7 +211,8 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
              firstnameUser="testuser2", lastnameUser="sw2020",
              emailUser="testuser2@example.com",
              publickeyUser='0x7Dca2Ba711f089C608ABe8C6F59Fe7B5F84fced8',
-             privatekeyUser=b'\x02P\x13\x96\xdc\xae\x86\x86\xff\x86\x83)Hj\xf1\x1c\x94\xc7?\xabj\xda\x93\t\xc0\xe8\xe4\t\xde\xd1M\xaf',
+             privatekeyUser=b'\x02P\x13\x96\xdc\xae\x86\x86\xff\x86\x83)Hj\xf1\x1c\x94\xc7?\xabj'
+                            b'\xda\x93\t\xc0\xe8\xe4\t\xde\xd1M\xaf',
              authToken=TOKEN_2),
     ]
 

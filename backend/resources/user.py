@@ -11,7 +11,7 @@ from backend.blockstack_auth import BlockstackAuth
 from backend.database.db import DB_SESSION
 from backend.database.model import User
 from backend.resources.helpers import auth_user
-from backend.smart_contracts.W3 import W3
+from backend.smart_contracts.web3 import WEB3
 
 BP = Blueprint('user', __name__, url_prefix='/api/users')
 
@@ -37,8 +37,8 @@ def users_get():
     json_data = []
     for result in results:
         try:
-            balance = W3.eth.getBalance(result.publickeyUser)
-            balance = float((W3.fromWei(balance, 'ether')))
+            balance = WEB3.eth.getBalance(result.publickeyUser)
+            balance = float((WEB3.fromWei(balance, 'ether')))
         except InvalidAddress:
             return jsonify({'error': 'given publickey is not valid'}), 400
 
@@ -77,8 +77,8 @@ def user_id(id):  # pylint:disable=redefined-builtin,invalid-name
     try:
         if id_user:
             results = results.filter(User.idUser == id_user).one()
-            balance = W3.eth.getBalance(results.publickeyUser)
-            balance = float((W3.fromWei(balance, 'ether')))
+            balance = WEB3.eth.getBalance(results.publickeyUser)
+            balance = float((WEB3.fromWei(balance, 'ether')))
     except NoResultFound:
         return jsonify({'error': 'User not found'}), 404
     except InvalidAddress:
@@ -151,7 +151,7 @@ def user_post():
     if re.match("^[a-zA-Z ,.'-]+$", firstname) is None or re.match("^[a-zA-Z ,.'-]+$", lastname) is None:
         return jsonify({'error': 'Firstname and/or lastname must contain only alphanumeric characters'}), 400
 
-    acc = W3.eth.account.create()
+    acc = WEB3.eth.account.create()
 
     session = DB_SESSION()
 
