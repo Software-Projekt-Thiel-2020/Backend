@@ -101,7 +101,7 @@ class VoucherUser(BASE):
     id_voucher = Column(Integer, ForeignKey('Voucher.idVoucher'), primary_key=True)
     id_user = Column(Integer, ForeignKey('User.idUser'), primary_key=True)
     usedVoucher = Column(BOOLEAN)
-    untilBlockVoucher = Column(Integer)
+    expires_unixtime = Column(TIMESTAMP)
 
     voucher = relationship("Voucher", back_populates="users")
     user = relationship("User", back_populates="vouchers")
@@ -331,13 +331,13 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
 
     associations: List[VoucherUser] = [
         VoucherUser(usedVoucher=False,
-                    untilBlockVoucher=66666666),
+                    expires_unixtime=datetime(2020, 1, 1)),
         VoucherUser(usedVoucher=False,
-                    untilBlockVoucher=77777777),
+                    expires_unixtime=datetime(2022, 5, 17)),
         VoucherUser(usedVoucher=False,
-                    untilBlockVoucher=13371337),
+                    expires_unixtime=datetime(2022, 1, 13)),
         VoucherUser(usedVoucher=True,
-                    untilBlockVoucher=42424242),
+                    expires_unixtime=datetime(2021, 5, 17)),
     ]
 
     # set Institution to Vouchers
