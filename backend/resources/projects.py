@@ -45,6 +45,7 @@ def projects_get():
             'webpage': result.webpageProject,
             'idsmartcontract': result.smartcontract_id,
             'idinstitution': result.institution_id,
+            'picturePath': result.picPathProject,
         })
 
     return jsonify(json_data)

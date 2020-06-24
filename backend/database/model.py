@@ -14,6 +14,7 @@ class Project(BASE):
     idProject = Column(Integer, primary_key=True)
     nameProject = Column(VARCHAR(256))
     webpageProject = Column(VARCHAR(256))
+    picPathProject = Column(VARCHAR(256))
 
     smartcontract_id = Column(Integer, ForeignKey('SmartContract.idSmartContract'))
     smartcontract = relationship("SmartContract", back_populates="projects")
@@ -54,6 +55,7 @@ class Institution(BASE):
     nameInstitution = Column(VARCHAR(256))
     webpageInstitution = Column(VARCHAR(256))
     addressInstitution = Column(VARCHAR(256))
+    picPathInstitution = Column(VARCHAR(256))
 
     projects = relationship("Project", back_populates="institution")
 
