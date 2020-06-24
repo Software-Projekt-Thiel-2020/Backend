@@ -36,7 +36,7 @@ jobs:
       run: |
         ganache-cli &
         export DB_TESTING=1
-        pytest -v
+        sleep 5 && pytest -v
 
   prospector:
     runs-on: ubuntu-latest
