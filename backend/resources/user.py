@@ -4,14 +4,13 @@ from flask import Blueprint, request, jsonify
 from jwt import DecodeError
 from sqlalchemy.orm.exc import NoResultFound
 
-from web3 import Web3
-from eth_account import Account
-import web3.exceptions as web3_exceptions
+from web3.exceptions import InvalidAddress
 
 from backend.blockstack_auth import BlockstackAuth
 from backend.database.db import DB_SESSION
 from backend.database.model import User
 from backend.resources.helpers import auth_user
+from backend.smart_contracts.W3 import W3
 
 BP = Blueprint('user', __name__, url_prefix='/api/users')
 
@@ -34,18 +33,12 @@ def users_get():
     else:
         return jsonify({'error': 'missing Argument'}), 400
 
-    gnache_url = "HTTP://127.0.0.1:7545"
-    web3 = Web3(Web3.HTTPProvider(gnache_url))
-
-    if not web3.isConnected():
-        return jsonify({'error': 'cant connect to Blockchain'}), 400
-
     json_data = []
     for result in results:
         try:
-            balance = web3.eth.getBalance(result.publickeyUser.decode("utf-8"))
-            balance = float((web3.fromWei(balance, 'ether')))
-        except web3_exceptions.InvalidAddress:
+            balance = W3.eth.getBalance(result.publickeyUser)
+            balance = float((W3.fromWei(balance, 'ether')))
+        except InvalidAddress:
             return jsonify({'error': 'given publickey is not valid'}), 400
 
         json_data.append({
@@ -54,7 +47,7 @@ def users_get():
             'firstname': result.firstnameUser,
             'lastname': result.lastnameUser,
             'email': result.emailUser,
-            'publickey': result.publickeyUser.decode("utf-8"),
+            'publickey': result.publickeyUser,
             'balance': balance,
         })
 
@@ -82,8 +75,12 @@ def user_id(id):  # pylint:disable=redefined-builtin,invalid-name
     try:
         if id_user:
             results = results.filter(User.idUser == id_user).one()
+            balance = W3.eth.getBalance(results.publickeyUser)
+            balance = float((W3.fromWei(balance, 'ether')))
     except NoResultFound:
         return jsonify({'error': 'User not found'}), 404
+    except InvalidAddress:
+        return jsonify({'error': 'given publickey is not valid'}), 400
 
     json_data = {
         'id': results.idUser,
@@ -91,7 +88,8 @@ def user_id(id):  # pylint:disable=redefined-builtin,invalid-name
         'firstname': results.firstnameUser,
         'lastname': results.lastnameUser,
         'email': results.emailUser,
-        'publickey': results.publickeyUser.decode("utf-8").rstrip("\x00"),
+        'publickey': results.publickeyUser,
+        'balance': balance,
     }
     return jsonify(json_data), 200
 
@@ -135,12 +133,7 @@ def user_post():
     if None in [username, firstname, lastname, email, auth_token]:
         return jsonify({'error': 'Missing parameter'}), 400
 
-    gnache_url = "HTTP://127.0.0.1:7545"
-    web3 = Web3(Web3.HTTPProvider(gnache_url))
-    acc = Account.create('ssdasadsa asdsd as das dsad as')
-
-    if not web3.isConnected():
-        return jsonify({'error': 'cant connect to Blockchain'}), 400
+    acc = W3.eth.account.create()
 
     session = DB_SESSION()
 
@@ -159,7 +152,7 @@ def user_post():
                          lastnameUser=lastname,
                          emailUser=email,
                          authToken=shortened_token,
-                         publickeyUser=bytes(acc.address, encoding="utf-8"),
+                         publickeyUser=acc.address,
                          privatekeyUser=acc.key)
     except (KeyError, ValueError, DecodeError):  # jwt decode errors
         return jsonify({'status': 'Invalid JWT'}), 400
