@@ -12,7 +12,7 @@ def test_users_get(client):
     assert res.json[0]["firstname"] == "Ludwig"
     assert res.json[0]["id"] == 1
     assert res.json[0]["lastname"] == "Loetkolben"
-    assert res.json[0]["publickey"] == "4242424242"
+    assert res.json[0]["publickey"] == "0xB8331Dcd8693F69f091A9E4648A5a8ee89226CE3"
     assert res.json[0]["username"] == "LoetkolbenLudwig"
     assert res.json[0]["group"] is None
 
@@ -26,7 +26,7 @@ def test_users_get2(client):
     assert res.json[0]["firstname"] == "Ludwig"
     assert res.json[0]["id"] == 1
     assert res.json[0]["lastname"] == "Loetkolben"
-    assert res.json[0]["publickey"] == "4242424242"
+    assert res.json[0]["publickey"] == "0xB8331Dcd8693F69f091A9E4648A5a8ee89226CE3"
     assert res.json[0]["username"] == "LoetkolbenLudwig"
     assert res.json[0]["group"] is None
 
@@ -67,21 +67,23 @@ def test_users_id_get(client):
     """get for users id with existant id."""
     res = client.get('/api/users/1')
     assert res._status_code == 200
-    assert len(res.json) == 7
+    assert len(res.json) == 8
 
     assert res.json["id"] == 1
     assert res.json["username"] == "LoetkolbenLudwig"
     assert res.json["firstname"] == "Ludwig"
     assert res.json["lastname"] == "Loetkolben"
     assert res.json["email"] == "ll@swp.de"
+    assert res.json["publickey"] == "0xB8331Dcd8693F69f091A9E4648A5a8ee89226CE3"
     assert res.json["group"] is None
+    assert res.json["balance"] == 0
 
 
 def test_users_id_get2(client):
     """get for users id with existant id."""
     res = client.get('/api/users/6')
     assert res._status_code == 200
-    assert len(res.json) == 7
+    assert len(res.json) == 8
 
     assert res.json["id"] == 6
     assert res.json["username"] == "sw2020testuser1.id.blockstack"

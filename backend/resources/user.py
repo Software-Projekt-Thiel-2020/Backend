@@ -5,10 +5,13 @@ from flask import Blueprint, request, jsonify
 from jwt import DecodeError
 from sqlalchemy.orm.exc import NoResultFound
 
+from web3.exceptions import InvalidAddress
+
 from backend.blockstack_auth import BlockstackAuth
 from backend.database.db import DB_SESSION
 from backend.database.model import User
 from backend.resources.helpers import auth_user
+from backend.smart_contracts.web3 import WEB3
 
 BP = Blueprint('user', __name__, url_prefix='/api/users')
 
@@ -33,6 +36,12 @@ def users_get():
 
     json_data = []
     for result in results:
+        try:
+            balance = WEB3.eth.getBalance(result.publickeyUser)
+            balance = float((WEB3.fromWei(balance, 'ether')))
+        except InvalidAddress:
+            return jsonify({'error': 'given publickey is not valid'}), 400
+
         json_data.append({
             'id': result.idUser,
             'username': result.usernameUser,
@@ -40,7 +49,8 @@ def users_get():
             'lastname': result.lastnameUser,
             'email': result.emailUser,
             'group': result.group,
-            'publickey': result.publickeyUser.decode("utf-8").rstrip("\x00"),
+            'publickey': result.publickeyUser,
+            'balance': balance,
         })
 
     return jsonify(json_data)
@@ -67,8 +77,11 @@ def user_id(id):  # pylint:disable=redefined-builtin,invalid-name
     try:
         if id_user:
             results = results.filter(User.idUser == id_user).one()
+            balance = WEB3.eth.getBalance(results.publickeyUser)
     except NoResultFound:
         return jsonify({'error': 'User not found'}), 404
+    except InvalidAddress:
+        return jsonify({'error': 'given publickey is not valid'}), 400
 
     json_data = {
         'id': results.idUser,
@@ -77,7 +90,8 @@ def user_id(id):  # pylint:disable=redefined-builtin,invalid-name
         'lastname': results.lastnameUser,
         'email': results.emailUser,
         'group': results.group,
-        'publickey': results.publickeyUser.decode("utf-8").rstrip("\x00"),
+        'publickey': results.publickeyUser,
+        'balance': balance,
     }
     return jsonify(json_data), 200
 
@@ -136,6 +150,8 @@ def user_post():
     if re.match("^[a-zA-Z ,.'-]+$", firstname) is None or re.match("^[a-zA-Z ,.'-]+$", lastname) is None:
         return jsonify({'error': 'Firstname and/or lastname must contain only alphanumeric characters'}), 400
 
+    acc = WEB3.eth.account.create()
+
     session = DB_SESSION()
 
     try:
@@ -152,7 +168,9 @@ def user_post():
                          firstnameUser=firstname,
                          lastnameUser=lastname,
                          emailUser=email,
-                         authToken=shortened_token)
+                         authToken=shortened_token,
+                         publickeyUser=acc.address,
+                         privatekeyUser=acc.key)
     except (KeyError, ValueError, DecodeError):  # jwt decode errors
         return jsonify({'status': 'Invalid JWT'}), 400
 
