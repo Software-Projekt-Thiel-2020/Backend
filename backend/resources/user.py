@@ -78,7 +78,6 @@ def user_id(id):  # pylint:disable=redefined-builtin,invalid-name
         if id_user:
             results = results.filter(User.idUser == id_user).one()
             balance = WEB3.eth.getBalance(results.publickeyUser)
-            balance = float((WEB3.fromWei(balance, 'ether')))
     except NoResultFound:
         return jsonify({'error': 'User not found'}), 404
     except InvalidAddress:
