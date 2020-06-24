@@ -2,7 +2,7 @@
 from datetime import datetime
 from typing import List
 
-from sqlalchemy import Column, ForeignKey, Integer, VARCHAR, BINARY, TIMESTAMP, Table, BOOLEAN
+from sqlalchemy import Column, ForeignKey, Integer, VARCHAR, BINARY, TIMESTAMP, BOOLEAN
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 from sqlalchemy.orm import relationship
 
@@ -65,24 +65,16 @@ class Institution(BASE):
     vouchers = relationship("Voucher", back_populates="institution")
 
 
-VOUCHER_USER_TABLE = Table("VoucherUser", BASE.metadata,
-                           Column("idUser", Integer, ForeignKey("User.idUser"), primary_key=True),
-                           Column("idVoucher", Integer, ForeignKey("Voucher.idVoucher"), primary_key=True)
-                           )
-
-
 class Voucher(BASE):
     __tablename__ = 'Voucher'
     idVoucher = Column(Integer, primary_key=True)
     titleVoucher = Column(VARCHAR(32))
     descriptionVoucher = Column(VARCHAR(1024))
-    usedVoucher = Column(BOOLEAN)
-    untilBlockVoucher = Column(Integer)
 
     institution_id = Column(Integer, ForeignKey('Institution.idInstitution'))
     institution = relationship("Institution", back_populates="vouchers")
 
-    users = relationship("User", secondary=VOUCHER_USER_TABLE, back_populates="vouchers")
+    users = relationship("VoucherUser")
 
 
 class User(BASE):
@@ -101,7 +93,18 @@ class User(BASE):
 
     transactions = relationship("Transaction", back_populates="user")
 
-    vouchers = relationship("Voucher", secondary=VOUCHER_USER_TABLE, back_populates="users")
+    vouchers = relationship("VoucherUser")
+
+
+class VoucherUser(BASE):
+    __tablename__ = "VoucherUser"
+    id_voucher = Column(Integer, ForeignKey('Voucher.idVoucher'), primary_key=True)
+    id_user = Column(Integer, ForeignKey('User.idUser'), primary_key=True)
+    usedVoucher = Column(BOOLEAN)
+    expires_unixtime = Column(TIMESTAMP)
+
+    voucher = relationship("Voucher", back_populates="users")
+    user = relationship("User", back_populates="vouchers")
 
 
 class Donation(BASE):
@@ -322,22 +325,38 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
         Voucher(idVoucher=1,
                 titleVoucher="Von Computer gemaltes Bild",
                 descriptionVoucher="Der Computer malt ein täuschend echtes Bild für sie",
-                usedVoucher=False,
-                untilBlockVoucher=600000000),
+                ),
         Voucher(idVoucher=2,
                 titleVoucher="Software",
                 descriptionVoucher="Software für ein Hochschulprojet",
-                usedVoucher=False,
-                untilBlockVoucher=600000000),
+                ),
     ]
+
+    associations: List[VoucherUser] = [
+        VoucherUser(usedVoucher=False,
+                    expires_unixtime=datetime(2020, 1, 1)),
+        VoucherUser(usedVoucher=False,
+                    expires_unixtime=datetime(2022, 5, 17)),
+        VoucherUser(usedVoucher=False,
+                    expires_unixtime=datetime(2022, 1, 13)),
+        VoucherUser(usedVoucher=True,
+                    expires_unixtime=datetime(2021, 5, 17)),
+    ]
+
     # set Institution to Vouchers
     vouchers[0].institution = institutions[0]
     vouchers[1].institution = institutions[0]
+
     # set Vouchers to Users (and users to vouchers, many-to-many!)
-    users[0].vouchers.append(vouchers[0])
-    users[1].vouchers.append(vouchers[0])
-    users[2].vouchers.append(vouchers[0])
-    users[3].vouchers.append(vouchers[0])
+    associations[0].voucher = vouchers[0]
+    associations[1].voucher = vouchers[1]
+    associations[2].voucher = vouchers[0]
+    associations[3].voucher = vouchers[1]
+
+    users[0].vouchers.append(associations[0])
+    users[1].vouchers.append(associations[1])
+    users[2].vouchers.append(associations[2])
+    users[3].vouchers.append(associations[3])
 
     # All objects created, Add and commit to DB:
     objects = [*smartcontracts, *users, *institutions, *projects, *milestones, *vouchers, *transactions,
