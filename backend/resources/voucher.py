@@ -2,7 +2,7 @@
 from flask import Blueprint, jsonify, request
 from sqlalchemy.orm.exc import NoResultFound
 from backend.database.db import DB_SESSION
-from backend.database.model import Voucher, User, VoucherUser
+from backend.database.model import Voucher, VoucherUser
 
 
 BP = Blueprint('voucher', __name__, url_prefix='/api/voucher')
@@ -83,14 +83,14 @@ def voucher_get_user():
     voucher = voucher.filter(VoucherUser.id_user == id_user).all()
 
     json_data = []
-    for v, vu in voucher:
+    for vouch, vuser in voucher:
         json_data.append({
-            "idVoucher": v.idVoucher,
-            "idInstitution": v.institution_id,
-            "titel": v.titleVoucher,
-            "description": v.descriptionVoucher,
-            "used": vu.usedVoucher,
-            "expires": vu.expires_unixtime
+            "idVoucher": vouch.idVoucher,
+            "idInstitution": vouch.institution_id,
+            "titel": vouch.titleVoucher,
+            "description": vouch.descriptionVoucher,
+            "used": vuser.usedVoucher,
+            "expires": vuser.expires_unixtime
         })
 
     return jsonify(json_data), 200
