@@ -2,7 +2,7 @@
 from datetime import datetime
 from typing import List
 
-from sqlalchemy import Column, ForeignKey, Integer, VARCHAR, BINARY, TIMESTAMP, BOOLEAN
+from sqlalchemy import Column, ForeignKey, Integer, VARCHAR, BINARY, BOOLEAN, DateTime
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 from sqlalchemy.orm import relationship
 
@@ -101,10 +101,11 @@ class User(BASE):
 
 class VoucherUser(BASE):
     __tablename__ = "VoucherUser"
-    id_voucher = Column(Integer, ForeignKey('Voucher.idVoucher'), primary_key=True)
-    id_user = Column(Integer, ForeignKey('User.idUser'), primary_key=True)
+    idVoucherUser = Column(Integer, primary_key=True)
+    id_voucher = Column(Integer, ForeignKey('Voucher.idVoucher'))
+    id_user = Column(Integer, ForeignKey('User.idUser'))
     usedVoucher = Column(BOOLEAN)
-    expires_unixtime = Column(TIMESTAMP)
+    expires_unixtime = Column(DateTime)
 
     voucher = relationship("Voucher", back_populates="users")
     user = relationship("User", back_populates="vouchers")
@@ -125,7 +126,7 @@ class Donation(BASE):
 class Transaction(BASE):
     __tablename__ = 'Transaction'
     idTransaction = Column(Integer, primary_key=True)
-    dateTransaction = Column(TIMESTAMP)
+    dateTransaction = Column(DateTime)
 
     smartcontract_id = Column(Integer, ForeignKey('SmartContract.idSmartContract'))
     smartcontract = relationship("SmartContract", back_populates="transactions")
@@ -340,13 +341,17 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
     ]
 
     associations: List[VoucherUser] = [
-        VoucherUser(usedVoucher=False,
+        VoucherUser(idVoucherUser=1,
+                    usedVoucher=False,
                     expires_unixtime=datetime(2020, 1, 1)),
-        VoucherUser(usedVoucher=False,
+        VoucherUser(idVoucherUser=2,
+                    usedVoucher=False,
                     expires_unixtime=datetime(2022, 5, 17)),
-        VoucherUser(usedVoucher=False,
+        VoucherUser(idVoucherUser=3,
+                    usedVoucher=False,
                     expires_unixtime=datetime(2022, 1, 13)),
-        VoucherUser(usedVoucher=True,
+        VoucherUser(idVoucherUser=4,
+                    usedVoucher=True,
                     expires_unixtime=datetime(2021, 5, 17)),
     ]
 
