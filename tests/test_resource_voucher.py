@@ -1,5 +1,5 @@
 """Tests for resource voucher."""
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from tests.test_blockstackauth import TOKEN_1
 
@@ -329,6 +329,71 @@ def test_voucher_user_delete_bad_id2(client):
     assert res.json[0]["price"] == 2000
 
 
+def test_voucher_user_post(client):
+    headers = {"authToken": TOKEN_1, "idVoucher": 1}
+    # ToDo: Add balance
+    res = client.post('/api/vouchers/user', headers=headers)
+    assert res._status_code == 200
+
+    res = client.get('/api/vouchers/user?idUser=6')
+    assert res._status_code == 200
+    assert len(res.json) == 2
+
+    assert res.json[0]["id"] == 3
+    assert res.json[0]["userid"] == 6
+    assert res.json[0]["idvoucher"] == 1
+    assert res.json[0]["untilTime"] == datetime(2022, 1, 13).timestamp()
+    assert not res.json[0]["used"]
+    assert res.json[0]["price"] == 1000
+
+    assert res.json[1]["id"] == 5
+    assert res.json[1]["userid"] == 6
+    assert res.json[1]["idvoucher"] == 1
+    assert int(res.json[1]["untilTime"]) == int((datetime.now() + timedelta(0, 2 * 31536000)).timestamp())
+    assert not res.json[1]["used"]
+    assert res.json[1]["price"] == 1000
 
 
+def test_voucher_user_post2(client):
+    headers = {"authToken": TOKEN_1, "idVoucher": 2}
+    # ToDo: Add balance
+    res = client.post('/api/vouchers/user', headers=headers)
+    assert res._status_code == 200
 
+    res = client.get('/api/vouchers/user?idUser=6')
+    assert res._status_code == 200
+    assert len(res.json) == 2
+
+    assert res.json[0]["id"] == 3
+    assert res.json[0]["userid"] == 6
+    assert res.json[0]["idvoucher"] == 1
+    assert res.json[0]["untilTime"] == datetime(2022, 1, 13).timestamp()
+    assert not res.json[0]["used"]
+    assert res.json[0]["price"] == 1000
+
+    assert res.json[1]["id"] == 5
+    assert res.json[1]["userid"] == 6
+    assert res.json[1]["idvoucher"] == 2
+    assert int(res.json[1]["untilTime"]) == int((datetime.now() + timedelta(0, 2 * 31536000)).timestamp())
+    assert not res.json[1]["used"]
+    assert res.json[1]["price"] == 2000
+
+
+def test_voucher_user_post_bad_voucherid(client):
+    headers = {"authToken": TOKEN_1, "idVoucher": 1337}
+    # ToDo: Add balance
+    res = client.post('/api/vouchers/user', headers=headers)
+    assert res._status_code == 404
+
+    res = client.get('/api/vouchers/user?idUser=6')
+    assert res._status_code == 200
+    assert len(res.json) == 1
+
+    assert res.json[0]["id"] == 3
+    assert res.json[0]["userid"] == 6
+    assert res.json[0]["idvoucher"] == 1
+    assert res.json[0]["untilTime"] == datetime(2022, 1, 13).timestamp()
+    assert not res.json[0]["used"]
+    assert res.json[0]["price"] == 1000
+
+# ToDo: test_voucher_user_no_funds
