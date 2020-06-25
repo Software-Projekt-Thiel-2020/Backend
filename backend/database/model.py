@@ -70,6 +70,9 @@ class Voucher(BASE):
     idVoucher = Column(Integer, primary_key=True)
     titleVoucher = Column(VARCHAR(32))
     descriptionVoucher = Column(VARCHAR(1024))
+    price = Column(Integer, nullable=False)
+    available = Column(BOOLEAN, default=True)
+    validTime = Column(Integer, default=2 * 31536000)
 
     institution_id = Column(Integer, ForeignKey('Institution.idInstitution'))
     institution = relationship("Institution", back_populates="vouchers")
@@ -325,10 +328,14 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
         Voucher(idVoucher=1,
                 titleVoucher="Von Computer gemaltes Bild",
                 descriptionVoucher="Der Computer malt ein täuschend echtes Bild für sie",
+                price=1000,
+                available=False,
                 ),
         Voucher(idVoucher=2,
                 titleVoucher="Software",
                 descriptionVoucher="Software für ein Hochschulprojet",
+                price=2000,
+                available=True,
                 ),
     ]
 

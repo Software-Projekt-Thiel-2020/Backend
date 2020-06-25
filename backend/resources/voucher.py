@@ -1,11 +1,12 @@
 """Voucher Resource."""
 from flask import Blueprint, jsonify, request
 from sqlalchemy.orm.exc import NoResultFound
+
 from backend.database.db import DB_SESSION
 from backend.database.model import Voucher, VoucherUser
-from backend.resources.helpers import auth_user
+from backend.resources.helpers import auth_user, check_params_int
 
-BP = Blueprint('voucher', __name__, url_prefix='/api/voucher')
+BP = Blueprint('voucher', __name__, url_prefix='/api/vouchers')
 
 
 @BP.route('/institution', methods=['GET'])
@@ -15,18 +16,36 @@ def voucher_get():
 
     :return: json data of projects
     """
-    id_inst = request.args.get('id', type=int)
+    id_voucher = request.args.get('id')
+    id_institution = request.args.get('idInstitution')
+    available = request.args.get('available')
+
+    try:
+        check_params_int([id_voucher, id_institution, available])
+    except ValueError:
+        return jsonify({"error": "bad argument"}), 400
 
     session = DB_SESSION()
-    results = session.query(Voucher).filter(Voucher.institution_id == id_inst)
+    results = session.query(Voucher)
+
+    if id_voucher is not None:
+        results = results.filter(Voucher.idVoucher == id_voucher)
+    if id_institution is not None:
+        results = results.filter(Voucher.institution_id == id_institution)
+    if available is not None:
+        results = results.filter(Voucher.available.is_(available))
 
     json_data = []
     for voucher in results:
         json_data.append({
             'id': voucher.idVoucher,
+            'amount': len(voucher.users),
+            'institutionid': voucher.institution_id,
+            'subject': voucher.descriptionVoucher,
             'title': voucher.titleVoucher,
-            'description': voucher.descriptionVoucher,
-            'untilBlock': voucher.untilBlockVoucher
+            'validTime': voucher.validTime,
+            'available': voucher.available,
+            'price': voucher.price,
         })
 
     return jsonify(json_data), 200
