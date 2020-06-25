@@ -1,4 +1,6 @@
 """Voucher Resource."""
+from datetime import datetime
+
 from flask import Blueprint, jsonify, request
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -109,38 +111,50 @@ def voucher_get_user():
     Handles GET for resource <base>/api/voucher/user .
     :return: json data of projects
     """
-    id_user = request.args.get('id')
+    id_voucheruser = request.args.get('id')
+    id_voucher = request.args.get('idVoucher')
+    id_user = request.args.get('idUser')
+    id_institution = request.args.get('idInstitution')
+    used = request.args.get('used')
+    expired = request.args.get('expired')
 
-    if not id_user:
-        return jsonify({'error': 'missing id'}), 400
     try:
-        if id_user:
-            int(id_user)
+        check_params_int([id_voucher, id_user, id_institution, used, expired])
     except ValueError:
-        return jsonify({'error': 'bad argument'}), 400
+        return jsonify({"error": "bad argument"}), 400
 
     session = DB_SESSION()
-    user = session.query(VoucherUser)
-    try:
-        if id_user:
-            user = user.filter(VoucherUser.id_user == id_user).one()
-    except NoResultFound:
-        return jsonify({'error': 'User has no vouchers'}), 404
 
-    voucher = session.query(Voucher, VoucherUser)
-    voucher = voucher.join(VoucherUser,
-                           Voucher.idVoucher == VoucherUser.id_voucher)
-    voucher = voucher.filter(VoucherUser.id_user == id_user).all()
+    results = session.query(Voucher, VoucherUser).join(Voucher, VoucherUser.id_voucher == Voucher.idVoucher)
+
+    if id_voucheruser is not None:
+        results = results.filter(VoucherUser.idVoucherUser == id_voucheruser)
+    if id_voucher is not None:
+        results = results.filter(Voucher.idVoucher == id_voucher)
+    if id_user is not None:
+        results = results.filter(VoucherUser.id_user == id_user)
+    if id_institution is not None:
+        results = results.filter(Voucher.institution_id == id_institution)
+    if used is not None:
+        results = results.filter(VoucherUser.usedVoucher.is_(used))
+    if expired is not None:
+        if int(expired) >= 1:
+            results = results.filter(VoucherUser.expires_unixtime < datetime.now())
+        else:
+            results = results.filter(VoucherUser.expires_unixtime >= datetime.now())
 
     json_data = []
-    for vouch, vuser in voucher:
+    for vouch, vuser in results:
         json_data.append({
-            "idVoucher": vouch.idVoucher,
-            "idInstitution": vouch.institution_id,
+            "id": vuser.idVoucherUser,
+            "userid": vuser.id_user,
+            "idvoucher": vuser.id_voucher,
+            "idinstitution": vouch.institution_id,
             "titel": vouch.titleVoucher,
             "description": vouch.descriptionVoucher,
             "used": vuser.usedVoucher,
-            "expires": vuser.expires_unixtime
+            "untilTime": vuser.expires_unixtime.timestamp(),
+            "price": vouch.price,
         })
 
     return jsonify(json_data), 200
