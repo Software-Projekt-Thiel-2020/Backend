@@ -101,3 +101,46 @@ def voucher_delete_user(user_inst):
     session.commit()
 
     return jsonify({'status': 'Gutschein wurde eingelöst'}), 201
+
+
+@BP.route('/user', methods=['GET'])
+def voucher_get_user():
+    """
+    Handles GET for resource <base>/api/voucher/user .
+    :return: json data of projects
+    """
+    id_user = request.args.get('id')
+
+    if not id_user:
+        return jsonify({'error': 'missing id'}), 400
+    try:
+        if id_user:
+            int(id_user)
+    except ValueError:
+        return jsonify({'error': 'bad argument'}), 400
+
+    session = DB_SESSION()
+    user = session.query(VoucherUser)
+    try:
+        if id_user:
+            user = user.filter(VoucherUser.id_user == id_user).one()
+    except NoResultFound:
+        return jsonify({'error': 'User has no vouchers'}), 404
+
+    voucher = session.query(Voucher, VoucherUser)
+    voucher = voucher.join(VoucherUser,
+                           Voucher.idVoucher == VoucherUser.id_voucher)
+    voucher = voucher.filter(VoucherUser.id_user == id_user).all()
+
+    json_data = []
+    for vouch, vuser in voucher:
+        json_data.append({
+            "idVoucher": vouch.idVoucher,
+            "idInstitution": vouch.institution_id,
+            "titel": vouch.titleVoucher,
+            "description": vouch.descriptionVoucher,
+            "used": vuser.usedVoucher,
+            "expires": vuser.expires_unixtime
+        })
+
+    return jsonify(json_data), 200
