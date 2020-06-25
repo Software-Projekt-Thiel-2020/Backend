@@ -47,7 +47,7 @@ def voucher_get():
             'title': voucher.titleVoucher,
             'validTime': voucher.validTime,
             'available': voucher.available,
-            'price': voucher.price,
+            'price': voucher.priceVoucher,
         })
 
     return jsonify(json_data), 200
@@ -154,7 +154,7 @@ def voucher_get_user():
             "description": vouch.descriptionVoucher,
             "used": vuser.usedVoucher,
             "untilTime": vuser.expires_unixtime.timestamp(),
-            "price": vouch.price,
+            "price": vouch.priceVoucher,
         })
 
     return jsonify(json_data), 200
