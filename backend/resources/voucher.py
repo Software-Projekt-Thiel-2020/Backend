@@ -81,21 +81,20 @@ def voucher_delete_user(user_inst):
 
     :return: json data of projects
     """
-    id_voucher = request.args.get('id')
+    id_voucheruser = request.headers.get('id')
 
-    if not id_voucher:
+    if not id_voucheruser:
         return jsonify({'error': 'missing id'}), 400
     try:
-        if id_voucher:
-            int(id_voucher)
+        check_params_int([id_voucheruser])
     except ValueError:
-        return jsonify({'error': 'bad argument'}), 400
+        return jsonify({"error": "bad argument"}), 400
 
     session = DB_SESSION()
     voucher = session.query(VoucherUser)
     try:
-        voucher = voucher.filter(VoucherUser.id_voucher == id_voucher).filter(
-            VoucherUser.id_user == user_inst.idUser).first()
+        voucher = voucher.filter(VoucherUser.idVoucherUser == id_voucheruser).filter(
+            VoucherUser.id_user == user_inst.idUser).one()
     except NoResultFound:
         return jsonify({'error': 'No voucher found'}), 404
 
