@@ -1,6 +1,8 @@
 """Tests for resource voucher."""
 from datetime import datetime
 
+from tests.test_blockstackauth import TOKEN_1
+
 
 def test_voucher_institution_get(client):
     res = client.get('/api/vouchers/institution')
@@ -111,14 +113,14 @@ def test_voucher_user_get(client):
     assert res.json[1]["price"] == 2000
 
     assert res.json[2]["id"] == 3
-    assert res.json[2]["userid"] == 3
+    assert res.json[2]["userid"] == 6
     assert res.json[2]["idvoucher"] == 1
     assert res.json[2]["untilTime"] == datetime(2022, 1, 13).timestamp()
     assert not res.json[2]["used"]
     assert res.json[2]["price"] == 1000
 
     assert res.json[3]["id"] == 4
-    assert res.json[3]["userid"] == 4
+    assert res.json[3]["userid"] == 7
     assert res.json[3]["idvoucher"] == 2
     assert res.json[3]["untilTime"] == datetime(2021, 5, 17).timestamp()
     assert res.json[3]["used"]
@@ -131,7 +133,7 @@ def test_voucher_user_get_id(client):
     assert len(res.json) == 1
 
     assert res.json[0]["id"] == 3
-    assert res.json[0]["userid"] == 3
+    assert res.json[0]["userid"] == 6
     assert res.json[0]["idvoucher"] == 1
     assert res.json[0]["untilTime"] == datetime(2022, 1, 13).timestamp()
     assert not res.json[0]["used"]
@@ -151,7 +153,7 @@ def test_voucher_user_get_idvoucher(client):
     assert res.json[0]["price"] == 2000
 
     assert res.json[1]["id"] == 4
-    assert res.json[1]["userid"] == 4
+    assert res.json[1]["userid"] == 7
     assert res.json[1]["idvoucher"] == 2
     assert res.json[1]["untilTime"] == datetime(2021, 5, 17).timestamp()
     assert res.json[1]["used"]
@@ -177,7 +179,7 @@ def test_voucher_user_get_used(client):
     assert len(res.json) == 1
 
     assert res.json[0]["id"] == 4
-    assert res.json[0]["userid"] == 4
+    assert res.json[0]["userid"] == 7
     assert res.json[0]["idvoucher"] == 2
     assert res.json[0]["untilTime"] == datetime(2021, 5, 17).timestamp()
     assert res.json[0]["used"]
@@ -204,7 +206,7 @@ def test_voucher_user_get_used2(client):
     assert res.json[1]["price"] == 2000
 
     assert res.json[2]["id"] == 3
-    assert res.json[2]["userid"] == 3
+    assert res.json[2]["userid"] == 6
     assert res.json[2]["idvoucher"] == 1
     assert res.json[2]["untilTime"] == datetime(2022, 1, 13).timestamp()
     assert not res.json[2]["used"]
@@ -237,14 +239,14 @@ def test_voucher_user_expired2(client):
     assert res.json[0]["price"] == 2000
 
     assert res.json[1]["id"] == 3
-    assert res.json[1]["userid"] == 3
+    assert res.json[1]["userid"] == 6
     assert res.json[1]["idvoucher"] == 1
     assert res.json[1]["untilTime"] == datetime(2022, 1, 13).timestamp()
     assert not res.json[1]["used"]
     assert res.json[1]["price"] == 1000
 
     assert res.json[2]["id"] == 4
-    assert res.json[2]["userid"] == 4
+    assert res.json[2]["userid"] == 7
     assert res.json[2]["idvoucher"] == 2
     assert res.json[2]["untilTime"] == datetime(2021, 5, 17).timestamp()
     assert res.json[2]["used"]

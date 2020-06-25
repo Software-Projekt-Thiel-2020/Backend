@@ -367,8 +367,8 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
 
     users[0].vouchers.append(associations[0])
     users[1].vouchers.append(associations[1])
-    users[2].vouchers.append(associations[2])
-    users[3].vouchers.append(associations[3])
+    users[5].vouchers.append(associations[2])
+    users[6].vouchers.append(associations[3])
 
     # All objects created, Add and commit to DB:
     objects = [*smartcontracts, *users, *institutions, *projects, *milestones, *vouchers, *transactions,
