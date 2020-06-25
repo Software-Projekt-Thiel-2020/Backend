@@ -56,6 +56,8 @@ class Institution(BASE):
     webpageInstitution = Column(VARCHAR(256))
     addressInstitution = Column(VARCHAR(256))
     picPathInstitution = Column(VARCHAR(256))
+    longitude = Column(Integer)
+    latitude = Column(Integer)
 
     projects = relationship("Project", back_populates="institution")
 
