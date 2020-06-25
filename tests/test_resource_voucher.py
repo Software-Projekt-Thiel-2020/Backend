@@ -254,11 +254,13 @@ def test_voucher_user_expired2(client):
 
 
 def test_voucher_user_delete(client):
-    headers = {"authToken": TOKEN_1, "username": "sw2020testuser2.id.blockstack", "name": "ExampleInstitution",
-               "address": "Address"}
+    headers = {"authToken": TOKEN_1, "id": 3}
     res = client.delete('/api/vouchers/user', headers=headers)
+    assert res._status_code == 201
+
+    res = client.get('/api/vouchers/user?used=0')
     assert res._status_code == 200
-    assert len(res.json) == 4
+    assert len(res.json) == 2
 
     assert res.json[0]["id"] == 1
     assert res.json[0]["userid"] == 1
@@ -274,16 +276,59 @@ def test_voucher_user_delete(client):
     assert not res.json[1]["used"]
     assert res.json[1]["price"] == 2000
 
-    assert res.json[2]["id"] == 3
-    assert res.json[2]["userid"] == 3
-    assert res.json[2]["idvoucher"] == 1
-    assert res.json[2]["untilTime"] == datetime(2022, 1, 13).timestamp()
-    assert not res.json[2]["used"]
-    assert res.json[2]["price"] == 1000
+    res = client.get('/api/vouchers/user?used=1')
+    assert res._status_code == 200
+    assert len(res.json) == 2
 
-    assert res.json[3]["id"] == 4
-    assert res.json[3]["userid"] == 4
-    assert res.json[3]["idvoucher"] == 2
-    assert res.json[3]["untilTime"] == datetime(2021, 5, 17).timestamp()
-    assert res.json[3]["used"]
-    assert res.json[3]["price"] == 2000
+    assert res.json[0]["id"] == 3
+    assert res.json[0]["userid"] == 6
+    assert res.json[0]["idvoucher"] == 1
+    assert res.json[0]["untilTime"] == datetime(2022, 1, 13).timestamp()
+    assert res.json[0]["used"]
+    assert res.json[0]["price"] == 1000
+
+    assert res.json[1]["id"] == 4
+    assert res.json[1]["userid"] == 7
+    assert res.json[1]["idvoucher"] == 2
+    assert res.json[1]["untilTime"] == datetime(2021, 5, 17).timestamp()
+    assert res.json[1]["used"]
+    assert res.json[1]["price"] == 2000
+
+
+def test_voucher_user_delete_bad_id(client):
+    headers = {"authToken": TOKEN_1, "id": 2}
+    res = client.delete('/api/vouchers/user', headers=headers)
+    assert res._status_code == 404
+
+    res = client.get('/api/vouchers/user?used=1')
+    assert res._status_code == 200
+    assert len(res.json) == 1
+
+    assert res.json[0]["id"] == 4
+    assert res.json[0]["userid"] == 7
+    assert res.json[0]["idvoucher"] == 2
+    assert res.json[0]["untilTime"] == datetime(2021, 5, 17).timestamp()
+    assert res.json[0]["used"]
+    assert res.json[0]["price"] == 2000
+
+
+def test_voucher_user_delete_bad_id2(client):
+    headers = {"authToken": TOKEN_1, "id": 1337}
+    res = client.delete('/api/vouchers/user', headers=headers)
+    assert res._status_code == 404
+
+    res = client.get('/api/vouchers/user?used=1')
+    assert res._status_code == 200
+    assert len(res.json) == 1
+
+    assert res.json[0]["id"] == 4
+    assert res.json[0]["userid"] == 7
+    assert res.json[0]["idvoucher"] == 2
+    assert res.json[0]["untilTime"] == datetime(2021, 5, 17).timestamp()
+    assert res.json[0]["used"]
+    assert res.json[0]["price"] == 2000
+
+
+
+
+
