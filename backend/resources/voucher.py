@@ -1,8 +1,10 @@
 """Voucher Resource."""
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from flask import Blueprint, jsonify, request
 from sqlalchemy.orm.exc import NoResultFound
+
+from web3.exceptions import InvalidAddress
 
 from backend.database.db import DB_SESSION
 from backend.database.model import Voucher, VoucherUser
@@ -51,6 +53,48 @@ def voucher_get():
         })
 
     return jsonify(json_data), 200
+
+
+@BP.route('/user', methods=['POST'])
+@auth_user
+def voucher_post(user):
+    """
+    Handles POST for resource <base>/api/voucher/user .
+    :return: json data of projects
+    """
+    id_voucher = request.headers.get('idVoucher')
+    if not id_voucher:
+        return jsonify({'error': 'missing id'}), 400
+    try:
+        check_params_int([id_voucher])
+    except ValueError:
+        return jsonify({"error": "bad argument"}), 400
+
+    session = DB_SESSION()
+
+    try:
+        voucher = session.query(Voucher).filter(Voucher.idVoucher == id_voucher).one()
+        balance = 9e19  # WEB3.eth.getBalance(user.publickeyUser)  # ToDo: Add balance (to tests)
+
+        if balance < voucher.priceVoucher:
+            return jsonify({'error': 'not enough balance'}), 406
+
+        association = VoucherUser(usedVoucher=False,
+                                  expires_unixtime=(datetime.now() + timedelta(0, 2 * 31536000)))
+        association.voucher = voucher
+        association.user = user
+
+        # TODO - do blockchain transaction
+
+        session.add(voucher)
+        session.add(association)
+        session.commit()
+    except InvalidAddress:
+        return jsonify({'error': 'given publickey is not valid'}), 400
+    except NoResultFound:
+        return jsonify({'error': 'Voucher doesnt exist'}), 404
+
+    return jsonify({'status': 'voucher bought'}), 200
 
 
 @BP.route('/user', methods=['DELETE'])
