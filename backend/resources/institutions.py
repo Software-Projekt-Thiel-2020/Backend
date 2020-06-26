@@ -21,13 +21,16 @@ def institutions_get():
     """
     id_institution = request.args.get('id', type=int)
     radius = request.args.get('radius', type=int)
-    latitude = request.args.get('lat', type=float)
-    longitude = request.args.get('long', type=float)
+    latitude = request.args.get('latitude', type=float)
+    longitude = request.args.get('longitude', type=float)
 
     try:
         check_params_int([id_institution, radius])
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
+
+    if None in [radius, latitude, longitude] and any([radius, latitude, longitude]):
+        return jsonify({"error": "bad geo argument"}), 400
 
     session = DB_SESSION()
     results = session.query(Institution)
