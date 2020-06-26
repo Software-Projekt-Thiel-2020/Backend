@@ -21,8 +21,8 @@ def institutions_get():
     """
     id_institution = request.args.get('id', type=int)
     radius = request.args.get('radius', type=int)
-    longitude = request.args.get('lang', type=int)
-    latitude = request.args.get('lat', type=int)
+    latitude = request.args.get('lat', type=float)
+    longitude = request.args.get('long', type=float)
 
     session = DB_SESSION()
     results = session.query(Institution)
@@ -55,9 +55,9 @@ def institutions_get():
             })
 
     elif radius and longitude and latitude and id_institution is None:
-        coords_1 = (longitude, latitude)
+        coords_1 = (latitude, longitude)
         for result in results:
-            coords_2 = (result.longitude, result.latitude)
+            coords_2 = (result.latitude, result.longitude)
             if distance.distance(coords_1, coords_2).km <= radius:
                 json_data.append({
                     "id": result.idInstitution,
@@ -69,8 +69,8 @@ def institutions_get():
                     "latitude": result.latitude,
                 })
 
-#    else:
-#        return jsonify({'error': 'too many arguments'})
+    else:
+        return jsonify({'error': 'wrong arguments'})
 
     return jsonify(json_data)
 
