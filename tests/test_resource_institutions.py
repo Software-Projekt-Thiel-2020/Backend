@@ -39,6 +39,32 @@ def test_institutions_get_id(client):
     assert res.json[0]["address"] == "Address1"
 
 
+def test_institutions_get_geo(client):
+    res = client.get('/api/institutions?radius=1&latitude=52.030228&longitude=8.532471')
+    assert res._status_code == 200
+    assert len(res.json) == 1
+
+    assert res.json[0]["id"] == 1
+    assert res.json[0]["name"] == "MSGraphic"
+    assert res.json[0]["webpage"] == "www.msgraphic.com"
+    assert res.json[0]["address"] == "Address1"
+
+
+def test_institutions_get_geo2(client):
+    res = client.get('/api/institutions?radius=1200&latitude=52.030228&longitude=8.532471')
+    # distance between institution 1 and 4 is ~ 1163km
+    assert res._status_code == 200
+    assert len(res.json) == 2
+
+    assert res.json[0]["id"] == 1
+    assert res.json[1]["id"] == 4
+
+
+def test_institutions_get_geo_bad(client):
+    res = client.get('/api/institutions?radius=1200')
+    assert res._status_code == 400
+
+
 def test_institutions_get_bad_id(client):
     res = client.get('/api/institutions?id=1337')
     assert res._status_code == 200
