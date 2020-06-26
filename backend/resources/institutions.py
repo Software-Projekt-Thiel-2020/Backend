@@ -35,7 +35,7 @@ def institutions_get():
                 "id": result.idInstitution,
                 "name": result.nameInstitution,
                 "webpage": result.webpageInstitution,
-                "address": result.addressInstitution,            
+                "address": result.addressInstitution,
                 "picturePath": result.picPathInstitution,
                 "longitude": result.longitude,
                 "latitude": result.latitude,
@@ -52,12 +52,12 @@ def institutions_get():
                 "picturePath": result.picPathInstitution,
                 "longitude": result.longitude,
                 "latitude": result.latitude,
-            })       
+            })
 
     elif radius and longitude and latitude and id_institution is None:
         coords_1 = (longitude, latitude)
         for result in results:
-            coords_2 = (result.longitude,result.latitude)
+            coords_2 = (result.longitude, result.latitude)
             if distance.distance(coords_1, coords_2).km <= radius:
                 json_data.append({
                     "id": result.idInstitution,
