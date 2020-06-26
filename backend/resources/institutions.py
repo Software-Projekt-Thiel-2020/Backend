@@ -3,12 +3,11 @@ from datetime import datetime
 
 import validators
 from flask import Blueprint, request, jsonify
+from geopy import distance
 
 from backend.database.db import DB_SESSION
 from backend.database.model import Institution, Transaction, User
 from backend.resources.helpers import auth_user
-
-from geopy import distance
 
 BP = Blueprint('institutions', __name__, url_prefix='/api/institutions')  # set blueprint name and resource path
 
@@ -21,9 +20,9 @@ def institutions_get():
     :return: json data of institutions
     """
     id_institution = request.args.get('id', type=int)
-    radius = request.args.get('radius',type = int)
-    longitude = request.args.get('lang',type = int)
-    latitude = request.args.get('lat',type=int)
+    radius = request.args.get('radius', type=int)
+    longitude = request.args.get('lang', type=int)
+    latitude = request.args.get('lat', type=int)
 
     session = DB_SESSION()
     results = session.query(Institution)
@@ -37,7 +36,7 @@ def institutions_get():
                 "name": result.nameInstitution,
                 "webpage": result.webpageInstitution,
                 "address": result.addressInstitution,            
-                "picturePath": result.picPathInstitution,		
+                "picturePath": result.picPathInstitution,
                 "longitude": result.longitude,
                 "latitude": result.latitude,
             })
@@ -49,8 +48,8 @@ def institutions_get():
                 "id": result.idInstitution,
                 "name": result.nameInstitution,
                 "webpage": result.webpageInstitution,
-                "address": result.addressInstitution,            
-                "picturePath": result.picPathInstitution,		
+                "address": result.addressInstitution,
+                "picturePath": result.picPathInstitution,
                 "longitude": result.longitude,
                 "latitude": result.latitude,
             })       
