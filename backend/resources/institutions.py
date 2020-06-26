@@ -7,7 +7,7 @@ from geopy import distance
 
 from backend.database.db import DB_SESSION
 from backend.database.model import Institution, Transaction, User
-from backend.resources.helpers import auth_user
+from backend.resources.helpers import auth_user, check_params_int
 
 BP = Blueprint('institutions', __name__, url_prefix='/api/institutions')  # set blueprint name and resource path
 
@@ -24,53 +24,32 @@ def institutions_get():
     latitude = request.args.get('lat', type=float)
     longitude = request.args.get('long', type=float)
 
+    try:
+        check_params_int([id_institution, radius])
+    except ValueError:
+        return jsonify({"error": "bad argument"}), 400
+
     session = DB_SESSION()
     results = session.query(Institution)
 
     json_data = []
 
-    if id_institution is None and radius is None and longitude is None and latitude is None:
-        for result in results:
-            json_data.append({
-                "id": result.idInstitution,
-                "name": result.nameInstitution,
-                "webpage": result.webpageInstitution,
-                "address": result.addressInstitution,
-                "picturePath": result.picPathInstitution,
-                "longitude": result.longitude,
-                "latitude": result.latitude,
-            })
-
-    elif id_institution and radius is None and longitude is None and latitude is None:
+    if id_institution:
         results = results.filter(Institution.idInstitution == id_institution)
-        for result in results:
-            json_data.append({
-                "id": result.idInstitution,
-                "name": result.nameInstitution,
-                "webpage": result.webpageInstitution,
-                "address": result.addressInstitution,
-                "picturePath": result.picPathInstitution,
-                "longitude": result.longitude,
-                "latitude": result.latitude,
-            })
 
-    elif radius and longitude and latitude and id_institution is None:
-        coords_1 = (latitude, longitude)
-        for result in results:
-            coords_2 = (result.latitude, result.longitude)
-            if distance.distance(coords_1, coords_2).km <= radius:
-                json_data.append({
-                    "id": result.idInstitution,
-                    "name": result.nameInstitution,
-                    "webpage": result.webpageInstitution,
-                    "address": result.addressInstitution,
-                    "picturePath": result.picPathInstitution,
-                    "longitude": result.longitude,
-                    "latitude": result.latitude,
-                })
-
-    else:
-        return jsonify({'error': 'wrong arguments'})
+    for result in results:
+        if radius and latitude and longitude and \
+                distance.distance((latitude, longitude), (result.latitude, result.longitude)).km > radius:
+            continue
+        json_data.append({
+            "id": result.idInstitution,
+            "name": result.nameInstitution,
+            "webpage": result.webpageInstitution,
+            "address": result.addressInstitution,
+            "picturePath": result.picPathInstitution,
+            "longitude": result.longitude,
+            "latitude": result.latitude,
+        })
 
     return jsonify(json_data)
 
