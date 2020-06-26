@@ -3,10 +3,11 @@ from datetime import datetime
 
 import validators
 from flask import Blueprint, request, jsonify
+from geopy import distance
 
 from backend.database.db import DB_SESSION
 from backend.database.model import Institution, Transaction, User
-from backend.resources.helpers import auth_user
+from backend.resources.helpers import auth_user, check_params_int
 
 BP = Blueprint('institutions', __name__, url_prefix='/api/institutions')  # set blueprint name and resource path
 
@@ -19,6 +20,17 @@ def institutions_get():
     :return: json data of institutions
     """
     id_institution = request.args.get('id', type=int)
+    radius = request.args.get('radius', type=int)
+    latitude = request.args.get('latitude', type=float)
+    longitude = request.args.get('longitude', type=float)
+
+    try:
+        check_params_int([id_institution, radius])
+    except ValueError:
+        return jsonify({"error": "bad argument"}), 400
+
+    if None in [radius, latitude, longitude] and any([radius, latitude, longitude]):
+        return jsonify({"error": "bad geo argument"}), 400
 
     session = DB_SESSION()
     results = session.query(Institution)
@@ -29,12 +41,17 @@ def institutions_get():
         results = results.filter(Institution.idInstitution == id_institution)
 
     for result in results:
+        if radius and latitude and longitude and \
+                distance.distance((latitude, longitude), (result.latitude, result.longitude)).km > radius:
+            continue
         json_data.append({
             "id": result.idInstitution,
             "name": result.nameInstitution,
             "webpage": result.webpageInstitution,
             "address": result.addressInstitution,
             "picturePath": result.picPathInstitution,
+            "longitude": result.longitude,
+            "latitude": result.latitude,
         })
 
     return jsonify(json_data)

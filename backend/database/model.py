@@ -2,7 +2,7 @@
 from datetime import datetime
 from typing import List
 
-from sqlalchemy import Column, ForeignKey, Integer, VARCHAR, BINARY, BOOLEAN, DateTime
+from sqlalchemy import Column, ForeignKey, Integer, VARCHAR, BINARY, BOOLEAN, DateTime, Float
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 from sqlalchemy.orm import relationship
 
@@ -56,6 +56,8 @@ class Institution(BASE):
     webpageInstitution = Column(VARCHAR(256))
     addressInstitution = Column(VARCHAR(256))
     picPathInstitution = Column(VARCHAR(256))
+    latitude = Column(Float)
+    longitude = Column(Float)
 
     projects = relationship("Project", back_populates="institution")
 
@@ -227,19 +229,27 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
         Institution(idInstitution=1,
                     nameInstitution="MSGraphic",
                     webpageInstitution="www.msgraphic.com",
-                    addressInstitution="Address1"),
+                    addressInstitution="Address1",
+                    latitude=52.030228,
+                    longitude=8.532471),
         Institution(idInstitution=2,
                     nameInstitution="SWP",
                     webpageInstitution="www.swp.com",
-                    addressInstitution="Address2"),
+                    addressInstitution="Address2",
+                    latitude=40.712776,
+                    longitude=-74.005974),
         Institution(idInstitution=3,
                     nameInstitution="Asgard Inc.",
                     webpageInstitution="www.asgard.as",
-                    addressInstitution="Address3"),
+                    addressInstitution="Address3",
+                    latitude=-13.531950,
+                    longitude=-71.967461),
         Institution(idInstitution=4,
                     nameInstitution="Blackhole",
                     webpageInstitution="127.0.0.1",
-                    addressInstitution="Address4"),
+                    addressInstitution="Address4",
+                    latitude=42.267502,
+                    longitude=2.960840),
     ]
     # set SmartContract to Institution
     institutions[0].smartcontract = smartcontracts[0]
