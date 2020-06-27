@@ -30,7 +30,6 @@ def voucher_get():
 
     session = DB_SESSION()
     results = session.query(Voucher)
-    session2 = DB_SESSION()
     results2 = session.query(Institution)
 
     if id_voucher is not None:
