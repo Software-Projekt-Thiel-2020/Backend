@@ -2,7 +2,7 @@
 from datetime import datetime
 from typing import List
 
-from sqlalchemy import Column, ForeignKey, Integer, VARCHAR, BINARY, BOOLEAN, DateTime, Float
+from sqlalchemy import Column, ForeignKey, Integer, VARCHAR, BINARY, TIMESTAMP, BOOLEAN, Float
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 from sqlalchemy.orm import relationship
 
@@ -72,9 +72,9 @@ class Voucher(BASE):
     idVoucher = Column(Integer, primary_key=True)
     titleVoucher = Column(VARCHAR(32))
     descriptionVoucher = Column(VARCHAR(1024))
-    priceVoucher = Column(Integer, nullable=False)
-    available = Column(BOOLEAN, default=True)
-    validTime = Column(Integer, default=2 * 31536000)
+    priceVoucher = Column(Integer)
+    validTime = Column(Integer)
+    available = Column(Integer)
 
     institution_id = Column(Integer, ForeignKey('Institution.idInstitution'))
     institution = relationship("Institution", back_populates="vouchers")
@@ -103,11 +103,10 @@ class User(BASE):
 
 class VoucherUser(BASE):
     __tablename__ = "VoucherUser"
-    idVoucherUser = Column(Integer, primary_key=True)
-    id_voucher = Column(Integer, ForeignKey('Voucher.idVoucher'))
-    id_user = Column(Integer, ForeignKey('User.idUser'))
+    id_voucher = Column(Integer, ForeignKey('Voucher.idVoucher'), primary_key=True)
+    id_user = Column(Integer, ForeignKey('User.idUser'), primary_key=True)
     usedVoucher = Column(BOOLEAN)
-    expires_unixtime = Column(DateTime)
+    expires_unixtime = Column(TIMESTAMP)
 
     voucher = relationship("Voucher", back_populates="users")
     user = relationship("User", back_populates="vouchers")
@@ -128,7 +127,7 @@ class Donation(BASE):
 class Transaction(BASE):
     __tablename__ = 'Transaction'
     idTransaction = Column(Integer, primary_key=True)
-    dateTransaction = Column(DateTime)
+    dateTransaction = Column(TIMESTAMP)
 
     smartcontract_id = Column(Integer, ForeignKey('SmartContract.idSmartContract'))
     smartcontract = relationship("SmartContract", back_populates="transactions")
@@ -339,29 +338,23 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
         Voucher(idVoucher=1,
                 titleVoucher="Von Computer gemaltes Bild",
                 descriptionVoucher="Der Computer malt ein täuschend echtes Bild für sie",
-                priceVoucher=1000,
-                available=False,
+                priceVoucher=666
                 ),
         Voucher(idVoucher=2,
                 titleVoucher="Software",
                 descriptionVoucher="Software für ein Hochschulprojet",
-                priceVoucher=2000,
-                available=True,
+                priceVoucher=1337
                 ),
     ]
 
     associations: List[VoucherUser] = [
-        VoucherUser(idVoucherUser=1,
-                    usedVoucher=False,
+        VoucherUser(usedVoucher=False,
                     expires_unixtime=datetime(2020, 1, 1)),
-        VoucherUser(idVoucherUser=2,
-                    usedVoucher=False,
+        VoucherUser(usedVoucher=False,
                     expires_unixtime=datetime(2022, 5, 17)),
-        VoucherUser(idVoucherUser=3,
-                    usedVoucher=False,
+        VoucherUser(usedVoucher=False,
                     expires_unixtime=datetime(2022, 1, 13)),
-        VoucherUser(idVoucherUser=4,
-                    usedVoucher=True,
+        VoucherUser(usedVoucher=True,
                     expires_unixtime=datetime(2021, 5, 17)),
     ]
 
@@ -377,8 +370,8 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
 
     users[0].vouchers.append(associations[0])
     users[1].vouchers.append(associations[1])
-    users[5].vouchers.append(associations[2])
-    users[6].vouchers.append(associations[3])
+    users[2].vouchers.append(associations[2])
+    users[3].vouchers.append(associations[3])
 
     # All objects created, Add and commit to DB:
     objects = [*smartcontracts, *users, *institutions, *projects, *milestones, *vouchers, *transactions,

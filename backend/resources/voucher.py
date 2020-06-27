@@ -7,7 +7,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from web3.exceptions import InvalidAddress
 
 from backend.database.db import DB_SESSION
-from backend.database.model import Voucher, VoucherUser
+from backend.database.model import Voucher, VoucherUser, Institution
 from backend.resources.helpers import auth_user, check_params_int
 
 BP = Blueprint('voucher', __name__, url_prefix='/api/vouchers')
@@ -17,7 +17,6 @@ BP = Blueprint('voucher', __name__, url_prefix='/api/vouchers')
 def voucher_get():
     """
     Handles GET for resource <base>/api/voucher/institution .
-
     :return: json data of projects
     """
     id_voucher = request.args.get('id')
@@ -31,6 +30,8 @@ def voucher_get():
 
     session = DB_SESSION()
     results = session.query(Voucher)
+    session2 = DB_SESSION()
+    results2 = session.query(Institution)
 
     if id_voucher is not None:
         results = results.filter(Voucher.idVoucher == id_voucher)
@@ -41,10 +42,13 @@ def voucher_get():
 
     json_data = []
     for voucher in results:
+        results2 = results2.filter(Institution.idInstitution == voucher.institution_id)
+        name = results2[0].nameInstitution
         json_data.append({
             'id': voucher.idVoucher,
             'amount': len(voucher.users),
             'institutionid': voucher.institution_id,
+            'institutionName': name,
             'subject': voucher.descriptionVoucher,
             'title': voucher.titleVoucher,
             'validTime': voucher.validTime,
@@ -102,7 +106,6 @@ def voucher_post(user):
 def voucher_delete_user(user_inst):
     """
     Handles DELETE for resource <base>/api/voucher/user .
-
     :return: json data of projects
     """
     id_voucheruser = request.headers.get('id')
