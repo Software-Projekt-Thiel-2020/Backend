@@ -7,7 +7,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from web3.exceptions import InvalidAddress
 
 from backend.database.db import DB_SESSION
-from backend.database.model import Voucher, VoucherUser, Institution
+from backend.database.model import Voucher, VoucherUser
 from backend.resources.helpers import auth_user, check_params_int
 
 BP = Blueprint('voucher', __name__, url_prefix='/api/vouchers')
