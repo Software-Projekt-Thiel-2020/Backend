@@ -23,6 +23,7 @@ def institutions_get():
     radius = request.args.get('radius', type=int)
     latitude = request.args.get('latitude', type=float)
     longitude = request.args.get('longitude', type=float)
+    name_institution = request.args.get('name')
 
     try:
         check_params_int([id_institution, radius])
@@ -39,6 +40,8 @@ def institutions_get():
 
     if id_institution:
         results = results.filter(Institution.idInstitution == id_institution)
+    if name_institution:
+        results = results.filter(Institution.nameInstitution.ilike("%" + name_institution + "%"))
 
     for result in results:
         if radius and latitude and longitude and \
