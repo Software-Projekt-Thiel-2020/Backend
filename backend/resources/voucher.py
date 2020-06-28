@@ -30,7 +30,6 @@ def voucher_get():
 
     session = DB_SESSION()
     results = session.query(Voucher)
-    results2 = session.query(Institution)
 
     if id_voucher is not None:
         results = results.filter(Voucher.idVoucher == id_voucher)
@@ -41,13 +40,11 @@ def voucher_get():
 
     json_data = []
     for voucher in results:
-        results2 = results2.filter(Institution.idInstitution == voucher.institution_id)
-        name = results2[0].nameInstitution
         json_data.append({
             'id': voucher.idVoucher,
             'amount': len(voucher.users),
             'institutionid': voucher.institution_id,
-            'institutionName': name,
+            'institutionName': voucher.institution.nameInstitution,
             'subject': voucher.descriptionVoucher,
             'title': voucher.titleVoucher,
             'validTime': voucher.validTime,
