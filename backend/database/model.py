@@ -161,6 +161,7 @@ TOKEN_2 = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxZjJiYzcyNy03Y2ZhLTQ5
 def add_sample_data(db_session):  # pylint:disable=too-many-statements
     """
     Adds some sample data.
+
     :param db_session: DB_SESSION object
     :return: -
     """
