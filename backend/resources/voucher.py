@@ -36,7 +36,7 @@ def voucher_get():
     if id_institution is not None:
         results = results.filter(Voucher.institution_id == id_institution)
     if available is not None:
-        results = results.filter(Voucher.available.is_(available))
+        results = results.filter(Voucher.available.is_(bool(int(available))))
 
     json_data = []
     for voucher in results:
@@ -78,6 +78,8 @@ def voucher_post(user):
 
         if balance < voucher.priceVoucher:
             return jsonify({'error': 'not enough balance'}), 406
+        if not voucher.available:
+            return jsonify({'error': 'voucher not available'}), 406
 
         association = VoucherUser(usedVoucher=False,
                                   expires_unixtime=(datetime.now() + timedelta(0, 2 * 31536000)))
