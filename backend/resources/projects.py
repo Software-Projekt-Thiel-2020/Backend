@@ -96,7 +96,8 @@ def projects_id(id):  # noqa
         'webpage': results.webpageProject,
         'idsmartcontract': results.smartcontract_id,
         'idinstitution': results.institution_id,
-        'milestones': json_ms
+        'milestones': json_ms,
+        'picturePath': results.picPathProject,
     }
 
     return jsonify(json_data), 200
