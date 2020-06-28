@@ -17,7 +17,6 @@ BP = Blueprint('voucher', __name__, url_prefix='/api/vouchers')
 def voucher_get():
     """
     Handles GET for resource <base>/api/voucher/institution .
-
     :return: json data of projects
     """
     id_voucher = request.args.get('id')
@@ -45,6 +44,7 @@ def voucher_get():
             'id': voucher.idVoucher,
             'amount': len(voucher.users),
             'institutionid': voucher.institution_id,
+            'institutionName': voucher.institution.nameInstitution,
             'subject': voucher.descriptionVoucher,
             'title': voucher.titleVoucher,
             'validTime': voucher.validTime,
@@ -102,7 +102,6 @@ def voucher_post(user):
 def voucher_delete_user(user_inst):
     """
     Handles DELETE for resource <base>/api/voucher/user .
-
     :return: json data of projects
     """
     id_voucheruser = request.headers.get('id')

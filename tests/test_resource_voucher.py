@@ -12,6 +12,7 @@ def test_voucher_institution_get(client):
     assert res.json[0]["id"] == 1
     assert res.json[0]["amount"] == 2
     assert res.json[0]["institutionid"] == 1
+    assert res.json[0]["institutionName"] == "MSGraphic"
     assert res.json[0]["subject"] == "Der Computer malt ein täuschend echtes Bild für sie"
     assert res.json[0]["title"] == "Von Computer gemaltes Bild"
     assert res.json[0]["validTime"] == 2 * 31536000
@@ -21,6 +22,7 @@ def test_voucher_institution_get(client):
     assert res.json[1]["id"] == 2
     assert res.json[1]["amount"] == 2
     assert res.json[1]["institutionid"] == 1
+    assert res.json[1]["institutionName"] == "MSGraphic"
     assert res.json[1]["subject"] == "Software für ein Hochschulprojet"
     assert res.json[1]["title"] == "Software"
     assert res.json[1]["validTime"] == 2 * 31536000
@@ -36,6 +38,7 @@ def test_voucher_institution_get_idinst(client):
     assert res.json[0]["id"] == 1
     assert res.json[0]["amount"] == 2
     assert res.json[0]["institutionid"] == 1
+    assert res.json[1]["institutionName"] == "MSGraphic"
     assert res.json[0]["subject"] == "Der Computer malt ein täuschend echtes Bild für sie"
     assert res.json[0]["title"] == "Von Computer gemaltes Bild"
     assert res.json[0]["validTime"] == 2 * 31536000
@@ -45,6 +48,7 @@ def test_voucher_institution_get_idinst(client):
     assert res.json[1]["id"] == 2
     assert res.json[1]["amount"] == 2
     assert res.json[1]["institutionid"] == 1
+    assert res.json[1]["institutionName"] == "MSGraphic"
     assert res.json[1]["subject"] == "Software für ein Hochschulprojet"
     assert res.json[1]["title"] == "Software"
     assert res.json[1]["validTime"] == 2 * 31536000
