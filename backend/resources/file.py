@@ -19,12 +19,13 @@ def allowed_file(filename):
 # TODO satisfy linter
 @BP.route('', methods=['POST'])
 @auth_user
-def file_upload():
+def file_upload(user_inst):  # pylint:disable=unused-argument
     """
     Handles uploading a file for  .
 
     :return: json data of projects
     """
+    # ToDo: check permissions
     id_inst = request.headers.get('idInstitution')
     id_proj = request.headers.get('idProject')
 
