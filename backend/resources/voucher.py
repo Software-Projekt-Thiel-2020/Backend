@@ -97,7 +97,7 @@ def voucher_post(user):
         nonce = WEB3.eth.getTransactionCount(user.publickeyUser)
         transaction = {
             'nonce': nonce,
-            'to': WEB3.eth.accounts[0],
+            'to': inst.addressInstitution,
             'value': voucher.priceVoucher,
             'gas': 200000,
             'gasPrice': WEB3.toWei('50', 'gwei')

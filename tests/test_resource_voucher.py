@@ -370,7 +370,7 @@ def test_voucher_user_post(client_w_eth):
     assert res.json[1]["id"] == 5
     assert res.json[1]["userid"] == 6
     assert res.json[1]["idvoucher"] == 2
-    assert int(res.json[1]["untilTime"]) == int((datetime.now() + timedelta(0, 2 * 31536000)).timestamp())
+    assert abs(int(res.json[1]["untilTime"]) - int((datetime.now() + timedelta(0, 2 * 31536000)).timestamp())) <= 3
     assert not res.json[1]["used"]
     assert res.json[1]["price"] == 2000
 
