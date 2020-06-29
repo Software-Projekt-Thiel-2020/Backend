@@ -24,9 +24,10 @@ def institutions_get():
     latitude = request.args.get('latitude', type=float)
     longitude = request.args.get('longitude', type=float)
     name_institution = request.args.get('name')
+    has_vouchers = request.args.get('has_vouchers')
 
     try:
-        check_params_int([id_institution, radius])
+        check_params_int([id_institution, radius, has_vouchers])
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
@@ -42,6 +43,11 @@ def institutions_get():
         results = results.filter(Institution.idInstitution == id_institution)
     if name_institution:
         results = results.filter(Institution.nameInstitution.ilike("%" + name_institution + "%"))
+    if has_vouchers is not None:
+        if int(has_vouchers) == 1:
+            results = results.filter(Institution.vouchers.any())
+        else:
+            results = results.filter(~Institution.vouchers.any())
 
     for result in results:
         if radius and latitude and longitude and \
