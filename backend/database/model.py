@@ -65,6 +65,7 @@ class Institution(BASE):
     smartcontract = relationship("SmartContract", back_populates="institutions")
 
     vouchers = relationship("Voucher", back_populates="institution")
+    publickeyInstitution = Column(VARCHAR(64))
 
 
 class Voucher(BASE):
@@ -230,6 +231,8 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
                     nameInstitution="MSGraphic",
                     webpageInstitution="www.msgraphic.com",
                     addressInstitution="Address1",
+                    publickeyInstitution="0xE92F05FEe101648aE33169150feE8F28FeFc19C2",
+                    # key = b',\xc5p\xc97Ue\x9d\x88\xbakd\xb4\xdbb\xdc\xb80\xa6\x9be\x0c\xf0\xdeX\xee\xa61F_\x13~'
                     latitude=52.030228,
                     longitude=8.532471,
                     picPathInstitution="a49d11ef-eb29-4867-9254-7c1ef1a7870c.png"),
@@ -237,6 +240,8 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
                     nameInstitution="SWP",
                     webpageInstitution="www.swp.com",
                     addressInstitution="Address2",
+                    publickeyInstitution="0x4b90030b0BA6790E8A34f5f58f10a43B3D13dCD1",
+                    # key = b"\xc6$\xf2\xe6\x81a7\rh`\xb0\x86I\x7f\x1e%8v\xde[\xb8w\x8c7\xf4'\xc3z\xb9g\x17\xb1"
                     latitude=40.712776,
                     longitude=-74.005974,
                     picPathInstitution="0984d9d5-7ebc-45a5-9258-46fe2c2b4151.png"),
@@ -244,6 +249,8 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
                     nameInstitution="Asgard Inc.",
                     webpageInstitution="www.asgard.as",
                     addressInstitution="Address3",
+                    publickeyInstitution="0xC6f1F12B6df34C98E670531Ab3cdA01df26Db585",
+                    # key = b'g\xbef\xb0\xc6\x04\xa3i%P\x03\xb7\xbe\xac\xc0}rN\xeaq\xc9\x9b\x88j\x04m\x15\xcah\xb4\xf1-'
                     latitude=-13.531950,
                     longitude=-71.967461,
                     picPathInstitution="88c0bc0a-c673-4cdf-8216-cd4e2c916be2.png"),
@@ -251,6 +258,8 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
                     nameInstitution="Blackhole",
                     webpageInstitution="127.0.0.1",
                     addressInstitution="Address4",
+                    publickeyInstitution="0x03bD157AF2BA8437CaB84bF3383d918f0a993399",
+                    # key = b'"\x1e\xe6\x01mu\xf07\xed\x84\xc1\xeb\x9du\x90\x1b\x80f\xc6g\x814+\xc3o.<9\xa7S\xb7M'
                     latitude=42.267502,
                     longitude=2.960840,
                     picPathInstitution="cdbad6a3-4322-43b3-9c07-be3606508386.png"),

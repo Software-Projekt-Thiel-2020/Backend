@@ -1,4 +1,7 @@
 """Voucher Resource."""
+import configparser
+import json
+
 from datetime import datetime, timedelta
 
 from flask import Blueprint, jsonify, request
@@ -6,8 +9,10 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from web3.exceptions import InvalidAddress
 
+from backend.smart_contracts.web3 import WEB3
+
 from backend.database.db import DB_SESSION
-from backend.database.model import Voucher, VoucherUser
+from backend.database.model import Voucher, VoucherUser, Institution
 from backend.resources.helpers import auth_user, check_params_int
 
 BP = Blueprint('voucher', __name__, url_prefix='/api/vouchers')
@@ -75,19 +80,43 @@ def voucher_post(user):
 
     try:
         voucher = session.query(Voucher).filter(Voucher.idVoucher == id_voucher).one()
-        balance = 9e19  # WEB3.eth.getBalance(user.publickeyUser)  # ToDo: Add balance (to tests)
+        balance = WEB3.eth.getBalance(user.publickeyUser)
 
-        if balance < voucher.priceVoucher:
+        if balance < voucher.priceVoucher:  # ToDo: gas-cost?
             return jsonify({'error': 'not enough balance'}), 406
         if not voucher.available:
             return jsonify({'error': 'voucher not available'}), 406
 
         association = VoucherUser(usedVoucher=False,
-                                  expires_unixtime=(datetime.now() + timedelta(0, 2 * 31536000)))
-        association.voucher = voucher
-        association.user = user
+                                  expires_unixtime=(datetime.now() + timedelta(0, 2 * 31536000)),
+                                  voucher=voucher,
+                                  user=user)
 
-        # TODO - do blockchain transaction
+        inst: Institution = session.query(Institution).filter(Institution.idInstitution == voucher.institution_id).one()
+
+        transaction = {
+            'nonce': WEB3.eth.getTransactionCount(user.publickeyUser),
+            'to': inst.publickeyInstitution,
+            'value': voucher.priceVoucher,
+            'gas': 200000,
+            'gasPrice': WEB3.toWei('50', 'gwei')
+        }
+        signed_transaction = WEB3.eth.account.sign_transaction(transaction, user.privatekeyUser)
+        WEB3.eth.sendRawTransaction(signed_transaction.rawTransaction)
+
+        cfg_parser: configparser.ConfigParser = configparser.ConfigParser()
+        cfg_parser.read("backend_config.ini")
+
+        voucher_sc = WEB3.eth.contract(
+                address=WEB3.toChecksumAddress(cfg_parser["Voucher"]["ADDRESS"]),
+                abi=json.loads(cfg_parser["Voucher"]["ABI"])
+        )
+
+        transaction = voucher_sc.functions.addVoucher(user.publickeyUser, WEB3.toBytes(text=voucher.titleVoucher), 666)\
+            .buildTransaction({'nonce': WEB3.eth.getTransactionCount(user.publickeyUser)})
+        signed_transaction = WEB3.eth.account.sign_transaction(transaction, user.privatekeyUser)
+
+        WEB3.eth.sendRawTransaction(signed_transaction.rawTransaction)
 
         session.add(voucher)
         session.add(association)

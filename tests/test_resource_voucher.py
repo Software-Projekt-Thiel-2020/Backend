@@ -350,13 +350,13 @@ def test_voucher_user_delete_bad_user(client):
     assert res.json[0]["price"] == 2000
 
 
-def test_voucher_user_post(client):
+def test_voucher_user_post(client_w_eth):
     headers = {"authToken": TOKEN_1, "idVoucher": 2}
     # ToDo: Add balance
-    res = client.post('/api/vouchers/user', headers=headers)
+    res = client_w_eth.post('/api/vouchers/user', headers=headers)
     assert res._status_code == 200
 
-    res = client.get('/api/vouchers/user?idUser=6')
+    res = client_w_eth.get('/api/vouchers/user?idUser=6')
     assert res._status_code == 200
     assert len(res.json) == 2
 
@@ -370,18 +370,18 @@ def test_voucher_user_post(client):
     assert res.json[1]["id"] == 5
     assert res.json[1]["userid"] == 6
     assert res.json[1]["idvoucher"] == 2
-    assert int(res.json[1]["untilTime"]) == int((datetime.now() + timedelta(0, 2 * 31536000)).timestamp())
+    assert abs(int(res.json[1]["untilTime"]) - int((datetime.now() + timedelta(0, 2 * 31536000)).timestamp())) <= 3
     assert not res.json[1]["used"]
     assert res.json[1]["price"] == 2000
 
 
-def test_voucher_user_post2(client):
+def test_voucher_user_post2(client_w_eth):
     headers = {"authToken": TOKEN_1, "idVoucher": 1}
     # ToDo: Add balance
-    res = client.post('/api/vouchers/user', headers=headers)
+    res = client_w_eth.post('/api/vouchers/user', headers=headers)
     assert res._status_code == 406
 
-    res = client.get('/api/vouchers/user?idUser=6')
+    res = client_w_eth.get('/api/vouchers/user?idUser=6')
     assert res._status_code == 200
     assert len(res.json) == 1
 
@@ -393,13 +393,13 @@ def test_voucher_user_post2(client):
     assert res.json[0]["price"] == 1000
 
 
-def test_voucher_user_post_bad_voucherid(client):
+def test_voucher_user_post_bad_voucherid(client_w_eth):
     headers = {"authToken": TOKEN_1, "idVoucher": 1337}
     # ToDo: Add balance
-    res = client.post('/api/vouchers/user', headers=headers)
+    res = client_w_eth.post('/api/vouchers/user', headers=headers)
     assert res._status_code == 404
 
-    res = client.get('/api/vouchers/user?idUser=6')
+    res = client_w_eth.get('/api/vouchers/user?idUser=6')
     assert res._status_code == 200
     assert len(res.json) == 1
 
