@@ -61,6 +61,7 @@ def institutions_get():
             "picturePath": result.picPathInstitution,
             "longitude": result.longitude,
             "latitude": result.latitude,
+            "publickey": result.publickeyInstitution,
         })
 
     return jsonify(json_data)
@@ -77,11 +78,12 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
     webpage = request.headers.get('webpage')
     address = request.headers.get('address')
     username = request.headers.get('username')
+    publickey = request.headers.get('publickey')
 
     if not user_inst.group == "support":
         return jsonify({'error': 'Forbidden'}), 403
 
-    if None in [name, address]:
+    if None in [name, address]:  # or publickey is None:
         return jsonify({'error': 'Missing parameter'}), 400
 
     if webpage is not None and not validators.url(webpage):
@@ -99,7 +101,7 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
 
     # Todo: smartcontract_id
     institution_inst = Institution(nameInstitution=name, webpageInstitution=webpage, addressInstitution=address,
-                                   smartcontract_id=2)
+                                   smartcontract_id=2, publickeyInstitution=publickey)
     transaction_inst = Transaction(dateTransaction=datetime.now(), smartcontract_id=2, user=owner_inst)
 
     session.add_all([institution_inst, transaction_inst])

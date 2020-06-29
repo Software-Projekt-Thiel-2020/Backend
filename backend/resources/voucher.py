@@ -80,24 +80,23 @@ def voucher_post(user):
 
     try:
         voucher = session.query(Voucher).filter(Voucher.idVoucher == id_voucher).one()
-        balance = WEB3.eth.getBalance(user.publickeyUser)  # ToDo: Add balance (to tests)
+        balance = WEB3.eth.getBalance(user.publickeyUser)
 
-        if balance < voucher.priceVoucher:
+        if balance < voucher.priceVoucher:  # ToDo: gas-cost?
             return jsonify({'error': 'not enough balance'}), 406
         if not voucher.available:
             return jsonify({'error': 'voucher not available'}), 406
 
         association = VoucherUser(usedVoucher=False,
-                                  expires_unixtime=(datetime.now() + timedelta(0, 2 * 31536000)))
-        association.voucher = voucher
-        association.user = user
+                                  expires_unixtime=(datetime.now() + timedelta(0, 2 * 31536000)),
+                                  voucher=voucher,
+                                  user=user)
 
-        inst = session.query(Institution).filter(Institution.idInstitution == voucher.institution_id).one()
+        inst: Institution = session.query(Institution).filter(Institution.idInstitution == voucher.institution_id).one()
 
-        nonce = WEB3.eth.getTransactionCount(user.publickeyUser)
         transaction = {
-            'nonce': nonce,
-            'to': inst.addressInstitution,
+            'nonce': WEB3.eth.getTransactionCount(user.publickeyUser),
+            'to': inst.publickeyInstitution,
             'value': voucher.priceVoucher,
             'gas': 200000,
             'gasPrice': WEB3.toWei('50', 'gwei')
@@ -113,9 +112,8 @@ def voucher_post(user):
                 abi=json.loads(cfg_parser["Voucher"]["ABI"])
         )
 
-        nonce = WEB3.eth.getTransactionCount(user.publickeyUser)
         transaction = voucher_sc.functions.addVoucher(user.publickeyUser, WEB3.toBytes(text=voucher.titleVoucher), 666)\
-            .buildTransaction({'nonce': nonce})
+            .buildTransaction({'nonce': WEB3.eth.getTransactionCount(user.publickeyUser)})
         signed_transaction = WEB3.eth.account.sign_transaction(transaction, user.privatekeyUser)
 
         WEB3.eth.sendRawTransaction(signed_transaction.rawTransaction)
