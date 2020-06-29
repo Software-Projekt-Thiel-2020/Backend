@@ -50,6 +50,7 @@ def voucher_get():
             'validTime': voucher.validTime,
             'available': voucher.available,
             'price': voucher.priceVoucher,
+            "picturePath": voucher.institution.picPathInstitution,
         })
 
     return jsonify(json_data), 200
