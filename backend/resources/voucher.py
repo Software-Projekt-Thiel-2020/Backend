@@ -7,7 +7,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from web3.exceptions import InvalidAddress
 
 from backend.database.db import DB_SESSION
-from backend.database.model import Voucher, VoucherUser, Institution
+from backend.database.model import Voucher, VoucherUser
 from backend.resources.helpers import auth_user, check_params_int
 
 BP = Blueprint('voucher', __name__, url_prefix='/api/vouchers')
@@ -19,27 +19,24 @@ def voucher_get():
     Handles GET for resource <base>/api/voucher/institution .
     :return: json data of projects
     """
+    id_voucher = request.args.get('id')
     id_institution = request.args.get('idInstitution')
+    available = request.args.get('available')
 
     try:
-        check_params_int([id_institution])
+        check_params_int([id_voucher, id_institution, available])
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
     session = DB_SESSION()
     results = session.query(Voucher)
 
+    if id_voucher is not None:
+        results = results.filter(Voucher.idVoucher == id_voucher)
     if id_institution is not None:
         results = results.filter(Voucher.institution_id == id_institution)
-    else:
-        return jsonify({"error": "missing argument"}), 400
-
-    results_2 = session.query(Institution)
-    results_2 = results_2.filter(Institution.idInstitution == id_institution)
-
-    picture_institution = None
-    for pic in results_2:
-        picture_institution = pic.picPathInstitution
+    if available is not None:
+        results = results.filter(Voucher.available.is_(bool(int(available))))
 
     json_data = []
     for voucher in results:
@@ -53,7 +50,7 @@ def voucher_get():
             'validTime': voucher.validTime,
             'available': voucher.available,
             'price': voucher.priceVoucher,
-            "picturePath": picture_institution,
+            "picturePath": voucher.institution.picPathInstitution,
         })
 
     return jsonify(json_data), 200
