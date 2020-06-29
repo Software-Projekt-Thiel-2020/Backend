@@ -51,7 +51,8 @@ def projects_get():
     for result in results:
 
         if radius and latitude and longitude and \
-                distance.distance((latitude, longitude), (result.institution.latitude, result.institution.longitude)).km > radius:
+                distance.distance((latitude, longitude), (result.institution.latitude, result.institution.longitude)) \
+                        .km > radius:
             continue
         json_data.append({
             'id': result.idProject,
