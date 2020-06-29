@@ -4,6 +4,7 @@ from typing import List
 
 import validators
 from flask import Blueprint, request, jsonify
+from geopy import distance
 from sqlalchemy.orm.exc import NoResultFound
 
 from backend.database.db import DB_SESSION
@@ -23,11 +24,18 @@ def projects_get():
     """
     id_project = request.args.get('id')
     id_institution = request.args.get('idinstitution')
+    radius = request.args.get('radius', type=int)
+    latitude = request.args.get('latitude', type=float)
+    longitude = request.args.get('longitude', type=float)
+    name_project = request.args.get('name')
 
     try:
         check_params_int([id_project, id_institution])
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
+
+    if None in [radius, latitude, longitude] and any([radius, latitude, longitude]):
+        return jsonify({"error": "bad geo argument"}), 400
 
     session = DB_SESSION()
     results = session.query(Project)
@@ -36,9 +44,15 @@ def projects_get():
         results = results.filter(Project.idProject == id_project)
     if id_institution:
         results = results.filter(Project.institution_id == id_institution)
+    if name_project:
+        results = results.filter(Project.nameProject.ilike("%" + name_project + "%"))
 
     json_data = []
     for result in results:
+
+        if radius and latitude and longitude and \
+                distance.distance((latitude, longitude), (result.institution.latitude, result.institution.longitude)).km > radius:
+            continue
         json_data.append({
             'id': result.idProject,
             'name': result.nameProject,
