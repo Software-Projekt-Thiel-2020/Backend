@@ -221,7 +221,7 @@ def test_users_put_wo_auth(client):
 
 def test_user_post(client):
     headers = {"authToken": TOKEN_3, "username": "sw2020testuser1337.id.blockstack", "firstname": "Peter",
-               "lastname": "Maffay", "email": "sw2020testuser1337@re-gister.com"}
+               "lastname": "MaffayäÖ", "email": "sw2020testuser1337@re-gister.com"}
     res = client.post('/api/users', headers=headers)
     assert res._status_code == 201
     assert res.json["status"] == "User registered"
