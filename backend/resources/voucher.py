@@ -1,4 +1,7 @@
 """Voucher Resource."""
+import configparser
+import json
+
 from datetime import datetime, timedelta
 
 from flask import Blueprint, jsonify, request
@@ -6,8 +9,10 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from web3.exceptions import InvalidAddress
 
+from backend.smart_contracts.web3 import WEB3
+
 from backend.database.db import DB_SESSION
-from backend.database.model import Voucher, VoucherUser
+from backend.database.model import Voucher, VoucherUser, User, Institution
 from backend.resources.helpers import auth_user, check_params_int
 
 BP = Blueprint('voucher', __name__, url_prefix='/api/vouchers')
@@ -86,7 +91,43 @@ def voucher_post(user):
         association.voucher = voucher
         association.user = user
 
-        # TODO - do blockchain transaction
+        w3 = WEB3
+
+        user_priv = user.privatekeyUser
+
+        inst = session.query(Institution).filter(Institution.idInstitution == voucher.institution_id)
+        inst_wllt = inst.one().addressInstitution
+
+        a1 = "0x1ba1D6bCDec9b97C001CbAcBfE0Aab3279b72fd1"
+        a2 = "0x7FFbF8F9321B6D9c8f60eD6fa58c391499683377"
+
+        a1p = "70b9a100cc3df02a61add624ab1b3d98aea20b1784a31fa3175093cec4a8941e"
+
+        nonce = w3.eth.getTransactionCount(a1)
+        tx_trans = {
+            'nonce': nonce,
+            'to': a2,
+            'value': voucher.priceVoucher,
+            'gas': 200000,
+            'gasPrice': w3.toWei('50', 'gwei')
+        }
+        signed_tx_trans = w3.eth.account.signTransaction(tx_trans, a1p) 
+        w3.eth.sendRawTransaction(signed_tx_trans.rawTransaction)
+
+        CFG_PARSER: configparser.ConfigParser = configparser.ConfigParser()
+        CFG_PARSER.read("backend_config.ini")
+
+        sc_add = w3.toChecksumAddress(CFG_PARSER["Voucher"]["ADDRESS"])
+        sc_abi = json.loads(CFG_PARSER["Voucher"]["ABI"])
+
+        voucher_sc = w3.eth.contract(address=sc_add, abi=sc_abi)
+
+        nonce = w3.eth.getTransactionCount(a1)
+        tx_add = voucher_sc.functions.addVoucher(a1, w3.toBytes(text=voucher.titleVoucher), 666)\
+            .buildTransaction({'nonce': nonce})
+        signed_tx_add = w3.eth.account.signTransaction(tx_add, a1p)
+        
+        w3.eth.sendRawTransaction(signed_tx_add.rawTransaction)
 
         session.add(voucher)
         session.add(association)
