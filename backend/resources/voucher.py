@@ -80,7 +80,7 @@ def voucher_post(user):
 
     try:
         voucher = session.query(Voucher).filter(Voucher.idVoucher == id_voucher).one()
-        balance = 9e19  # WEB3.eth.getBalance(user.publickeyUser)  # ToDo: Add balance (to tests)
+        balance = WEB3.eth.getBalance(user.publickeyUser)  # ToDo: Add balance (to tests)
 
         if balance < voucher.priceVoucher:
             return jsonify({'error': 'not enough balance'}), 406
@@ -97,12 +97,12 @@ def voucher_post(user):
         nonce = WEB3.eth.getTransactionCount(user.publickeyUser)
         transaction = {
             'nonce': nonce,
-            'to': inst.addressInstitution,
+            'to': WEB3.eth.accounts[0],
             'value': voucher.priceVoucher,
             'gas': 200000,
             'gasPrice': WEB3.toWei('50', 'gwei')
         }
-        signed_transaction = WEB3.eth.account.signTransaction(transaction, user.privatekeyUser)
+        signed_transaction = WEB3.eth.account.sign_transaction(transaction, user.privatekeyUser)
         WEB3.eth.sendRawTransaction(signed_transaction.rawTransaction)
 
         cfg_parser: configparser.ConfigParser = configparser.ConfigParser()
@@ -116,7 +116,7 @@ def voucher_post(user):
         nonce = WEB3.eth.getTransactionCount(user.publickeyUser)
         transaction = voucher_sc.functions.addVoucher(user.publickeyUser, WEB3.toBytes(text=voucher.titleVoucher), 666)\
             .buildTransaction({'nonce': nonce})
-        signed_transaction = WEB3.eth.account.signTransaction(transaction, user.privatekeyUser)
+        signed_transaction = WEB3.eth.account.sign_transaction(transaction, user.privatekeyUser)
 
         WEB3.eth.sendRawTransaction(signed_transaction.rawTransaction)
 
