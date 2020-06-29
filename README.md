@@ -135,7 +135,7 @@ Port: 80
 
 - gunicorn beenden
 ```sh
-$ pkill gunicorn3
+$ sudo systemctl stop backend
 ```
 - neue Backend Version pullen
 ```sh
@@ -156,9 +156,12 @@ flask init-db
 ```
 - Server starten
 ```sh
-$ cd ~/Backend
-$ gunicorn3 -w 4 -b 192.168.178.50:5000 "backend:create_app()"
+$ sudo sytemctl start backend
 ```
+
+## Etherium Private Keys
+- Die Schlüssel sind in der Datei "/home/pi/backend_configs/nohup.out"zu finden
+
 
 # Code linting, Statische Analyse und testing
 - Zum testen vor einem PR bitte mit:
