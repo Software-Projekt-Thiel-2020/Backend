@@ -19,7 +19,7 @@ BP = Blueprint('voucher', __name__, url_prefix='/api/vouchers')
 
 
 @BP.route('/institution', methods=['POST'])
-def voucher_post_institution(institution_inst):
+def voucher_post_institution():
     """
     Handles POST for resource <base>/api/voucher/institution .
     :return: json data result (success or failure)
@@ -29,29 +29,39 @@ def voucher_post_institution(institution_inst):
     voucher_description = request.headers.get('description', default=None)
     voucher_price = request.headers.get('price', default=None)
     voucher_valid_time = request.headers.get('validTime', default=2 * 31536000)
+    inst_id = request.headers.get('idInstitution', default=None)
 
-    if None in [voucher_id, voucher_title, voucher_description, voucher_price]:
+    if None in [voucher_id, voucher_title, voucher_description, voucher_price, inst_id]:
         return jsonify({'error': 'Missing parameter'}), 400
 
     if "" in [voucher_title, voucher_description]:
         return jsonify({'error': "Empty parameter"}), 400
+
+    try:
+        check_params_int([voucher_id, voucher_price, voucher_valid_time, inst_id])
+    except ValueError:
+        return jsonify({"error": "bad argument"}), 400
 
     session = DB_SESSION()
     res = session.query(Voucher).filter(Voucher.idVoucher == voucher_id).one_or_none()
     if res is not None:
         return jsonify({'status': 'Id is already in use'}), 400
 
+    res = session.query(Institution).filter(Institution.idInstitution == inst_id).one_or_none()
+    if res is None:
+        return jsonify({'status': 'Institution does not exist'}), 400
+
     voucher_inst = Voucher(idVoucher=voucher_id,
                            titleVoucher=voucher_title,
                            descriptionVoucher=voucher_description,
                            priceVoucher=voucher_price,
                            validTime=voucher_valid_time,
-                           institution_id=institution_inst.idInstitution
+                           institution_id=inst_id,
                            )
 
     session.add(voucher_inst)
     session.commit()
-    return jsonify({'status': 'Voucher registered'}), 400
+    return jsonify({'status': 'Voucher registered'}), 200
 
 
 @BP.route('/institution', methods=['GET'])
