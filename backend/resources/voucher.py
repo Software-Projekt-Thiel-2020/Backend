@@ -18,6 +18,45 @@ from backend.resources.helpers import auth_user, check_params_int
 BP = Blueprint('voucher', __name__, url_prefix='/api/vouchers')
 
 
+@BP.route('/institution', methods=['POST'])
+def voucher_post_institution(institution):
+
+    """
+    Handles POST for resource <base>/api/voucher/institution .
+    :return: json data result (success or failure)
+    """    
+    voucher_id = request.headers.get('id', default=None)
+    voucher_title = request.headers.get('title',default=None)
+    voucher_description = request.headers.get('description',default=None)
+    voucher_price = request.headers.get('price',default=None)
+    voucher_validTime = request.headers.get('validTime',default=2 * 31536000)
+
+    if None in [voucher_id,voucher_title,voucher_description,voucher_price]:
+        return jsonify({'error': 'Missing parameter'}), 400
+
+
+    if "" in [voucher_title, voucher_description]:
+        return jsonify({'error': "Empty parameter"}), 400
+
+    session = DB_SESSION()
+    res = session.query(Voucher).filter(Voucher.idVoucher == voucher_id).one_or_none()
+    if res is not None:
+        return jsonify({'status': 'Id is already in use'}), 400
+
+
+    voucher_inst = Voucher(idVoucher=voucher_id,
+                           titleVoucher=voucher_title,
+                           descriptionVoucher=voucher_description,
+                           priceVoucher=voucher_price,
+                           validTime=voucher_validTime,
+                           institution_id=institution.idInstitution)
+                           
+
+    session.add(voucher_inst)
+    session.commit()
+    return jsonify({'status':'Voucher registered'}),400
+  
+        
 @BP.route('/institution', methods=['GET'])
 def voucher_get():
     """
