@@ -118,6 +118,7 @@ class Donation(BASE):
     __tablename__ = 'Donation'
     idDonation = Column(Integer, primary_key=True)
     amountDonation = Column(Integer)
+    voteDonation = Column(BOOLEAN)
 
     user_id = Column(Integer, ForeignKey('User.idUser'))
     user = relationship("User", back_populates="donations")
@@ -319,10 +320,10 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
     milestones[6].project = projects[0]
 
     donations: List[Donation] = [
-        Donation(idDonation=1, amountDonation=300),
-        Donation(idDonation=2, amountDonation=200),
-        Donation(idDonation=3, amountDonation=100),
-        Donation(idDonation=4, amountDonation=400),
+        Donation(idDonation=1, amountDonation=300, voteDonation=True),
+        Donation(idDonation=2, amountDonation=200, voteDonation=False),
+        Donation(idDonation=3, amountDonation=100, voteDonation=True),
+        Donation(idDonation=4, amountDonation=400, voteDonation=False),
     ]
     # set Milestone to Donation
     donations[0].milestone = milestones[0]
