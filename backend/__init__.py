@@ -1,6 +1,9 @@
 """The application factory of the backend."""
 import os
+from pathlib import Path
 from flask import Flask
+from flask_cors import CORS
+
 from backend.database import db
 from backend.resources import BLUEPRINTS
 
@@ -16,7 +19,12 @@ def create_app(test_config=None):
     app.config.from_mapping(
         SECRET_KEY=os.urandom(24),
         DATABASE=os.path.join(app.instance_path, 'backend.sqlite'),
+        UPLOAD_FOLDER=os.path.join(app.root_path, '../files'),
+        MAX_CONTETN_LENGTH=5 * 1024 * 1024,
+        ALLOWED_EXTENSIONS={'png', 'jpeg', 'jpg', 'gif', 'bmp'}
     )
+    CORS(app)
+    # ToDo: for production add real cors-options
 
     if test_config is None:
         app.config.from_pyfile('config.py', silent=True)  # load the instance config if exists
@@ -29,6 +37,8 @@ def create_app(test_config=None):
         pass
 
     db.init_app(app)
+
+    Path(app.config['UPLOAD_FOLDER']).mkdir(parents=True, exist_ok=True)
 
     for blueprint in BLUEPRINTS:
         app.register_blueprint(blueprint)

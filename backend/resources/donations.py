@@ -4,7 +4,8 @@ from flask import Blueprint, request, jsonify
 from backend.database.db import DB_SESSION
 from backend.database.model import Donation
 from backend.database.model import Milestone
-from backend.resources.helpers import check_params_int
+from backend.database.model import Project
+from backend.resources.helpers import check_params_int, auth_user
 
 BP = Blueprint('donations', __name__, url_prefix='/api/donations')
 
@@ -30,8 +31,8 @@ def donations_get():
         return jsonify({"error": "bad argument"}), 400
 
     session = DB_SESSION()
-    results = session.query(Donation)
-
+    results = session.query(Donation, Project)
+    results = results.join(Milestone, Donation.milestone).join(Project)
     if id_donation:
         results = results.filter(Donation.idDonation == id_donation)
     if minamount_donation:
@@ -43,15 +44,49 @@ def donations_get():
     if idmilestone_milestone:
         results = results.filter(Donation.milestone_id == idmilestone_milestone)
     if idproject_project:
-        results = results.join(Donation.milestone).filter(Milestone.project_id == idproject_project)
+        results = results.filter(Milestone.project_id == idproject_project)
 
     json_data = []
-    for result in results:
+    for donation, project in results:
         json_data.append({
-            'id': result.idDonation,
-            'amount': result.amountDonation,
-            'userid': result.user_id,
-            'milestoneid': result.milestone_id,
+            'id': donation.idDonation,
+            'amount': donation.amountDonation,
+            'userid': donation.user_id,
+            'milestoneid': donation.milestone_id,
+            'projectid': project.idProject,
+            'projectname': project.nameProject,
+            'projectpic': project.picPathProject,
         })
 
     return jsonify(json_data)
+
+
+@BP.route('', methods=['POST'])
+@auth_user
+def donations_post(user_inst):
+    """
+    Handles POST for resource <base>/api/donations .
+    :return: "{'status': 'Spende wurde verbucht'}", 201
+    """
+    idmilestone = request.headers.get('idmilestone', default=None)
+    amount = request.headers.get('amount', default=None)
+    ether_account_key = request.headers.get('etherAccountKey', default=None)  # ToDo: an web3.py ?
+
+    if None in [idmilestone, amount, ether_account_key]:
+        return jsonify({'error': 'Missing parameter'}), 400
+
+    session = DB_SESSION()
+
+    if session.query(Milestone).get(idmilestone) is None:
+        return jsonify({'error': 'Milestone not found'}), 400
+
+    donations_inst = Donation(
+        amountDonation=amount,
+        user=user_inst,
+        milestone_id=idmilestone
+    )
+
+    session.add(donations_inst)
+    session.commit()
+
+    return jsonify({'status': 'Spende wurde verbucht'}), 201

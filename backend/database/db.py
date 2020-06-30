@@ -1,5 +1,7 @@
 """Handles the functionality for the database access."""
 import configparser
+import os
+
 import click
 from flask.cli import with_appcontext
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -9,13 +11,12 @@ from backend.database.model import BASE, add_sample_data
 CFG_PARSER: configparser.ConfigParser = configparser.ConfigParser()
 CFG_PARSER.read("backend_config.ini")
 
-# Set the configuration of the database connection
-DB_CONFIG: dict = {
-    'URI': CFG_PARSER["Database"]["URI"],
-}
+
+DB_URI: str = CFG_PARSER["Database"]["URI"]
+if "DB_TESTING" in os.environ:
+    DB_URI = "sqlite://"
 
 # Create DB Engine
-DB_URI: str = DB_CONFIG['URI']
 ENGINE = create_engine(DB_URI)
 
 # Bind engine to metadata of the BASE (our model)
