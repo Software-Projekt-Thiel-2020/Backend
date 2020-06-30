@@ -17,7 +17,7 @@ BP = Blueprint('voucher', __name__, url_prefix='/api/vouchers')
 
 @BP.route('/institution', methods=['POST'])
 @auth_user
-def voucher_post_institution(user_inst):
+def voucher_post_institution(user_inst):  # pylint:disable=unused-argument
     """
     Handles POST for resource <base>/api/voucher/institution .
     :return: json data result (success or failure)
@@ -155,7 +155,9 @@ def voucher_post(user):
             abi=json.loads(cfg_parser["Voucher"]["ABI"])
         )
 
-        transaction = voucher_sc.functions.addVoucher(user.publickeyUser, WEB3.toBytes(text=voucher.titleVoucher), 666) \
+        transaction = voucher_sc.functions.addVoucher(user.publickeyUser,
+                                                      WEB3.toBytes(text=voucher.titleVoucher),
+                                                      666) \
             .buildTransaction({'nonce': WEB3.eth.getTransactionCount(user.publickeyUser)})
         signed_transaction = WEB3.eth.account.sign_transaction(transaction, user.privatekeyUser)
 
