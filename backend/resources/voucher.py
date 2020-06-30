@@ -19,7 +19,7 @@ BP = Blueprint('voucher', __name__, url_prefix='/api/vouchers')
 
 
 @BP.route('/institution', methods=['POST'])
-def voucher_post_institution(institution):
+def voucher_post_institution(institution_inst):
     """
     Handles POST for resource <base>/api/voucher/institution .
     :return: json data result (success or failure)
@@ -46,7 +46,7 @@ def voucher_post_institution(institution):
                            descriptionVoucher=voucher_description,
                            priceVoucher=voucher_price,
                            validTime=voucher_valid_time,
-                           institution_id=institution.idInstitution
+                           institution_id=institution_inst.idInstitution
                            )
 
     session.add(voucher_inst)
