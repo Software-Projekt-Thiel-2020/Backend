@@ -115,7 +115,7 @@ def test_projects_id_get_existant_param(client):
     """get for project id with existant id."""
     res = client.get('/api/projects/1')
     assert res._status_code == 200
-    assert len(res.json) == 7
+    assert len(res.json) == 8
 
     assert res.json["id"] == 1
     assert res.json["idinstitution"] == 1
@@ -201,7 +201,7 @@ def test_projects_post_required_params(client):
 
     res = client.get('/api/projects/4')
     assert res._status_code == 200
-    assert len(res.json) == 7
+    assert len(res.json) == 8
 
     assert res.json["id"] == 4
     assert res.json["idinstitution"] is None
@@ -232,7 +232,7 @@ def test_projects_post_w_milestones(client):
 
     res = client.get('/api/projects/4')
     assert res._status_code == 200
-    assert len(res.json) == 7
+    assert len(res.json) == 8
 
     assert res.json["id"] == 4
     assert res.json["idinstitution"] is None
@@ -265,7 +265,7 @@ def test_projects_post_w_webpage(client):
 
     res = client.get('/api/projects/4')
     assert res._status_code == 200
-    assert len(res.json) == 7
+    assert len(res.json) == 8
 
     assert res.json["id"] == 4
     assert res.json["idinstitution"] is None
@@ -292,7 +292,7 @@ def test_projects_post_w_institution(client):
 
     res = client.get('/api/projects/4')
     assert res._status_code == 200
-    assert len(res.json) == 7
+    assert len(res.json) == 8
 
     assert res.json["id"] == 4
     assert res.json["idinstitution"] == headers["idInstitution"]
@@ -317,7 +317,6 @@ def test_projects_patch_w_webpage(client):
 
     res = client.get('/api/projects/1')
     assert res._status_code == 200
-    assert len(res.json) == 7
 
     assert res.json["id"] == 1
     assert res.json["idinstitution"] == 1
@@ -336,7 +335,6 @@ def test_projects_patch_w_bad_webpage(client):
 
     res = client.get('/api/projects/1')
     assert res._status_code == 200
-    assert len(res.json) == 7
 
     assert res.json["id"] == 1
     assert res.json["idinstitution"] == 1
@@ -364,7 +362,6 @@ def test_projects_patch_w_milestones(client):
     assert res.json["status"] == "ok"
     res = client.get('/api/projects/1')
     assert res._status_code == 200
-    assert len(res.json) == 7
 
     assert res.json["id"] == 1
     assert res.json["idinstitution"] == 1
@@ -424,7 +421,6 @@ def test_projects_patch_wo_params(client):
     assert res.json["status"] == "ok"
     res = client.get('/api/projects/1')
     assert res._status_code == 200
-    assert len(res.json) == 7
 
     assert res.json["id"] == 1
     assert res.json["idinstitution"] == 1
@@ -470,7 +466,6 @@ def test_projects_patch_w_bad_milestone(client):
     assert res.json["status"] == "invalid json"
     res = client.get('/api/projects/1')
     assert res._status_code == 200
-    assert len(res.json) == 7
     assert len(res.json["milestones"]) == 4
 
 
