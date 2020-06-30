@@ -2,7 +2,7 @@
 from datetime import datetime
 from typing import List
 
-from sqlalchemy import Column, ForeignKey, Integer, VARCHAR, BINARY, BOOLEAN, DateTime, Float
+from sqlalchemy import Column, ForeignKey, Integer, VARCHAR, BINARY, BOOLEAN, DateTime, Float, TEXT
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 from sqlalchemy.orm import relationship
 
@@ -15,6 +15,7 @@ class Project(BASE):
     nameProject = Column(VARCHAR(256))
     webpageProject = Column(VARCHAR(256))
     picPathProject = Column(VARCHAR(256))
+    descriptionProject = Column(TEXT)
 
     smartcontract_id = Column(Integer, ForeignKey('SmartContract.idSmartContract'))
     smartcontract = relationship("SmartContract", back_populates="projects")
@@ -58,6 +59,7 @@ class Institution(BASE):
     picPathInstitution = Column(VARCHAR(256))
     latitude = Column(Float)
     longitude = Column(Float)
+    descriptionInstitution = Column(TEXT)
 
     projects = relationship("Project", back_populates="institution")
 

@@ -62,6 +62,7 @@ def institutions_get():
             "longitude": result.longitude,
             "latitude": result.latitude,
             "publickey": result.publickeyInstitution,
+            "description": result.descriptionInstitution
         })
 
     return jsonify(json_data)
@@ -79,6 +80,7 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
     address = request.headers.get('address')
     username = request.headers.get('username')
     publickey = request.headers.get('publickey')
+    description = request.headers.get('description')
 
     if not user_inst.group == "support":
         return jsonify({'error': 'Forbidden'}), 403
@@ -101,7 +103,7 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
 
     # Todo: smartcontract_id
     institution_inst = Institution(nameInstitution=name, webpageInstitution=webpage, addressInstitution=address,
-                                   smartcontract_id=2, publickeyInstitution=publickey)
+                                   smartcontract_id=2, publickeyInstitution=publickey, descriptionInstitution=description)
     transaction_inst = Transaction(dateTransaction=datetime.now(), smartcontract_id=2, user=owner_inst)
 
     session.add_all([institution_inst, transaction_inst])
@@ -121,6 +123,7 @@ def institutions_patch(user_inst):
     name = request.headers.get('name')
     webpage = request.headers.get('webpage')
     address = request.headers.get('address')
+    description = request.headers.get('description')
 
     if institution_id is None:
         return jsonify({'error': 'Missing parameter'}), 400
@@ -150,6 +153,8 @@ def institutions_patch(user_inst):
         institution.addressInstitution = address
     if webpage:
         institution.webpageInstitution = webpage
+    if description:
+        institution.descriptionInstitution = description
 
     session.commit()
     return jsonify({'status': 'Institution wurde bearbeitet'}), 201

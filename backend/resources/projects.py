@@ -61,6 +61,7 @@ def projects_get():
             'idsmartcontract': result.smartcontract_id,
             'idinstitution': result.institution_id,
             'picturePath': result.picPathProject,
+            'description': result.descriptionProject
         })
 
     return jsonify(json_data)
@@ -113,6 +114,7 @@ def projects_id(id):  # noqa
         'idinstitution': results.institution_id,
         'milestones': json_ms,
         'picturePath': results.picPathProject,
+        'description': result.descriptionProject
     }
 
     return jsonify(json_data), 200
@@ -133,6 +135,7 @@ def projects_post(user_inst):  # pylint:disable=unused-argument
     required_votes = request.headers.get('requiredVotes')
     until = request.headers.get('until')
     milestones = request.headers.get('milestones', default="[]")
+    description = request.headers.get('description')
 
     if None in [name, goal, required_votes, until]:
         return jsonify({'error': 'Missing parameter'}), 403
@@ -153,7 +156,8 @@ def projects_post(user_inst):  # pylint:disable=unused-argument
         nameProject=name,
         webpageProject=webpage,
         smartcontract_id=1,
-        institution_id=id_institution
+        institution_id=id_institution,
+        descriptionProject=description
         # ToDo: add user as project owner
     )
 
@@ -186,6 +190,7 @@ def projects_patch(user_inst, id):  # pylint:disable=invalid-name,redefined-buil
     """
     webpage = request.headers.get('webpage', default=None)
     milestones = request.headers.get('milestones', default="[]")
+    description = request.headers.get('description')
     # ToDo: is this user allowed to patch this project?
 
     session = DB_SESSION()
@@ -198,6 +203,8 @@ def projects_patch(user_inst, id):  # pylint:disable=invalid-name,redefined-buil
 
     if webpage is not None:
         project_inst.webpageProject = webpage
+    if description is not None:
+        project_inst.descriptionProject = description
 
     try:
         milestones_inst: List[Milestone] = []
