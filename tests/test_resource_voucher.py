@@ -97,6 +97,77 @@ def test_voucher_institution_get_available_bad(client):
     assert res._status_code == 400
 
 
+def test_voucher_institution_post(client_w_eth):
+    headers = {"authToken": TOKEN_1, "idInstitution": 1, "price": 3000, "subject": "subject", "title": "title",
+               "validTime": 2 * 31536000}
+    res = client_w_eth.post('/api/vouchers/institution', headers=headers)
+    assert res._status_code == 200
+
+    res = client_w_eth.get('/api/vouchers/institution')
+    assert res._status_code == 200
+    assert len(res.json) == 3
+
+    assert res.json[2]["id"] == 3
+    assert res.json[2]["amount"] == 0
+    assert res.json[2]["institutionid"] == 1
+    assert res.json[2]["institutionName"] == "MSGraphic"
+    assert res.json[2]["subject"] == "subject"
+    assert res.json[2]["title"] == "title"
+    assert res.json[2]["validTime"] == 2 * 31536000
+    assert res.json[2]["available"]
+    assert res.json[2]["price"] == 3000
+
+
+def test_voucher_institution_post2(client_w_eth):
+    headers = {"authToken": TOKEN_1, "idInstitution": 1, "price": 3000, "subject": "subject", "title": "title"}
+    res = client_w_eth.post('/api/vouchers/institution', headers=headers)
+    assert res._status_code == 200
+
+    res = client_w_eth.get('/api/vouchers/institution')
+    assert res._status_code == 200
+    assert len(res.json) == 3
+
+    assert res.json[2]["id"] == 3
+    assert res.json[2]["amount"] == 0
+    assert res.json[2]["institutionid"] == 1
+    assert res.json[2]["institutionName"] == "MSGraphic"
+    assert res.json[2]["subject"] == "subject"
+    assert res.json[2]["title"] == "title"
+    assert res.json[2]["validTime"] == 2 * 31536000
+    assert res.json[2]["available"]
+    assert res.json[2]["price"] == 3000
+
+
+def test_voucher_institution_post_bad_institution(client_w_eth):
+    headers = {"authToken": TOKEN_1, "idInstitution": 1337, "price": 3000, "subject": "subject", "title": "title"}
+    res = client_w_eth.post('/api/vouchers/institution', headers=headers)
+    assert res._status_code == 400
+
+    res = client_w_eth.get('/api/vouchers/institution')
+    assert res._status_code == 200
+    assert len(res.json) == 2
+
+
+def test_voucher_institution_missing_params(client_w_eth):
+    headers = {"authToken": TOKEN_1, "idInstitution": 1, "price": 3000}
+    res = client_w_eth.post('/api/vouchers/institution', headers=headers)
+    assert res._status_code == 400
+
+    res = client_w_eth.get('/api/vouchers/institution')
+    assert res._status_code == 200
+    assert len(res.json) == 2
+
+
+def test_voucher_institution_bad_params(client_w_eth):
+    headers = {"authToken": TOKEN_1, "idInstitution": 1, "price": 3000, "title": "", "subject": ""}
+    res = client_w_eth.post('/api/vouchers/institution', headers=headers)
+    assert res._status_code == 400
+
+    res = client_w_eth.get('/api/vouchers/institution')
+    assert res._status_code == 200
+    assert len(res.json) == 2
+
+
 def test_voucher_user_get(client):
     res = client.get('/api/vouchers/user')
     assert res._status_code == 200
@@ -352,7 +423,6 @@ def test_voucher_user_delete_bad_user(client):
 
 def test_voucher_user_post(client_w_eth):
     headers = {"authToken": TOKEN_1, "idVoucher": 2}
-    # ToDo: Add balance
     res = client_w_eth.post('/api/vouchers/user', headers=headers)
     assert res._status_code == 200
 
@@ -377,7 +447,6 @@ def test_voucher_user_post(client_w_eth):
 
 def test_voucher_user_post2(client_w_eth):
     headers = {"authToken": TOKEN_1, "idVoucher": 1}
-    # ToDo: Add balance
     res = client_w_eth.post('/api/vouchers/user', headers=headers)
     assert res._status_code == 406
 
@@ -395,7 +464,6 @@ def test_voucher_user_post2(client_w_eth):
 
 def test_voucher_user_post_bad_voucherid(client_w_eth):
     headers = {"authToken": TOKEN_1, "idVoucher": 1337}
-    # ToDo: Add balance
     res = client_w_eth.post('/api/vouchers/user', headers=headers)
     assert res._status_code == 404
 
