@@ -70,15 +70,15 @@ def donations_post(user_inst):
     """
     idmilestone = request.headers.get('idmilestone', default=None)
     amount = request.headers.get('amount', default=None)
-    voteEnabled = request.headers.get('voteEnabled', default=None)
+    vote_enabled = request.headers.get('voteEnabled', default=None)
 
-    if None in [idmilestone, amount, voteEnabled]:
+    if None in [idmilestone, amount, vote_enabled]:
         return jsonify({'error': 'Missing parameter'}), 400
 
-    if voteEnabled == "True":
-        voteEnabled = True
-    elif voteEnabled == "False":
-        voteEnabled = False
+    if vote_enabled == "True":
+        vote_enabled = True
+    elif vote_enabled == "False":
+        vote_enabled = False
     else:
         return jsonify({'error': 'Unknown voteEnabled parameter'})
 
@@ -91,7 +91,7 @@ def donations_post(user_inst):
         amountDonation=amount,
         user=user_inst,
         milestone_id=idmilestone,
-        voteDonation=voteEnabled
+        voteDonation=vote_enabled
     )
 
     session.add(donations_inst)
