@@ -114,7 +114,7 @@ def projects_id(id):  # noqa
         'idinstitution': results.institution_id,
         'milestones': json_ms,
         'picturePath': results.picPathProject,
-        'description': result.descriptionProject
+        'description': results.descriptionProject
     }
 
     return jsonify(json_data), 200

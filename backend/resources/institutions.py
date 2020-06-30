@@ -103,7 +103,8 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
 
     # Todo: smartcontract_id
     institution_inst = Institution(nameInstitution=name, webpageInstitution=webpage, addressInstitution=address,
-                                   smartcontract_id=2, publickeyInstitution=publickey, descriptionInstitution=description)
+                                   smartcontract_id=2, publickeyInstitution=publickey,
+                                  descriptionInstitution=description)
     transaction_inst = Transaction(dateTransaction=datetime.now(), smartcontract_id=2, user=owner_inst)
 
     session.add_all([institution_inst, transaction_inst])
