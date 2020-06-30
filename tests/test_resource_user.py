@@ -1,6 +1,6 @@
 """Tests for resource users."""
 
-from .test_blockstackauth import TOKEN_1, TOKEN_3
+from .test_blockstackauth import TOKEN_1, TOKEN_2, TOKEN_3
 
 
 def test_users_get(client):
@@ -140,6 +140,22 @@ def test_users_put(client):
     assert res.json["email"] == "a@b.com"
 
 
+def test_users_put_group_wout_permission(client):
+    headers = {"authToken": TOKEN_2, "firstname": "Peter", "lastname": "Maffay", "email": "a@b.com", "group": "support"}
+    res = client.put('/api/users', headers=headers)
+    assert res._status_code == 200
+
+    res = client.get('/api/users/7')
+    assert res._status_code == 200
+
+    assert res.json["id"] == 7
+    assert res.json["username"] == "sw2020testuser2.id.blockstack"
+    assert res.json["firstname"] == "Peter"
+    assert res.json["lastname"] == "Maffay"
+    assert res.json["email"] == "a@b.com"
+    assert res.json["group"] is None
+
+
 def test_users_put_invalid_email(client):
     headers = {"authToken": TOKEN_1, "firstname": "newfirstname", "lastname": "newlastname", "email": "dennis"}
     res = client.put('/api/users', headers=headers)
@@ -225,6 +241,18 @@ def test_user_post(client):
     res = client.post('/api/users', headers=headers)
     assert res._status_code == 201
     assert res.json["status"] == "User registered"
+
+
+def test_user_post_w_invalid_group(client):
+    headers = {"authToken": TOKEN_3, "username": "sw2020testuser1337.id.blockstack", "firstname": "Peter",
+               "lastname": "MaffayäÖ", "email": "sw2020testuser1337@re-gister.com", "group": "support"}
+    res = client.post('/api/users', headers=headers)
+    assert res._status_code == 201
+    assert res.json["status"] == "User registered"
+
+    res = client.get('/api/users?username=sw2020testuser1337.id.blockstack')
+    assert res._status_code == 200
+    assert res.json[0]["group"] is None
 
 
 def test_user_post_existing(client):
