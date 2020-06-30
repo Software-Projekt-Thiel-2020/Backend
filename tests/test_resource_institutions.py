@@ -73,7 +73,7 @@ def test_institutions_get_bad_id(client):
 
 def test_institutions_post(client):
     headers = {"authToken": TOKEN_1, "username": "sw2020testuser2.id.blockstack", "name": "ExampleInstitution",
-               "address": "Address"}
+               "address": "Address", "description": "description", "latitude": 13.37, "longitude": 42.69}
     res = client.post('/api/institutions', headers=headers)
     assert res._status_code == 201
     assert len(res.json) == 1
@@ -87,12 +87,15 @@ def test_institutions_post(client):
     assert res.json[0]["name"] == "ExampleInstitution"
     assert res.json[0]["webpage"] is None
     assert res.json[0]["address"] == "Address"
+    assert res.json[0]["description"] == "description"
+    assert res.json[0]["latitude"] == 13.37
+    assert res.json[0]["longitude"] == 42.69
 
 
 def test_institutions_post2(client):
     headers = {"authToken": TOKEN_1, "username": "sw2020testuser2.id.blockstack", "name": "ExampleInstitution",
-               "address": "Address",
-               "webpage": "https://www.example.com/"}
+               "address": "Address", "webpage": "https://www.example.com/", "description": "description",
+               "latitude": 13.37, "longitude": 42.69}
     res = client.post('/api/institutions', headers=headers)
     assert res._status_code == 201
     assert len(res.json) == 1
@@ -110,8 +113,8 @@ def test_institutions_post2(client):
 
 def test_institutions_post_bad_owner(client):
     headers = {"authToken": TOKEN_1, "username": "sw2020testuser1337.id.blockstack", "name": "ExampleInstitution",
-               "address": "Address",
-               "webpage": "https://www.example.com/"}
+               "address": "Address", "webpage": "https://www.example.com/", "description": "description",
+               "latitude": 13.37, "longitude": 42.69}
     res = client.post('/api/institutions', headers=headers)
     assert res._status_code == 400
     assert len(res.json) == 1
@@ -120,8 +123,8 @@ def test_institutions_post_bad_owner(client):
 
 def test_institutions_post_non_support_user(client):
     headers = {"authToken": TOKEN_2, "username": "sw2020testuser2.id.blockstack", "name": "ExampleInstitution",
-               "address": "Address",
-               "webpage": "https://www.example.com/"}
+               "address": "Address", "webpage": "https://www.example.com/", "description": "description",
+               "latitude": 13.37, "longitude": 42.69}
     res = client.post('/api/institutions', headers=headers)
     assert res._status_code == 403
     assert len(res.json) == 1
@@ -144,7 +147,7 @@ def test_institutions_post_no_params(client):
 
 def test_institutions_post_bad_webpage(client):
     headers = {"authToken": TOKEN_1, "name": "ExampleInstitution", "address": "Address",
-               "webpage": "NotAValidURL"}
+               "webpage": "NotAValidURL", "description": "description", "latitude": 13.37, "longitude": 42.69}
     res = client.post('/api/institutions', headers=headers)
     assert res._status_code == 400
     assert len(res.json) == 1
@@ -153,8 +156,8 @@ def test_institutions_post_bad_webpage(client):
 
 def test_institutions_post_existing_name(client):
     headers = {"authToken": TOKEN_1, "username": "sw2020testuser2.id.blockstack", "name": "MSGraphic",
-               "address": "Address",
-               "webpage": "https://www.example.com/"}
+               "address": "Address", "webpage": "https://www.example.com/", "description": "description",
+               "latitude": 13.37, "longitude": 42.69}
     res = client.post('/api/institutions', headers=headers)
     assert res._status_code == 400
     assert len(res.json) == 1
