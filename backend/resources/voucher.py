@@ -1,21 +1,64 @@
 """Voucher Resource."""
 import configparser
 import json
-
 from datetime import datetime, timedelta
 
 from flask import Blueprint, jsonify, request
 from sqlalchemy.orm.exc import NoResultFound
-
 from web3.exceptions import InvalidAddress
-
-from backend.smart_contracts.web3 import WEB3
 
 from backend.database.db import DB_SESSION
 from backend.database.model import Voucher, VoucherUser, Institution
 from backend.resources.helpers import auth_user, check_params_int
+from backend.smart_contracts.web3 import WEB3
 
 BP = Blueprint('voucher', __name__, url_prefix='/api/vouchers')
+
+
+@BP.route('/institution', methods=['POST'])
+@auth_user
+def voucher_post_institution(user_inst):  # pylint:disable=unused-argument
+    """
+    Handles POST for resource <base>/api/voucher/institution .
+    :return: json data result (success or failure)
+    """
+    institution_id = request.headers.get('idInstitution', default=None)
+    voucher_price = request.headers.get('price', default=None)
+    voucher_description = request.headers.get('subject', default=None)
+    voucher_title = request.headers.get('title', default=None)
+    voucher_valid_time = request.headers.get('validTime', default=2 * 31536000)
+
+    if None in [voucher_title, voucher_description, voucher_price, institution_id]:
+        return jsonify({'error': 'Missing parameter'}), 400
+
+    if "" in [voucher_title, voucher_description]:
+        return jsonify({'error': "Empty parameter"}), 400
+
+    try:
+        check_params_int([voucher_price, voucher_valid_time, institution_id])
+    except ValueError:
+        return jsonify({"error": "bad argument"}), 400
+
+    session = DB_SESSION()
+
+    # ToDo: check institution_owner = user_inst
+
+    res = session.query(Institution).filter(Institution.idInstitution == institution_id).one_or_none()
+    if res is None:
+        return jsonify({'status': 'Institution does not exist'}), 400
+
+    voucher_inst = Voucher(titleVoucher=voucher_title,
+                           descriptionVoucher=voucher_description,
+                           priceVoucher=voucher_price,
+                           validTime=voucher_valid_time,
+                           institution_id=institution_id,
+                           )
+
+    # ToDo Blockchain
+
+    session.add(voucher_inst)
+    session.commit()
+    return jsonify({'status': 'Voucher registered'}), 200
 
 
 @BP.route('/institution', methods=['GET'])
@@ -108,11 +151,13 @@ def voucher_post(user):
         cfg_parser.read("backend_config.ini")
 
         voucher_sc = WEB3.eth.contract(
-                address=WEB3.toChecksumAddress(cfg_parser["Voucher"]["ADDRESS"]),
-                abi=json.loads(cfg_parser["Voucher"]["ABI"])
+            address=WEB3.toChecksumAddress(cfg_parser["Voucher"]["ADDRESS"]),
+            abi=json.loads(cfg_parser["Voucher"]["ABI"])
         )
 
-        transaction = voucher_sc.functions.addVoucher(user.publickeyUser, WEB3.toBytes(text=voucher.titleVoucher), 666)\
+        transaction = voucher_sc.functions.addVoucher(user.publickeyUser,
+                                                      WEB3.toBytes(text=voucher.titleVoucher),
+                                                      666) \
             .buildTransaction({'nonce': WEB3.eth.getTransactionCount(user.publickeyUser)})
         signed_transaction = WEB3.eth.account.sign_transaction(transaction, user.privatekeyUser)
 
