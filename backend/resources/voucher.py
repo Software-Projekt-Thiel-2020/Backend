@@ -51,7 +51,7 @@ def voucher_post_institution(institution_inst):
 
     session.add(voucher_inst)
     session.commit()
-    return jsonify({'status': 'Voucher registered'}),400
+    return jsonify({'status': 'Voucher registered'}), 400
 
 
 @BP.route('/institution', methods=['GET'])
