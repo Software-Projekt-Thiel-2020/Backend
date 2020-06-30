@@ -81,11 +81,13 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
     username = request.headers.get('username')
     publickey = request.headers.get('publickey')
     description = request.headers.get('description')
+    latitude = request.headers.get('latitude')
+    longitude = request.headers.get('longitude')
 
     if not user_inst.group == "support":
         return jsonify({'error': 'Forbidden'}), 403
 
-    if None in [name, address]:  # or publickey is None:
+    if None in [name, address, latitude, longitude]:  # or publickey is None:
         return jsonify({'error': 'Missing parameter'}), 400
 
     if webpage is not None and not validators.url(webpage):
@@ -104,7 +106,8 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
     # Todo: smartcontract_id
     institution_inst = Institution(nameInstitution=name, webpageInstitution=webpage, addressInstitution=address,
                                    smartcontract_id=2, publickeyInstitution=publickey,
-                                  descriptionInstitution=description)
+                                  descriptionInstitution=description,
+                                  latitude=latitude, longitude=longitude)
     transaction_inst = Transaction(dateTransaction=datetime.now(), smartcontract_id=2, user=owner_inst)
 
     session.add_all([institution_inst, transaction_inst])
@@ -125,6 +128,8 @@ def institutions_patch(user_inst):
     webpage = request.headers.get('webpage')
     address = request.headers.get('address')
     description = request.headers.get('description')
+    latitude = request.headers.get('latitude')
+    longitude = request.headers.get('longitude')
 
     if institution_id is None:
         return jsonify({'error': 'Missing parameter'}), 400
@@ -156,6 +161,9 @@ def institutions_patch(user_inst):
         institution.webpageInstitution = webpage
     if description:
         institution.descriptionInstitution = description
+    if latitude and longitude:
+        institution.latitude = latitude
+        institution.longitude = longitude
 
     session.commit()
     return jsonify({'status': 'Institution wurde bearbeitet'}), 201
