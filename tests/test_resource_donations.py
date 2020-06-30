@@ -188,7 +188,7 @@ def test_donations_get_w_project_bad_value(client):
 
 
 def test_donations_post(client):
-    headers = {"authToken": TOKEN_1, "idmilestone": 1, "amount": 1337, "etherAccountKey": "89354joiternjkfsdhiu4378z"}
+    headers = {"authToken": TOKEN_1, "idmilestone": 1, "amount": 1337, "voteEnabled": 1}
     res = client.post('/api/donations', headers=headers)
 
     assert res._status_code == 201
@@ -207,7 +207,7 @@ def test_donations_post(client):
 
 
 def test_donations_post_w_nonexistant_milestone(client):
-    headers = {"authToken": TOKEN_1, "idmilestone": 1337, "amount": 1337, "etherAccountKey": "89354joiternjkfsdhiu4378z"}
+    headers = {"authToken": TOKEN_1, "idmilestone": 1337, "amount": 1337, "voteEnabled": 0}
     res = client.post('/api/donations', headers=headers)
 
     assert res._status_code == 400

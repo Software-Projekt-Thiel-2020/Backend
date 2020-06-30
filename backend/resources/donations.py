@@ -75,13 +75,6 @@ def donations_post(user_inst):
     if None in [idmilestone, amount, vote_enabled]:
         return jsonify({'error': 'Missing parameter'}), 400
 
-    if vote_enabled == "True":
-        vote_enabled = True
-    elif vote_enabled == "False":
-        vote_enabled = False
-    else:
-        return jsonify({'error': 'Unknown voteEnabled parameter'})
-
     session = DB_SESSION()
 
     if session.query(Milestone).get(idmilestone) is None:
@@ -91,7 +84,7 @@ def donations_post(user_inst):
         amountDonation=amount,
         user=user_inst,
         milestone_id=idmilestone,
-        voteDonation=vote_enabled
+        voteDonation=bool(int(vote_enabled))
     )
 
     session.add(donations_inst)
