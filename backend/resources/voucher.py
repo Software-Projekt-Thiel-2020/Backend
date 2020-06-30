@@ -28,11 +28,10 @@ def voucher_post_institution(institution):
     voucher_title = request.headers.get('title', default=None)
     voucher_description = request.headers.get('description', default=None)
     voucher_price = request.headers.get('price', default=None)
-    voucher_validTime = request.headers.get('validTime', default=2 * 31536000)
+    voucher_valid_time = request.headers.get('validTime', default=2 * 31536000)
 
-    if None in [voucher_id, voucher_title,voucher_description, voucher_price]:
+    if None in [voucher_id, voucher_title, voucher_description, voucher_price]:
         return jsonify({'error': 'Missing parameter'}), 400
-
 
     if "" in [voucher_title, voucher_description]:
         return jsonify({'error': "Empty parameter"}), 400
@@ -42,19 +41,18 @@ def voucher_post_institution(institution):
     if res is not None:
         return jsonify({'status': 'Id is already in use'}), 400
 
-
     voucher_inst = Voucher(idVoucher=voucher_id,
                            titleVoucher=voucher_title,
                            descriptionVoucher=voucher_description,
                            priceVoucher=voucher_price,
-                           validTime=voucher_validTime,
+                           validTime=voucher_valid_time,
                            institution_id=institution.idInstitution
                            )
-
 
     session.add(voucher_inst)
     session.commit()
     return jsonify({'status': 'Voucher registered'}),400
+
 
 @BP.route('/institution', methods=['GET'])
 def voucher_get():
