@@ -70,9 +70,9 @@ def donations_post(user_inst):
     """
     idmilestone = request.headers.get('idmilestone', default=None)
     amount = request.headers.get('amount', default=None)
-    ether_account_key = request.headers.get('etherAccountKey', default=None)  # ToDo: an web3.py ?
+    vote_enabled = request.headers.get('voteEnabled', default=None)
 
-    if None in [idmilestone, amount, ether_account_key]:
+    if None in [idmilestone, amount, vote_enabled]:
         return jsonify({'error': 'Missing parameter'}), 400
 
     session = DB_SESSION()
@@ -83,7 +83,8 @@ def donations_post(user_inst):
     donations_inst = Donation(
         amountDonation=amount,
         user=user_inst,
-        milestone_id=idmilestone
+        milestone_id=idmilestone,
+        voteDonation=bool(int(vote_enabled))
     )
 
     session.add(donations_inst)
