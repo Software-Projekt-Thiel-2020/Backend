@@ -85,11 +85,6 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
     latitude = request.headers.get('latitude')
     longitude = request.headers.get('longitude')
 
-    Donations = WEB3.eth.contract(abi=PROJECT_JSON["abi"], bytecode=PROJECT_JSON["bytecode"])
-    tx_hash = Donations.constructor(publickey, 80, WEB3.toBytes(text="donations sc"), 100000,
-                                    20).transact()
-    tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash)
-
     if not user_inst.group == "support":
         return jsonify({'error': 'Forbidden'}), 403
     if None in [name, address, latitude, longitude]:  # or publickey is None:
@@ -114,6 +109,11 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
     name_exist = session.query(Institution).filter(Institution.nameInstitution == name).first()
     if name_exist:
         return jsonify({'error': 'name already exists'}), 400
+
+    Donations = WEB3.eth.contract(abi=PROJECT_JSON["abi"], bytecode=PROJECT_JSON["bytecode"])
+    tx_hash = Donations.constructor(publickey, 80, WEB3.toBytes(text="donations sc"), 100000,
+                                    20).transact()
+    tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash)
 
     # Todo: smartcontract_id
     institution_inst = Institution(

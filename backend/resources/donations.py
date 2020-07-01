@@ -6,6 +6,7 @@ from backend.database.model import Donation
 from backend.database.model import Milestone
 from backend.database.model import Project
 from backend.resources.helpers import check_params_int, auth_user
+from backend.smart_contracts.web3 import WEB3, PROJECT_JSON
 
 BP = Blueprint('donations', __name__, url_prefix='/api/donations')
 
@@ -77,8 +78,30 @@ def donations_post(user_inst):
 
     session = DB_SESSION()
 
-    if session.query(Milestone).get(idmilestone) is None:
+    results: Milestone = session.query(Milestone).get(idmilestone)
+
+    if results is None:
         return jsonify({'error': 'Milestone not found'}), 400
+
+    address = results.project.institution.scAddress
+
+    donations_sc = WEB3.eth.contract(address=address, abi=PROJECT_JSON["abi"])
+
+    # Add Donation
+    tx = donations_sc.functions.register().buildTransaction({'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser), 'from': user_inst.publickeyUser})
+    signed_tx = WEB3.eth.account.signTransaction(tx, private_key=user_inst.privatekeyUser)
+    tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+    tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash)
+    print(tx_receipt)
+
+    tx = donations_sc.functions.donate(bool(int(vote_enabled))) \
+        .buildTransaction(
+        {'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser),
+         'from': user_inst.publickeyUser, 'value': amount})
+    signed_tx = WEB3.eth.account.signTransaction(tx, private_key=user_inst.privatekeyUser)
+    tx_hash2 = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+    tx_receipt2 = WEB3.eth.waitForTransactionReceipt(tx_hash2)
+    print(tx_receipt2)
 
     donations_inst = Donation(
         amountDonation=amount,
