@@ -28,13 +28,7 @@ donations_path = base / "build" / "contracts" / "Project.json"
 with open(str(donations_path)) as json_file:
     project_json = json.load(json_file)
 
-Donations = WEB3.eth.contract(abi=project_json["abi"], bytecode=project_json["bytecode"])
-tx_hash = Donations.constructor(WEB3.eth.accounts[1], 80, WEB3.toBytes(text="test donations sc"), 100000, 20).transact()
-tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash)
-
-donations_inst = WEB3.eth.contract(address=tx_receipt.contractAddress, abi=project_json["abi"])
-
-
+PROJECT_JSON: dict = project_json
 
 # import json
 # from pathlib import Path

@@ -8,6 +8,7 @@ from geopy import distance
 from backend.database.db import DB_SESSION
 from backend.database.model import Institution, Transaction, User
 from backend.resources.helpers import auth_user, check_params_int
+from backend.smart_contracts.web3 import WEB3, PROJECT_JSON
 
 BP = Blueprint('institutions', __name__, url_prefix='/api/institutions')  # set blueprint name and resource path
 
@@ -84,9 +85,13 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
     latitude = request.headers.get('latitude')
     longitude = request.headers.get('longitude')
 
+    Donations = WEB3.eth.contract(abi=PROJECT_JSON["abi"], bytecode=PROJECT_JSON["bytecode"])
+    tx_hash = Donations.constructor(publickey, 80, WEB3.toBytes(text="donations sc"), 100000,
+                                    20).transact()
+    tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash)
+
     if not user_inst.group == "support":
         return jsonify({'error': 'Forbidden'}), 403
-
     if None in [name, address, latitude, longitude]:  # or publickey is None:
         return jsonify({'error': 'Missing parameter'}), 400
 
@@ -119,7 +124,8 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
         publickeyInstitution=publickey,
         descriptionInstitution=description,
         latitude=latitude,
-        longitude=longitude
+        longitude=longitude,
+        scAddress=tx_receipt.contractAddress
     )
     transaction_inst = Transaction(dateTransaction=datetime.now(), smartcontract_id=2, user=owner_inst)
 
