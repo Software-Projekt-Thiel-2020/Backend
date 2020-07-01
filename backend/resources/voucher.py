@@ -15,6 +15,49 @@ from backend.smart_contracts.web3 import WEB3
 BP = Blueprint('voucher', __name__, url_prefix='/api/vouchers')
 
 
+@BP.route('/institution', methods=['PATCH'])
+def voucher_patch_institution():
+    """
+    Handles PATCH for resource <base>/api/vouchers/institutions.
+
+    :return: "{'status': 'ok'}", 200
+    """
+    inst_id = request.headers.get('idInstitution', default=None)
+    voucher_id = request.headers.get('idVoucher', default=None)
+    voucher_price = request.headers.get('priceVoucher', default=None)
+    voucher_available = request.headers.get('availableVoucher', default=None)
+    voucher_valid_time = request.headers.get('validTimeVoucher',default=None)
+
+    if None in [inst_id, voucher_id]:
+        return jsonify({'error': 'Missing parameter'}), 400
+
+    try:
+        check_params_int([voucher_id, inst_id, voucher_valid_time])
+    except ValueError:
+        return jsonify({"error": "bad argument"}), 400
+
+    session = DB_SESSION()
+    voucher = session.query(Voucher).filter(Voucher.idVoucher == voucher_id).one_or_none()
+
+    if voucher is None:
+        return jsonify({'error': 'voucher does not exist'}), 400
+
+    if int(voucher.institution_id) != int(inst_id):
+        return jsonify({"error": "voucher does not belong to institution"}), 400        
+
+    if voucher_valid_time:
+        if int(voucher_valid_time) < int(voucher.validTime):
+            return jsonify({'error': 'new validTime has to be bigger than the old one'}), 400
+        voucher.validTime = voucher_valid_time
+    if voucher_price:
+        voucher.priceVoucher = voucher_price
+    if voucher_available:
+        voucher.available = voucher_available
+
+    session.commit()
+    return jsonify({'status': 'Voucher wurde bearbeitet'}), 201            
+    
+
 @BP.route('/institution', methods=['POST'])
 @auth_user
 def voucher_post_institution(user_inst):  # pylint:disable=unused-argument
