@@ -92,7 +92,6 @@ def donations_post(user_inst):
     signed_tx = WEB3.eth.account.signTransaction(tx, private_key=user_inst.privatekeyUser)
     tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
     tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash)
-    print(tx_receipt)
 
     tx = donations_sc.functions.donate(bool(int(vote_enabled))) \
         .buildTransaction(
@@ -101,7 +100,6 @@ def donations_post(user_inst):
     signed_tx = WEB3.eth.account.signTransaction(tx, private_key=user_inst.privatekeyUser)
     tx_hash2 = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
     tx_receipt2 = WEB3.eth.waitForTransactionReceipt(tx_hash2)
-    print(tx_receipt2)
 
     donations_inst = Donation(
         amountDonation=amount,
