@@ -26,7 +26,7 @@ def voucher_patch_institution():
     voucher_id = request.headers.get('idVoucher', default=None)
     voucher_price = request.headers.get('priceVoucher', default=None)
     voucher_available = request.headers.get('availableVoucher', default=None)
-    voucher_valid_time = request.headers.get('validTimeVoucher',default=None)
+    voucher_valid_time = request.headers.get('validTimeVoucher', default=None)
 
     if None in [inst_id, voucher_id]:
         return jsonify({'error': 'Missing parameter'}), 400
@@ -43,7 +43,7 @@ def voucher_patch_institution():
         return jsonify({'error': 'voucher does not exist'}), 400
 
     if int(voucher.institution_id) != int(inst_id):
-        return jsonify({"error": "voucher does not belong to institution"}), 400        
+        return jsonify({"error": "voucher does not belong to institution"}), 400
 
     if voucher_valid_time:
         if int(voucher_valid_time) < int(voucher.validTime):
@@ -55,8 +55,8 @@ def voucher_patch_institution():
         voucher.available = voucher_available
 
     session.commit()
-    return jsonify({'status': 'Voucher wurde bearbeitet'}), 201            
-    
+    return jsonify({'status': 'Voucher wurde bearbeitet'}), 201
+
 
 @BP.route('/institution', methods=['POST'])
 @auth_user
