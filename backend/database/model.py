@@ -66,6 +66,9 @@ class Institution(BASE):
     smartcontract_id = Column(Integer, ForeignKey('SmartContract.idSmartContract'))
     smartcontract = relationship("SmartContract", back_populates="institutions")
 
+    user_id = Column(Integer, ForeignKey('User.idUser'))
+    user = relationship("User", back_populates="institution")
+
     vouchers = relationship("Voucher", back_populates="institution")
     publickeyInstitution = Column(VARCHAR(64))
 
@@ -102,6 +105,8 @@ class User(BASE):
     transactions = relationship("Transaction", back_populates="user")
 
     vouchers = relationship("VoucherUser")
+
+    institution = relationship("Institution", back_populates="user")
 
 
 class VoucherUser(BASE):
@@ -275,6 +280,11 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
     institutions[1].smartcontract = smartcontracts[0]
     institutions[2].smartcontract = smartcontracts[0]
     institutions[3].smartcontract = smartcontracts[0]
+
+    institutions[0].user = users[4]
+    institutions[1].user = users[3]
+    institutions[2].user = users[2]
+    institutions[3].user = users[1]
 
     projects: List[Project] = [
         Project(idProject=1,
