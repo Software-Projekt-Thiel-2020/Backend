@@ -142,24 +142,22 @@ class Transaction(BASE):
 
 
 # sw2020testuser1.id.blockstack - shortened
-TOKEN_1 = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIyNGE1OTFkNS1lOGJiLTQwMzYtYWE0Ni1hNzg5MjU2ZDVjZDYiLCJpYX" \
-          "QiOjE1OTEyMjUyMzIsImV4cCI6MTU5MzgxNzIzMiwiaXNzIjoiZGlkOmJ0Yy1hZGRyOjE0Z1N4eFhZdzlXbTNoYWoxaGVKYXQ1ZGdpe" \
-          "HF0YVJ3a3MiLCJwdWJsaWNfa2V5cyI6WyIwMzliZWM4NjkxMGViZmVmMGU4ZmE3YmE2OTQ1MWU1ZjljNDU1NjhmZDFhMmY4MDQ5MzM2" \
-          "MWFlMzUzOGM2N2Y3YmIiXSwidXNlcm5hbWUiOiJzdzIwMjB0ZXN0dXNlcjEuaWQuYmxvY2tzdGFjayIsImNvcmVfdG9rZW4iOm51bGw" \
-          "sImVtYWlsIjpudWxsLCJwcm9maWxlX3VybCI6Imh0dHBzOi8vZ2FpYS5ibG9ja3N0YWNrLm9yZy9odWIvMTRnU3h4WFl3OVdtM2hhaj" \
-          "FoZUphdDVkZ2l4cXRhUndrcy9wcm9maWxlLmpzb24iLCJodWJVcmwiOiJodHRwczovL2h1Yi5ibG9ja3N0YWNrLm9yZyIsImJsb2Nrc" \
-          "3RhY2tBUElVcmwiOiJodHRwczovL2NvcmUuYmxvY2tzdGFjay5vcmciLCJ2ZXJzaW9uIjoiMS4zLjEifQ.5Nhd7TWhXhwkkkNOZCHUc" \
-          "MSX4ykE6Fdm5-N7yxA60ZI"
+TOKEN_1 = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIyNGE1OTFkNS1lOGJiLTQwMzYtYWE0Ni1hNzg5MjU2ZDVjZDYiLCJpYXQiO" \
+          "jE1OTEyMjUyMzIsImV4cCI6MTYyNTM1MzIzMiwiaXNzIjoiZGlkOmJ0Yy1hZGRyOjE0Z1N4eFhZdzlXbTNoYWoxaGVKYXQ1ZGdpeHF0YVJ" \
+          "3a3MiLCJwdWJsaWNfa2V5cyI6WyIwMzliZWM4NjkxMGViZmVmMGU4ZmE3YmE2OTQ1MWU1ZjljNDU1NjhmZDFhMmY4MDQ5MzM2MWFlMzUzO" \
+          "GM2N2Y3YmIiXSwidXNlcm5hbWUiOiJzdzIwMjB0ZXN0dXNlcjEuaWQuYmxvY2tzdGFjayIsImNvcmVfdG9rZW4iOm51bGwsImVtYWlsIjp" \
+          "udWxsLCJwcm9maWxlX3VybCI6Imh0dHBzOi8vZ2FpYS5ibG9ja3N0YWNrLm9yZy9odWIvMTRnU3h4WFl3OVdtM2hhajFoZUphdDVkZ2l4c" \
+          "XRhUndrcy9wcm9maWxlLmpzb24iLCJodWJVcmwiOiJodHRwczovL2h1Yi5ibG9ja3N0YWNrLm9yZyIsImJsb2Nrc3RhY2tBUElVcmwiOiJ" \
+          "odHRwczovL2NvcmUuYmxvY2tzdGFjay5vcmciLCJ2ZXJzaW9uIjoiMS4zLjEifQ.5Nhd7TWhXhwkkkNOZCHUcMSX4ykE6Fdm5-N7yxA60ZI"
 
 # sw2020testuser2.id.blockstack
-TOKEN_2 = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxZjJiYzcyNy03Y2ZhLTQ5NDEtOTk4ZC03YjIyMGEwOTg2NmYiLCJpYXQi" \
-          "OjE1OTEyMjU0OTYsImV4cCI6MTU5MzgxNzQ5NiwiaXNzIjoiZGlkOmJ0Yy1hZGRyOjFIMlQxY0Rmd3lZZFlra1pFUkhmQUh4SkJxaDNie" \
-          "TlWd2kiLCJwdWJsaWNfa2V5cyI6WyIwMzgzNGE2MTI3NTc0NzhiMjlhMGU0ZjAxNTdiMjcwYTk3OTUzNzc1MTVhNjJkMGE2M2EyNWQ1Nj" \
-          "BmMDgxOGU5NWIiXSwidXNlcm5hbWUiOiJzdzIwMjB0ZXN0dXNlcjIuaWQuYmxvY2tzdGFjayIsImNvcmVfdG9rZW4iOm51bGwsImVtYWl" \
-          "sIjpudWxsLCJwcm9maWxlX3VybCI6Imh0dHBzOi8vZ2FpYS5ibG9ja3N0YWNrLm9yZy9odWIvMUgyVDFjRGZ3eVlkWWtrWkVSSGZBSHhK" \
-          "QnFoM2J5OVZ3aS9wcm9maWxlLmpzb24iLCJodWJVcmwiOiJodHRwczovL2h1Yi5ibG9ja3N0YWNrLm9yZyIsImJsb2Nrc3RhY2tBUElVc" \
-          "mwiOiJodHRwczovL2NvcmUuYmxvY2tzdGFjay5vcmciLCJ2ZXJzaW9uIjoiMS4zLjEifQ.GLsCrvh3jxopSwHTQeFA57AQ-eeL_ZbXto8" \
-          "RtzioxMw"
+TOKEN_2 = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxZjJiYzcyNy03Y2ZhLTQ5NDEtOTk4ZC03YjIyMGEwOTg2NmYiLCJpYXQiO" \
+          "jE1OTEyMjU0OTYsImV4cCI6MTYyNTM1MzQ5NiwiaXNzIjoiZGlkOmJ0Yy1hZGRyOjFIMlQxY0Rmd3lZZFlra1pFUkhmQUh4SkJxaDNieTl" \
+          "Wd2kiLCJwdWJsaWNfa2V5cyI6WyIwMzgzNGE2MTI3NTc0NzhiMjlhMGU0ZjAxNTdiMjcwYTk3OTUzNzc1MTVhNjJkMGE2M2EyNWQ1NjBmM" \
+          "DgxOGU5NWIiXSwidXNlcm5hbWUiOiJzdzIwMjB0ZXN0dXNlcjIuaWQuYmxvY2tzdGFjayIsImNvcmVfdG9rZW4iOm51bGwsImVtYWlsIjp" \
+          "udWxsLCJwcm9maWxlX3VybCI6Imh0dHBzOi8vZ2FpYS5ibG9ja3N0YWNrLm9yZy9odWIvMUgyVDFjRGZ3eVlkWWtrWkVSSGZBSHhKQnFoM" \
+          "2J5OVZ3aS9wcm9maWxlLmpzb24iLCJodWJVcmwiOiJodHRwczovL2h1Yi5ibG9ja3N0YWNrLm9yZyIsImJsb2Nrc3RhY2tBUElVcmwiOiJ" \
+          "odHRwczovL2NvcmUuYmxvY2tzdGFjay5vcmciLCJ2ZXJzaW9uIjoiMS4zLjEifQ.GLsCrvh3jxopSwHTQeFA57AQ-eeL_ZbXto8RtzioxMw"
 
 
 def add_sample_data(db_session):  # pylint:disable=too-many-statements
