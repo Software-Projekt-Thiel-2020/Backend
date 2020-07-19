@@ -15,6 +15,38 @@ from backend.resources.helpers import auth_user, check_params_int
 BP = Blueprint('projects', __name__, url_prefix='/api/projects')
 
 
+@BP.route('/vote', methods=['PATCH'])
+def milestones_vote():
+    """
+    Vote for milestone.
+
+    :return: "{'status': 'ok'}", 200
+    """
+    project_id = request.headers.get('projectId', default=None)
+    milestone_id = request.headers.get('milestoneId', default=None)
+
+    if None in [project_id, milestone_id]:
+        return jsonify({'error': 'Missing parameter'}), 400
+
+    try:
+        check_params_int([project_id, milestone_id])
+    except ValueError:
+        return jsonify({"error": "bad argument"}), 400
+
+    session = DB_SESSION()
+    milestones = session.query(Milestone)
+    for milestone in milestones:
+
+        if int(milestone.idMilestone) == int(milestone_id):
+
+            if int(milestone.project_id) == int(project_id):
+                milestone.currentVotesMilestone += 1
+                session.commit()
+                return jsonify({'status': 'ok'}), 201
+
+    return jsonify({"error": "milestone not found"}), 404
+
+
 @BP.route('', methods=['GET'])
 def projects_get():
     """
