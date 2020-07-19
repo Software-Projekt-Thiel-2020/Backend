@@ -75,6 +75,10 @@ def donations_post(user_inst):
 
     if None in [idmilestone, amount, vote_enabled]:
         return jsonify({'error': 'Missing parameter'}), 400
+    try:
+        check_params_int([idmilestone, amount, vote_enabled])
+    except ValueError:
+        return jsonify({"error": "bad argument"}), 400
 
     session = DB_SESSION()
 
@@ -83,32 +87,40 @@ def donations_post(user_inst):
     if results is None:
         return jsonify({'error': 'Milestone not found'}), 400
 
-    address = results.project.institution.scAddress
+    donations_sc = WEB3.eth.contract(address=results.project.institution.scAddress, abi=PROJECT_JSON["abi"])
 
-    donations_sc = WEB3.eth.contract(address=address, abi=PROJECT_JSON["abi"])
+    try:
+        # Add Donation
+        tx_hash = donations_sc.functions.register().buildTransaction({
+            'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser),
+            'from': user_inst.publickeyUser
+        })
+        print("tx: ", tx_hash)
+        signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=user_inst.privatekeyUser)
+        tx_hash2 = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+        WEB3.eth.waitForTransactionReceipt(tx_hash2)
 
-    # Add Donation
-    tx = donations_sc.functions.register().buildTransaction({'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser), 'from': user_inst.publickeyUser})
-    signed_tx = WEB3.eth.account.signTransaction(tx, private_key=user_inst.privatekeyUser)
-    tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
-    tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash)
+        tx_hash = donations_sc.functions.donate(bool(int(vote_enabled))) \
+            .buildTransaction(
+            {'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser),
+             'from': user_inst.publickeyUser, 'value': int(amount)})
+        signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=user_inst.privatekeyUser)
+        tx_hash2 = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+        WEB3.eth.waitForTransactionReceipt(tx_hash2)
 
-    tx = donations_sc.functions.donate(bool(int(vote_enabled))) \
-        .buildTransaction(
-        {'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser),
-         'from': user_inst.publickeyUser, 'value': amount})
-    signed_tx = WEB3.eth.account.signTransaction(tx, private_key=user_inst.privatekeyUser)
-    tx_hash2 = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
-    tx_receipt2 = WEB3.eth.waitForTransactionReceipt(tx_hash2)
+        # ToDo: check receipt status
 
-    donations_inst = Donation(
-        amountDonation=amount,
-        user=user_inst,
-        milestone_id=idmilestone,
-        voteDonation=bool(int(vote_enabled))
-    )
+        donations_inst = Donation(
+            amountDonation=amount,
+            user=user_inst,
+            milestone_id=idmilestone,
+            voteDonation=bool(int(vote_enabled))
+        )
 
-    session.add(donations_inst)
-    session.commit()
+        session.add(donations_inst)
+        session.commit()
 
-    return jsonify({'status': 'Spende wurde verbucht'}), 201
+        return jsonify({'status': 'Spende wurde verbucht'}), 201
+    except Exception:  # pylint:disable=broad-except
+        session.rollback()
+        return jsonify({'status': 'Internal Server Error'}), 500

@@ -87,7 +87,7 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
 
     if not user_inst.group == "support":
         return jsonify({'error': 'Forbidden'}), 403
-    if None in [name, address, latitude, longitude]:  # or publickey is None:
+    if None in [name, address, latitude, longitude, publickey]:
         return jsonify({'error': 'Missing parameter'}), 400
 
     if latitude and longitude is not None:
@@ -106,33 +106,35 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
         return jsonify({'error': 'username not found'}), 400
 
     # check if name is already taken
-    name_exist = session.query(Institution).filter(Institution.nameInstitution == name).first()
-    if name_exist:
+    if session.query(Institution).filter(Institution.nameInstitution == name).first():
         return jsonify({'error': 'name already exists'}), 400
 
-    Donations = WEB3.eth.contract(abi=PROJECT_JSON["abi"], bytecode=PROJECT_JSON["bytecode"])
-    tx_hash = Donations.constructor(publickey, 80, WEB3.toBytes(text="donations sc"), 100000,
-                                    20).transact()
-    tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash)
+    try:
+        # web3 default account is used for this:
+        donations_contract = WEB3.eth.contract(abi=PROJECT_JSON["abi"], bytecode=PROJECT_JSON["bytecode"])
+        ctor = donations_contract.constructor(publickey, 80, WEB3.toBytes(text="donations sc"), 100000, 20)
+        tx_hash = ctor.transact()
+        tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash)
 
-    # Todo: smartcontract_id
-    institution_inst = Institution(
-        nameInstitution=name,
-        webpageInstitution=webpage,
-        addressInstitution=address,
-        smartcontract_id=2,
-        publickeyInstitution=publickey,
-        descriptionInstitution=description,
-        latitude=latitude,
-        longitude=longitude,
-        scAddress=tx_receipt.contractAddress
-    )
-    transaction_inst = Transaction(dateTransaction=datetime.now(), smartcontract_id=2, user=owner_inst)
-
-    session.add_all([institution_inst, transaction_inst])
-    session.commit()
-
-    return jsonify({'status': 'Institution wurde erstellt'}), 201
+        session.add_all([
+            Institution(
+                nameInstitution=name,
+                webpageInstitution=webpage,
+                addressInstitution=address,
+                smartcontract_id=2,
+                publickeyInstitution=publickey,
+                descriptionInstitution=description,
+                latitude=latitude,
+                longitude=longitude,
+                scAddress=tx_receipt.contractAddress
+            ),
+            Transaction(dateTransaction=datetime.now(), smartcontract_id=2, user=owner_inst)
+        ])
+        session.commit()
+        return jsonify({'status': 'Institution wurde erstellt'}), 201
+    except Exception:  # pylint:disable=broad-except
+        session.rollback()
+        return jsonify({'status': 'Internal Server Error'}), 500
 
 
 @BP.route('', methods=['PATCH'])
@@ -163,8 +165,7 @@ def institutions_patch(user_inst):
     session = DB_SESSION()
 
     if name:  # check if name is already taken
-        name_exist = session.query(Institution).filter(Institution.nameInstitution == name).one_or_none()
-        if name_exist:
+        if session.query(Institution).filter(Institution.nameInstitution == name).one_or_none():
             return jsonify({'error': 'name already exists'}), 400
 
     institution = session.query(Institution).get(institution_id)

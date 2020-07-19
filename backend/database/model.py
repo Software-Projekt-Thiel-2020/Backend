@@ -5,6 +5,9 @@ from typing import List
 from sqlalchemy import Column, ForeignKey, Integer, VARCHAR, BINARY, BOOLEAN, DateTime, Float, TEXT
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 from sqlalchemy.orm import relationship
+from web3.types import TxReceipt
+
+from backend.smart_contracts.web3 import WEB3, PROJECT_JSON
 
 BASE: DeclarativeMeta = declarative_base()
 
@@ -160,6 +163,9 @@ TOKEN_2 = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxZjJiYzcyNy03Y2ZhLTQ5
           "2J5OVZ3aS9wcm9maWxlLmpzb24iLCJodWJVcmwiOiJodHRwczovL2h1Yi5ibG9ja3N0YWNrLm9yZyIsImJsb2Nrc3RhY2tBUElVcmwiOiJ" \
           "odHRwczovL2NvcmUuYmxvY2tzdGFjay5vcmciLCJ2ZXJzaW9uIjoiMS4zLjEifQ.GLsCrvh3jxopSwHTQeFA57AQ-eeL_ZbXto8RtzioxMw"
 
+SAMPLE_SC_DEPLOYED = False
+TX_RECEIPTS: List[TxReceipt] = []
+
 
 def add_sample_data(db_session):  # pylint:disable=too-many-statements
     """
@@ -168,6 +174,30 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
     :param db_session: DB_SESSION object
     :return: -
     """
+    global SAMPLE_SC_DEPLOYED, TX_RECEIPTS  # pylint:disable=global-statement
+
+    if not SAMPLE_SC_DEPLOYED:
+        # Deploy Sample SmartContracts
+        voucher_contract = WEB3.eth.contract(abi=PROJECT_JSON["abi"], bytecode=PROJECT_JSON["bytecode"])
+
+        tx_hash = voucher_contract.constructor(WEB3.eth.accounts[1], 80, WEB3.toBytes(text="test description"),
+                                               133337, 10).transact()
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))
+
+        tx_hash = voucher_contract.constructor(WEB3.eth.accounts[1], 80, WEB3.toBytes(text="test description"),
+                                               133337, 10).transact()
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))
+
+        tx_hash = voucher_contract.constructor(WEB3.eth.accounts[1], 80, WEB3.toBytes(text="test description"),
+                                               133337, 10).transact()
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))
+
+        tx_hash = voucher_contract.constructor(WEB3.eth.accounts[1], 80, WEB3.toBytes(text="test description"),
+                                               133337, 10).transact()
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))
+
+        SAMPLE_SC_DEPLOYED = True
+
     session = db_session()
 
     smartcontracts: List[SmartContract] = [
@@ -235,7 +265,7 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
                     addressInstitution="Address1",
                     publickeyInstitution="0xE92F05FEe101648aE33169150feE8F28FeFc19C2",
                     # key = b',\xc5p\xc97Ue\x9d\x88\xbakd\xb4\xdbb\xdc\xb80\xa6\x9be\x0c\xf0\xdeX\xee\xa61F_\x13~'
-                    scAddress="Address1",
+                    scAddress=TX_RECEIPTS[0].contractAddress,
                     latitude=52.030228,
                     longitude=8.532471,
                     picPathInstitution="a49d11ef-eb29-4867-9254-7c1ef1a7870c.png",
@@ -246,7 +276,7 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
                     addressInstitution="Address2",
                     publickeyInstitution="0x4b90030b0BA6790E8A34f5f58f10a43B3D13dCD1",
                     # key = b"\xc6$\xf2\xe6\x81a7\rh`\xb0\x86I\x7f\x1e%8v\xde[\xb8w\x8c7\xf4'\xc3z\xb9g\x17\xb1"
-                    scAddress="Address2",
+                    scAddress=TX_RECEIPTS[1].contractAddress,
                     latitude=40.712776,
                     longitude=-74.005974,
                     picPathInstitution="0984d9d5-7ebc-45a5-9258-46fe2c2b4151.png",
@@ -257,7 +287,7 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
                     addressInstitution="Address3",
                     publickeyInstitution="0xC6f1F12B6df34C98E670531Ab3cdA01df26Db585",
                     # key = b'g\xbef\xb0\xc6\x04\xa3i%P\x03\xb7\xbe\xac\xc0}rN\xeaq\xc9\x9b\x88j\x04m\x15\xcah\xb4\xf1-'
-                    scAddress="Address3",
+                    scAddress=TX_RECEIPTS[2].contractAddress,
                     latitude=-13.531950,
                     longitude=-71.967461,
                     picPathInstitution="88c0bc0a-c673-4cdf-8216-cd4e2c916be2.png",
@@ -268,7 +298,7 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
                     addressInstitution="Address4",
                     publickeyInstitution="0x03bD157AF2BA8437CaB84bF3383d918f0a993399",
                     # key = b'"\x1e\xe6\x01mu\xf07\xed\x84\xc1\xeb\x9du\x90\x1b\x80f\xc6g\x814+\xc3o.<9\xa7S\xb7M'
-                    scAddress="Address4",
+                    scAddress=TX_RECEIPTS[3].contractAddress,
                     latitude=42.267502,
                     longitude=2.960840,
                     picPathInstitution="cdbad6a3-4322-43b3-9c07-be3606508386.png",

@@ -1,4 +1,5 @@
 """Tests for resource institutions."""
+from backend.smart_contracts.web3 import WEB3
 from tests.test_blockstackauth import TOKEN_1, TOKEN_2, TOKEN_3
 
 
@@ -71,15 +72,16 @@ def test_institutions_get_bad_id(client):
     assert len(res.json) == 0
 
 
-def test_institutions_post(client):
+def test_institutions_post(client_w_eth):
     headers = {"authToken": TOKEN_1, "username": "sw2020testuser2.id.blockstack", "name": "ExampleInstitution",
-               "address": "Address", "description": "description", "latitude": 13.37, "longitude": 42.69}
-    res = client.post('/api/institutions', headers=headers)
+               "address": "Address", "description": "description", "latitude": 13.37, "longitude": 42.69,
+               "publickey": WEB3.eth.accounts[2]}
+    res = client_w_eth.post('/api/institutions', headers=headers)
     assert res._status_code == 201
     assert len(res.json) == 1
     assert res.json["status"] == "Institution wurde erstellt"
 
-    res = client.get('/api/institutions?id=5')
+    res = client_w_eth.get('/api/institutions?id=5')
     assert res._status_code == 200
     assert len(res.json) == 1
 
@@ -92,16 +94,16 @@ def test_institutions_post(client):
     assert res.json[0]["longitude"] == 42.69
 
 
-def test_institutions_post2(client):
+def test_institutions_post2(client_w_eth):
     headers = {"authToken": TOKEN_1, "username": "sw2020testuser2.id.blockstack", "name": "ExampleInstitution",
                "address": "Address", "webpage": "https://www.example.com/", "description": "description",
-               "latitude": 13.37, "longitude": 42.69}
-    res = client.post('/api/institutions', headers=headers)
+               "latitude": 13.37, "longitude": 42.69, "publickey": WEB3.eth.accounts[2]}
+    res = client_w_eth.post('/api/institutions', headers=headers)
     assert res._status_code == 201
     assert len(res.json) == 1
     assert res.json["status"] == "Institution wurde erstellt"
 
-    res = client.get('/api/institutions?id=5')
+    res = client_w_eth.get('/api/institutions?id=5')
     assert res._status_code == 200
     assert len(res.json) == 1
 
@@ -114,7 +116,7 @@ def test_institutions_post2(client):
 def test_institutions_post_bad_owner(client):
     headers = {"authToken": TOKEN_1, "username": "sw2020testuser1337.id.blockstack", "name": "ExampleInstitution",
                "address": "Address", "webpage": "https://www.example.com/", "description": "description",
-               "latitude": 13.37, "longitude": 42.69}
+               "latitude": 13.37, "longitude": 42.69, "publickey": WEB3.eth.accounts[3]}
     res = client.post('/api/institutions', headers=headers)
     assert res._status_code == 400
     assert len(res.json) == 1
@@ -124,7 +126,7 @@ def test_institutions_post_bad_owner(client):
 def test_institutions_post_non_support_user(client):
     headers = {"authToken": TOKEN_2, "username": "sw2020testuser2.id.blockstack", "name": "ExampleInstitution",
                "address": "Address", "webpage": "https://www.example.com/", "description": "description",
-               "latitude": 13.37, "longitude": 42.69}
+               "latitude": 13.37, "longitude": 42.69, "publickey": WEB3.eth.accounts[2]}
     res = client.post('/api/institutions', headers=headers)
     assert res._status_code == 403
     assert len(res.json) == 1
@@ -147,7 +149,8 @@ def test_institutions_post_no_params(client):
 
 def test_institutions_post_bad_webpage(client):
     headers = {"authToken": TOKEN_1, "name": "ExampleInstitution", "address": "Address",
-               "webpage": "NotAValidURL", "description": "description", "latitude": 13.37, "longitude": 42.69}
+               "webpage": "NotAValidURL", "description": "description", "latitude": 13.37, "longitude": 42.69,
+               "publickey": WEB3.eth.accounts[2]}
     res = client.post('/api/institutions', headers=headers)
     assert res._status_code == 400
     assert len(res.json) == 1
@@ -157,7 +160,7 @@ def test_institutions_post_bad_webpage(client):
 def test_institutions_post_existing_name(client):
     headers = {"authToken": TOKEN_1, "username": "sw2020testuser2.id.blockstack", "name": "MSGraphic",
                "address": "Address", "webpage": "https://www.example.com/", "description": "description",
-               "latitude": 13.37, "longitude": 42.69}
+               "latitude": 13.37, "longitude": 42.69, "publickey": WEB3.eth.accounts[2]}
     res = client.post('/api/institutions', headers=headers)
     assert res._status_code == 400
     assert len(res.json) == 1
