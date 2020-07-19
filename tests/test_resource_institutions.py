@@ -9,22 +9,22 @@ def test_institutions_get(client):
 
     assert res.json[0]["id"] == 1
     assert res.json[0]["name"] == "MSGraphic"
-    assert res.json[0]["webpage"] == "www.msgraphic.com"
+    assert res.json[0]["webpage"] == "http://www.msgraphic.com"
     assert res.json[0]["address"] == "Address1"
 
     assert res.json[1]["id"] == 2
     assert res.json[1]["name"] == "SWP"
-    assert res.json[1]["webpage"] == "www.swp.com"
+    assert res.json[1]["webpage"] == "http://www.swp.com"
     assert res.json[1]["address"] == "Address2"
 
     assert res.json[2]["id"] == 3
     assert res.json[2]["name"] == "Asgard Inc."
-    assert res.json[2]["webpage"] == "www.asgard.as"
+    assert res.json[2]["webpage"] == "http://www.asgard.as"
     assert res.json[2]["address"] == "Address3"
 
     assert res.json[3]["id"] == 4
     assert res.json[3]["name"] == "Blackhole"
-    assert res.json[3]["webpage"] == "127.0.0.1"
+    assert res.json[3]["webpage"] == "http://127.0.0.1"
     assert res.json[3]["address"] == "Address4"
 
 
@@ -35,7 +35,7 @@ def test_institutions_get_id(client):
 
     assert res.json[0]["id"] == 1
     assert res.json[0]["name"] == "MSGraphic"
-    assert res.json[0]["webpage"] == "www.msgraphic.com"
+    assert res.json[0]["webpage"] == "http://www.msgraphic.com"
     assert res.json[0]["address"] == "Address1"
 
 
@@ -46,7 +46,7 @@ def test_institutions_get_geo(client):
 
     assert res.json[0]["id"] == 1
     assert res.json[0]["name"] == "MSGraphic"
-    assert res.json[0]["webpage"] == "www.msgraphic.com"
+    assert res.json[0]["webpage"] == "http://www.msgraphic.com"
     assert res.json[0]["address"] == "Address1"
 
 
@@ -147,7 +147,8 @@ def test_institutions_post_no_params(client):
 
 def test_institutions_post_bad_webpage(client):
     headers = {"authToken": TOKEN_1, "name": "ExampleInstitution", "address": "Address",
-               "webpage": "NotAValidURL", "description": "description", "latitude": 13.37, "longitude": 42.69}
+               "webpage": "NotAValidURL", "description": "description", "latitude": 13.37, "longitude": 42.69,
+               "username":"LoetkolbenLudwig"}
     res = client.post('/api/institutions', headers=headers)
     assert res._status_code == 400
     assert len(res.json) == 1

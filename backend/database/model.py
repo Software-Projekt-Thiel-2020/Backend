@@ -66,6 +66,9 @@ class Institution(BASE):
     smartcontract_id = Column(Integer, ForeignKey('SmartContract.idSmartContract'))
     smartcontract = relationship("SmartContract", back_populates="institutions")
 
+    user_id = Column(Integer, ForeignKey('User.idUser'))
+    user = relationship("User", back_populates="institution")
+
     vouchers = relationship("Voucher", back_populates="institution")
     publickeyInstitution = Column(VARCHAR(64))
 
@@ -102,6 +105,8 @@ class User(BASE):
     transactions = relationship("Transaction", back_populates="user")
 
     vouchers = relationship("VoucherUser")
+
+    institution = relationship("Institution", back_populates="user")
 
 
 class VoucherUser(BASE):
@@ -230,7 +235,7 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
     institutions: List[Institution] = [
         Institution(idInstitution=1,
                     nameInstitution="MSGraphic",
-                    webpageInstitution="www.msgraphic.com",
+                    webpageInstitution="http://www.msgraphic.com",
                     addressInstitution="Address1",
                     publickeyInstitution="0xE92F05FEe101648aE33169150feE8F28FeFc19C2",
                     # key = b',\xc5p\xc97Ue\x9d\x88\xbakd\xb4\xdbb\xdc\xb80\xa6\x9be\x0c\xf0\xdeX\xee\xa61F_\x13~'
@@ -240,7 +245,7 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
                     descriptionInstitution="# MSGraphic\n'MSGraphic is the best company ever' - Donald Trump"),
         Institution(idInstitution=2,
                     nameInstitution="SWP",
-                    webpageInstitution="www.swp.com",
+                    webpageInstitution="http://www.swp.com",
                     addressInstitution="Address2",
                     publickeyInstitution="0x4b90030b0BA6790E8A34f5f58f10a43B3D13dCD1",
                     # key = b"\xc6$\xf2\xe6\x81a7\rh`\xb0\x86I\x7f\x1e%8v\xde[\xb8w\x8c7\xf4'\xc3z\xb9g\x17\xb1"
@@ -250,7 +255,7 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
                     descriptionInstitution="# SWP\nSoftwareprojekt202"),
         Institution(idInstitution=3,
                     nameInstitution="Asgard Inc.",
-                    webpageInstitution="www.asgard.as",
+                    webpageInstitution="http://www.asgard.as",
                     addressInstitution="Address3",
                     publickeyInstitution="0xC6f1F12B6df34C98E670531Ab3cdA01df26Db585",
                     # key = b'g\xbef\xb0\xc6\x04\xa3i%P\x03\xb7\xbe\xac\xc0}rN\xeaq\xc9\x9b\x88j\x04m\x15\xcah\xb4\xf1-'
@@ -260,7 +265,7 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
                     descriptionInstitution="# Asgard Inc.\nWir sind die, die Asgard kennen wie kein anderer!"),
         Institution(idInstitution=4,
                     nameInstitution="Blackhole",
-                    webpageInstitution="127.0.0.1",
+                    webpageInstitution="http://127.0.0.1",
                     addressInstitution="Address4",
                     publickeyInstitution="0x03bD157AF2BA8437CaB84bF3383d918f0a993399",
                     # key = b'"\x1e\xe6\x01mu\xf07\xed\x84\xc1\xeb\x9du\x90\x1b\x80f\xc6g\x814+\xc3o.<9\xa7S\xb7M'
@@ -275,6 +280,11 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
     institutions[1].smartcontract = smartcontracts[0]
     institutions[2].smartcontract = smartcontracts[0]
     institutions[3].smartcontract = smartcontracts[0]
+
+    institutions[0].user = users[4]
+    institutions[1].user = users[3]
+    institutions[2].user = users[2]
+    institutions[3].user = users[1]
 
     projects: List[Project] = [
         Project(idProject=1,

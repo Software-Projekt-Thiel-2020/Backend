@@ -24,8 +24,9 @@ def milestones_vote():
     """
     project_id = request.headers.get('projectId', default=None)
     milestone_id = request.headers.get('milestoneId', default=None)
+    vote_position = request.headers.get('votePosition', default=None)#n or p
 
-    if None in [project_id, milestone_id]:
+    if None in [project_id, milestone_id, vote_position]:
         return jsonify({'error': 'Missing parameter'}), 400
 
     try:
@@ -40,9 +41,14 @@ def milestones_vote():
         if int(milestone.idMilestone) == int(milestone_id):
 
             if int(milestone.project_id) == int(project_id):
-                milestone.currentVotesMilestone += 1
-                session.commit()
-                return jsonify({'status': 'ok'}), 201
+                if vote_position == 'p':
+                    milestone.currentVotesMilestone += 1
+                    session.commit()
+                    return jsonify({'status': 'ok'}), 201
+                if vote_position == 'n':
+                    milestone.currentVotesMilestone -= 1
+                    session.commit()
+                    return jsonify({'status': 'ok'}), 201
 
     return jsonify({"error": "milestone not found"}), 404
 
