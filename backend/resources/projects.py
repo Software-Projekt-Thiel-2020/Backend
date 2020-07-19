@@ -138,7 +138,7 @@ def projects_post(user_inst):  # pylint:disable=unused-argument
     latitude = request.headers.get('latitude')
     longitude = request.headers.get('longitude')
 
-    if None in [name, goal, required_votes, until]:
+    if None in [name, goal, required_votes]:
         return jsonify({'error': 'Missing parameter'}), 403
     try:
         check_params_int([id_institution, goal, required_votes])
