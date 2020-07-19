@@ -16,6 +16,8 @@ class Project(BASE):
     webpageProject = Column(VARCHAR(256))
     picPathProject = Column(VARCHAR(256))
     descriptionProject = Column(TEXT)
+    latitude = Column(Float)
+    longitude = Column(Float)
 
     smartcontract_id = Column(Integer, ForeignKey('SmartContract.idSmartContract'))
     smartcontract = relationship("SmartContract", back_populates="projects")
