@@ -147,7 +147,8 @@ def test_institutions_post_no_params(client):
 
 def test_institutions_post_bad_webpage(client):
     headers = {"authToken": TOKEN_1, "name": "ExampleInstitution", "address": "Address",
-               "webpage": "NotAValidURL", "description": "description", "latitude": 13.37, "longitude": 42.69}
+               "webpage": "NotAValidURL", "description": "description", "latitude": 13.37, "longitude": 42.69,
+               "username":"LoetkolbenLudwig"}
     res = client.post('/api/institutions', headers=headers)
     assert res._status_code == 400
     assert len(res.json) == 1

@@ -87,7 +87,7 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
     if not user_inst.group == "support":
         return jsonify({'error': 'Forbidden'}), 403
 
-    if None in [name, address, latitude, longitude]:  # or publickey is None:
+    if None in [name, address, latitude, longitude, username]:  # or publickey is None:
         return jsonify({'error': 'Missing parameter'}), 400
 
     if latitude and longitude is not None:
@@ -121,10 +121,13 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
         latitude=latitude,
         longitude=longitude
     )
+    institution_inst.user = owner_inst
     transaction_inst = Transaction(dateTransaction=datetime.now(), smartcontract_id=2, user=owner_inst)
 
     session.add_all([institution_inst, transaction_inst])
     session.commit()
+
+    print("I am done with doing nothing at all bastard")
 
     return jsonify({'status': 'Institution wurde erstellt'}), 201
 
