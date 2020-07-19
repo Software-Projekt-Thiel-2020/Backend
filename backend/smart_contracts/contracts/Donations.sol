@@ -3,7 +3,7 @@ pragma solidity ^0.5.16;
 contract Project {
 
     modifier onlyOwner(){
-        require(msg.sender == owner);
+        require((msg.sender == owner) || (msg.sender == admin) );
         _;
     }
 
@@ -20,7 +20,8 @@ contract Project {
     uint8 milestonesCounter = 0;
     uint8 activeMilestone;
     uint8 partial_payment;
-    address owner;
+    address payable owner;
+    address admin;
 
     struct Milestone {
         bytes name;
@@ -54,11 +55,13 @@ contract Project {
     event PayingOutProject(uint256 _amount);
     event Retract(uint256 amount, uint8 milestoneId, address donor);
 
+    /// @param _owner Addresse der Institution an die das Geld ausgezahlt werden soll
+    /// @param _admin Addresse eines weiteren Kontos das alle Funktionen aufrufen kann selber aber kein Geld bekommen kann
     /// @param _partial_payment Teilauszahlung in Prozent von 0-100
     /// @param _projectTargetName Name des Projektziels in hex
     /// @param _projectTargetAmount das Projektziels in Wei
     /// @param _minDonation Mindestbetrag einer Spende um Stimmbereichtigt zu sein
-    constructor(address _owner, uint8 _partial_payment, bytes memory _projectTargetName, uint256 _projectTargetAmount, uint256 _minDonation) public {
+    constructor(address payable _owner, address _admin, uint8 _partial_payment, bytes memory _projectTargetName, uint256 _projectTargetAmount, uint256 _minDonation) public {
         require(_partial_payment < 100);
         require(_projectTargetName.length > 0);
         require(_projectTargetAmount > 0);
@@ -67,6 +70,7 @@ contract Project {
         projectTarget = ProjectTarget(_projectTargetName, _projectTargetAmount);
         minDonation = _minDonation;
         owner = _owner;
+        admin = _admin;
     }
 
     /// @notice Fuert eine Teilauszahlung des Meilensteins aus,
@@ -91,7 +95,7 @@ contract Project {
         }
 
         already_withdrawn += amount;
-        msg.sender.transfer(amount);
+        owner.transfer(amount);
         m.payoutPart = true;
 
         milestones[milestoneId] = m;
@@ -123,7 +127,7 @@ contract Project {
         }
 
         already_withdrawn += amount;
-        msg.sender.transfer(amount);
+        owner.transfer(amount);
         m.payoutAll = true;
 
         milestones[milestoneId] = m;
@@ -138,7 +142,7 @@ contract Project {
         uint256 amount = address(this).balance;
 
         already_withdrawn += amount;
-        msg.sender.transfer(amount);
+        owner.transfer(amount);
 
         emit PayingOutProject(amount);
     }
@@ -166,6 +170,7 @@ contract Project {
     function register() public {
         require(!donors[msg.sender].exists);
 	require(msg.sender != owner);
+	require(msg.sender != admin);
         Donor memory d;
         d.exists = true;
         donors[msg.sender] = d;
