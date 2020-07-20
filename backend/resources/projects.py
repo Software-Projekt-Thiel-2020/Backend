@@ -25,8 +25,8 @@ def vote_transaction(milestone_id, vote, user_inst, project_id):
     contract_address = smart_contract.blockchainAddrSmartContract
 
     donation_sc = WEB3.eth.contract(
-        address = '0x4316d047388e61EBC3Ed34DFf4cEE215840decDa',
-        abi = PROJECT_JSON["abi"]
+        address='0x4316d047388e61EBC3Ed34DFf4cEE215840decDa',
+        abi=PROJECT_JSON["abi"]
     )
 
     transaction = donation_sc.functions.vote(int(milestone_id),
