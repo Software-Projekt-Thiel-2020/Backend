@@ -1,5 +1,6 @@
 """Project Resource."""
 import json
+import configparser
 from typing import List
 
 import validators
@@ -11,12 +12,32 @@ from backend.database.db import DB_SESSION
 from backend.database.model import Milestone, Institution
 from backend.database.model import Project
 from backend.resources.helpers import auth_user, check_params_int
+from backend.smart_contracts.web3 import WEB3
 
 BP = Blueprint('projects', __name__, url_prefix='/api/projects')
 
 
+def vote_transaction(milestone_id, vote, user):
+    """Method to make the voting Transaction."""
+    cfg_parser: configparser.ConfigParser = configparser.ConfigParser()
+    cfg_parser.read("backend_config.ini")
+
+    donation_sc = WEB3.eth.contract(
+        address=WEB3.toChecksumAddress(cfg_parser["Donations"]["ADDRESS"]),
+        abi=json.loads(cfg_parser["Donations"]["ABI"])
+    )
+
+    transaction = donation_sc.functions.vote(milestone_id,
+                                             vote)\
+        .buildTransaction({'nonce': WEB3.eth.getTransactionCount(user.publickeyUser)})
+    signed_transaction = WEB3.eth.account.sign_transaction(transaction, user.privatekeyUser)
+
+    WEB3.eth.sendRawTransaction(signed_transaction.rawTransaction)
+
+
 @BP.route('/vote', methods=['PATCH'])
-def milestones_vote():
+@auth_user
+def milestones_vote(user):
     """
     Vote for milestone.
 
@@ -24,7 +45,7 @@ def milestones_vote():
     """
     project_id = request.headers.get('projectId', default=None)
     milestone_id = request.headers.get('milestoneId', default=None)
-    vote_position = request.headers.get('votePosition', default=None)#n or p
+    vote_position = request.headers.get('votePosition', default=None)  # n or p
 
     if None in [project_id, milestone_id, vote_position]:
         return jsonify({'error': 'Missing parameter'}), 400
@@ -36,6 +57,12 @@ def milestones_vote():
 
     session = DB_SESSION()
     milestones = session.query(Milestone)
+
+    if vote_position == 'n':
+        vote = 1
+    else:
+        vote = 0
+
     for milestone in milestones:
 
         if int(milestone.idMilestone) == int(milestone_id):
@@ -44,10 +71,12 @@ def milestones_vote():
                 if vote_position == 'p':
                     milestone.currentVotesMilestone += 1
                     session.commit()
+                    vote_transaction(milestone_id, vote, user)
                     return jsonify({'status': 'ok'}), 201
                 if vote_position == 'n':
                     milestone.currentVotesMilestone -= 1
                     session.commit()
+                    vote_transaction(milestone_id, vote, user)
                     return jsonify({'status': 'ok'}), 201
 
     return jsonify({"error": "milestone not found"}), 404
