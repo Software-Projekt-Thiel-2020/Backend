@@ -185,20 +185,20 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
         # Deploy Sample SmartContracts
         voucher_contract = WEB3.eth.contract(abi=PROJECT_JSON["abi"], bytecode=PROJECT_JSON["bytecode"])
 
-        tx_hash = voucher_contract.constructor(WEB3.eth.accounts[1], 80, WEB3.toBytes(text="test description"),
-                                               133337, 10).transact()
+        tx_hash = voucher_contract.constructor(WEB3.eth.accounts[1], WEB3.eth.defaultAccount, 80,
+                                               WEB3.toBytes(text="test description"), 133337, 10).transact()
         TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))
 
-        tx_hash = voucher_contract.constructor(WEB3.eth.accounts[1], 80, WEB3.toBytes(text="test description"),
-                                               133337, 10).transact()
+        tx_hash = voucher_contract.constructor(WEB3.eth.accounts[1], WEB3.eth.defaultAccount, 80,
+                                               WEB3.toBytes(text="test description"), 133337, 10).transact()
         TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))
 
-        tx_hash = voucher_contract.constructor(WEB3.eth.accounts[1], 80, WEB3.toBytes(text="test description"),
-                                               133337, 10).transact()
+        tx_hash = voucher_contract.constructor(WEB3.eth.accounts[1], WEB3.eth.defaultAccount, 80,
+                                               WEB3.toBytes(text="test description"), 133337, 10).transact()
         TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))
 
-        tx_hash = voucher_contract.constructor(WEB3.eth.accounts[1], 80, WEB3.toBytes(text="test description"),
-                                               133337, 10).transact()
+        tx_hash = voucher_contract.constructor(WEB3.eth.accounts[1], WEB3.eth.defaultAccount, 80,
+                                               WEB3.toBytes(text="test description"), 133337, 10).transact()
         TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))
 
         SAMPLE_SC_DEPLOYED = True
