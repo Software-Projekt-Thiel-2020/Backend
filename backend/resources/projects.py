@@ -115,8 +115,8 @@ def projects_id(id):  # noqa
         'milestones': json_ms,
         'picturePath': results.picPathProject,
         'description': results.descriptionProject,
-		'latitude' : results.latitude,
-        'longitude' : results.longitude
+        'latitude': results.latitude,
+        'longitude': results.longitude
     }
 
     return jsonify(json_data), 200
@@ -135,15 +135,16 @@ def projects_post(user_inst):  # pylint:disable=unused-argument
     id_institution = request.headers.get('idInstitution')
     goal = request.headers.get('goal')
     required_votes = request.headers.get('requiredVotes')
+    until = request.headers.get('until')
     milestones = request.headers.get('milestones', default="[]")
     description = request.headers.get('description')
     latitude = request.headers.get('latitude')
     longitude = request.headers.get('longitude')
 
-    if None in [name, goal, required_votes]:
+    if None in [name, goal, required_votes, until]:
         return jsonify({'error': 'Missing parameter'}), 403
     try:
-        check_params_int([id_institution, goal, required_votes])
+        check_params_int([id_institution, goal, required_votes, until])
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
