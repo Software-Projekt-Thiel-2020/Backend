@@ -10,7 +10,7 @@ from backend.database.db import DB_SESSION
 from backend.database.model import Milestone, Institution, SmartContract
 from backend.database.model import Project
 from backend.resources.helpers import auth_user, check_params_int
-from backend.smart_contracts.web3 import WEB3
+from backend.smart_contracts.web3 import WEB3, PROJECT_JSON
 
 BP = Blueprint('projects', __name__, url_prefix='/api/projects')
 
@@ -22,13 +22,15 @@ def vote_transaction(milestone_id, vote, user_inst, project_id):
     sc_id = int(project.smartcontract_id)
     smart_contract = session.query(SmartContract).filter(SmartContract.idSmartContract == sc_id).one()
 
+    contract_address = smart_contract.blockchainAddrSmartContract
+
     donation_sc = WEB3.eth.contract(
-        address=smart_contract.blockchainAddrSmartContract,
-        # abi=json.loads(cfg_parser["Donations"]["ABI"]) ABI muss noch woanders hergeholt werden
+        address = '0x4316d047388e61EBC3Ed34DFf4cEE215840decDa',
+        abi = PROJECT_JSON["abi"]
     )
 
-    transaction = donation_sc.functions.vote(milestone_id,
-                                             vote)\
+    transaction = donation_sc.functions.vote(int(milestone_id),
+                                             int(vote))\
         .buildTransaction({'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser)})
     signed_transaction = WEB3.eth.account.sign_transaction(transaction, user_inst.privatekeyUser)
 
@@ -43,6 +45,7 @@ def milestones_vote(user_inst):
 
     :return: "{'status': 'ok'}", 200
     """
+    vote = 0
     project_id = request.headers.get('projectId', default=None)
     milestone_id = request.headers.get('milestoneId', default=None)
     vote_position = request.headers.get('votePosition', default=None)  # n or p
@@ -60,8 +63,6 @@ def milestones_vote(user_inst):
 
     if vote_position == 'n':
         vote = 1
-    else:
-        vote = 0
 
     for milestone in milestones:
 
