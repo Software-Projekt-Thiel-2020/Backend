@@ -153,6 +153,8 @@ def projects_post(user_inst):  # pylint:disable=unused-argument, too-many-locals
     if webpage and not validators.url(webpage):
         return jsonify({'error': 'webpage is not a valid url'}), 400
 
+    # ToDo: sanity check milestones
+
     project_inst = Project(
         nameProject=name,
         webpageProject=webpage,
@@ -166,16 +168,17 @@ def projects_post(user_inst):  # pylint:disable=unused-argument, too-many-locals
         milestones_inst: List[Milestone] = []
         for milestone in json.loads(milestones):
             try:
-                a = donations_sc.functions.addMilestone(WEB3.toBytes(text="Milestone"), milestone['goal'], milestone['until'])
-                cc = WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount)
-                tx_hash = a.buildTransaction(
-                    {'nonce': cc, 'from': WEB3.eth.defaultAccount})
-                #signed_tx = WEB3.eth.account.signTransaction(tx_hash, private_key=admin_account.key)
-                #tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
-                tx_hash = WEB3.eth.sendRawTransaction(tx_hash)
+                tx_hash = donations_sc.functions.addMilestone(WEB3.toBytes(text=milestone['name']),
+                                                              int(milestone['goal']),
+                                                              int(milestone['until'])). \
+                    buildTransaction({'nonce': WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount),
+                                      'from': WEB3.eth.defaultAccount})
+                # signed_tx = WEB3.eth.account.signTransaction(tx_hash, private_key=admin_account.key)
+                # tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+                tx_hash = WEB3.eth.sendTransaction(tx_hash)
                 WEB3.eth.waitForTransactionReceipt(tx_hash)
                 # ToDo: check receipt status
-            except Exception as ex:  # pylint:disable=broad-except
+            except Exception:  # pylint:disable=broad-except
                 session.rollback()
                 return jsonify({'status': 'Internal Server Error'}), 500
 
@@ -227,12 +230,13 @@ def projects_patch(user_inst, id):  # pylint:disable=invalid-name,redefined-buil
         milestones_inst: List[Milestone] = []
         for milestone in json.loads(milestones):
             try:
-                tx_hash = donations_sc.functions.addMilestone(WEB3.toBytes(text="Milestone"), milestone['goal'],
-                                                              milestone['until']).buildTransaction(
-                    {'nonce': WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount.address),
-                     'from': WEB3.eth.defaultAccount.address})
-                signed_tx = WEB3.eth.account.signTransaction(tx_hash, private_key=WEB3.eth.defaultAccount.key)
-                tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+                tx_hash = donations_sc.functions.addMilestone(WEB3.toBytes(text=milestone['name']),
+                                                              int(milestone['goal']), int(milestone['until'])). \
+                    buildTransaction({'nonce': WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount),
+                                      'from': WEB3.eth.defaultAccount})
+                # signed_tx = WEB3.eth.account.signTransaction(tx_hash, private_key=admin_account.key)
+                # tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+                tx_hash = WEB3.eth.sendTransaction(tx_hash)
                 WEB3.eth.waitForTransactionReceipt(tx_hash)
                 # ToDo: check receipt status
             except Exception:  # pylint:disable=broad-except
