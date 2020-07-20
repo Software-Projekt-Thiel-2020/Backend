@@ -1,15 +1,13 @@
 """Project Resource."""
 import json
-import configparser
 from typing import List
 
 import validators
 from flask import Blueprint, request, jsonify
 from geopy import distance
 from sqlalchemy.orm.exc import NoResultFound
-
 from backend.database.db import DB_SESSION
-from backend.database.model import Milestone, Institution
+from backend.database.model import Milestone, Institution, SmartContract
 from backend.database.model import Project
 from backend.resources.helpers import auth_user, check_params_int
 from backend.smart_contracts.web3 import WEB3
@@ -17,27 +15,29 @@ from backend.smart_contracts.web3 import WEB3
 BP = Blueprint('projects', __name__, url_prefix='/api/projects')
 
 
-def vote_transaction(milestone_id, vote, user):
+def vote_transaction(milestone_id, vote, user_inst, project_id):
     """Method to make the voting Transaction."""
-    cfg_parser: configparser.ConfigParser = configparser.ConfigParser()
-    cfg_parser.read("backend_config.ini")
+    session = DB_SESSION()
+    project = session.query(Project).filter(Project.idProject == project_id).one()
+    sc_id = int(project.smartcontract_id)
+    smart_contract = session.query(SmartContract).filter(SmartContract.idSmartContract == sc_id).one()
 
     donation_sc = WEB3.eth.contract(
-        address=WEB3.toChecksumAddress(cfg_parser["Donations"]["ADDRESS"]),
-        abi=json.loads(cfg_parser["Donations"]["ABI"])
+        address=smart_contract.blockchainAddrSmartContract,
+        # abi=json.loads(cfg_parser["Donations"]["ABI"]) ABI muss noch woanders hergeholt werden
     )
 
     transaction = donation_sc.functions.vote(milestone_id,
                                              vote)\
-        .buildTransaction({'nonce': WEB3.eth.getTransactionCount(user.publickeyUser)})
-    signed_transaction = WEB3.eth.account.sign_transaction(transaction, user.privatekeyUser)
+        .buildTransaction({'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser)})
+    signed_transaction = WEB3.eth.account.sign_transaction(transaction, user_inst.privatekeyUser)
 
     WEB3.eth.sendRawTransaction(signed_transaction.rawTransaction)
 
 
 @BP.route('/vote', methods=['PATCH'])
 @auth_user
-def milestones_vote(user):
+def milestones_vote(user_inst):
     """
     Vote for milestone.
 
@@ -71,12 +71,12 @@ def milestones_vote(user):
                 if vote_position == 'p':
                     milestone.currentVotesMilestone += 1
                     session.commit()
-                    vote_transaction(milestone_id, vote, user)
+                    vote_transaction(milestone_id, vote, user_inst, project_id)
                     return jsonify({'status': 'ok'}), 201
                 if vote_position == 'n':
                     milestone.currentVotesMilestone -= 1
                     session.commit()
-                    vote_transaction(milestone_id, vote, user)
+                    vote_transaction(milestone_id, vote, user_inst, project_id)
                     return jsonify({'status': 'ok'}), 201
 
     return jsonify({"error": "milestone not found"}), 404
