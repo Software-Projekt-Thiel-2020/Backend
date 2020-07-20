@@ -26,6 +26,7 @@ def institutions_get():
     longitude = request.args.get('longitude', type=float)
     name_institution = request.args.get('name')
     has_vouchers = request.args.get('has_vouchers')
+    username = request.args.get('username')
 
     try:
         check_params_int([id_institution, radius, has_vouchers])
@@ -36,10 +37,12 @@ def institutions_get():
         return jsonify({"error": "bad geo argument"}), 400
 
     session = DB_SESSION()
-    results = session.query(Institution)
+    results = session.query(Institution, User).join(Institution, User.idUser == Institution.user_id)
 
     json_data = []
 
+    if username:
+        results = results.filter(User.usernameUser == username)
     if id_institution:
         results = results.filter(Institution.idInstitution == id_institution)
     if name_institution:
@@ -50,20 +53,21 @@ def institutions_get():
         else:
             results = results.filter(~Institution.vouchers.any())
 
-    for result in results:
+    for inst, user in results:
         if radius and latitude and longitude and \
-                distance.distance((latitude, longitude), (result.latitude, result.longitude)).km > radius:
+                distance.distance((latitude, longitude), (inst.latitude, inst.longitude)).km > radius:
             continue
         json_data.append({
-            "id": result.idInstitution,
-            "name": result.nameInstitution,
-            "webpage": result.webpageInstitution,
-            "address": result.addressInstitution,
-            "picturePath": result.picPathInstitution,
-            "longitude": result.longitude,
-            "latitude": result.latitude,
-            "publickey": result.publickeyInstitution,
-            "description": result.descriptionInstitution
+            "id": inst.idInstitution,
+            "name": inst.nameInstitution,
+            "webpage": inst.webpageInstitution,
+            "address": inst.addressInstitution,
+            "picturePath": inst.picPathInstitution,
+            "longitude": inst.longitude,
+            "latitude": inst.latitude,
+            "publickey": inst.publickeyInstitution,
+            "description": inst.descriptionInstitution,
+            "username": user.usernameUser
         })
 
     return jsonify(json_data)
