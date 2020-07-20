@@ -108,7 +108,7 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
     # check if name is already taken
     if session.query(Institution).filter(Institution.nameInstitution == name).first():
         return jsonify({'error': 'name already exists'}), 400
-
+    
     try:
         # web3 default account is used for this:
         donations_contract = WEB3.eth.contract(abi=PROJECT_JSON["abi"], bytecode=PROJECT_JSON["bytecode"])
