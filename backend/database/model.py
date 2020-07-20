@@ -319,7 +319,7 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
     institutions[0].user = users[4]
     institutions[1].user = users[3]
     institutions[2].user = users[2]
-    institutions[3].user = users[1]
+    institutions[3].user = users[6]
 
     projects: List[Project] = [
         Project(idProject=1,

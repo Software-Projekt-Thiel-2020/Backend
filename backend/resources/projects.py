@@ -138,7 +138,7 @@ def projects_post(user_inst):  # pylint:disable=unused-argument, too-many-locals
     milestones = request.headers.get('milestones', default="[]")
     description = request.headers.get('description')
 
-    if None in [name, goal, required_votes, until]:
+    if None in [name, goal, required_votes, until, id_institution]:
         return jsonify({'error': 'Missing parameter'}), 403
     try:
         check_params_int([id_institution, goal, required_votes, until])
@@ -159,7 +159,6 @@ def projects_post(user_inst):  # pylint:disable=unused-argument, too-many-locals
         smartcontract_id=1,
         institution_id=id_institution,
         descriptionProject=description
-        # ToDo: add user as project owner
     )
     result: Institution = session.query(Institution).get(id_institution)
     donations_sc = WEB3.eth.contract(address=result.scAddress, abi=PROJECT_JSON["abi"])
@@ -167,15 +166,16 @@ def projects_post(user_inst):  # pylint:disable=unused-argument, too-many-locals
         milestones_inst: List[Milestone] = []
         for milestone in json.loads(milestones):
             try:
-                tx_hash = donations_sc.functions.addMilestone(WEB3.toBytes(text="Milestone"), milestone['goal'],
-                                                              milestone['until']).buildTransaction(
-                    {'nonce': WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount.address),
-                     'from': WEB3.eth.defaultAccount.address})
-                signed_tx = WEB3.eth.account.signTransaction(tx_hash, private_key=WEB3.eth.defaultAccount.key)
-                tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+                a = donations_sc.functions.addMilestone(WEB3.toBytes(text="Milestone"), milestone['goal'], milestone['until'])
+                cc = WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount)
+                tx_hash = a.buildTransaction(
+                    {'nonce': cc, 'from': WEB3.eth.defaultAccount})
+                #signed_tx = WEB3.eth.account.signTransaction(tx_hash, private_key=admin_account.key)
+                #tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+                tx_hash = WEB3.eth.sendRawTransaction(tx_hash)
                 WEB3.eth.waitForTransactionReceipt(tx_hash)
                 # ToDo: check receipt status
-            except Exception:  # pylint:disable=broad-except
+            except Exception as ex:  # pylint:disable=broad-except
                 session.rollback()
                 return jsonify({'status': 'Internal Server Error'}), 500
 

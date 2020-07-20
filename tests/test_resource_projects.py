@@ -1,7 +1,8 @@
 """Tests for resource projects."""
 import json
 
-from .test_blockstackauth import TOKEN_1
+from .test_blockstackauth import TOKEN_1, TOKEN_2
+from .test_resource_institutions import test_institutions_post
 
 
 def test_projects_get(client):
@@ -194,7 +195,8 @@ def test_projects_post_w_auth_bad_params(client):
 
 
 def test_projects_post_required_params(client):
-    headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933}
+    headers = {"authToken": TOKEN_2, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
+               "idInstitution": 4}
     res = client.post('/api/projects', headers=headers)
     assert res._status_code == 201
     assert res.json["status"] == "ok"
@@ -204,7 +206,7 @@ def test_projects_post_required_params(client):
     assert len(res.json) == 8
 
     assert res.json["id"] == 4
-    assert res.json["idinstitution"] is None
+    assert res.json["idinstitution"] == 4
     assert res.json["idsmartcontract"] == 1
     assert res.json["name"] == headers["name"]
     assert res.json["webpage"] is None
@@ -213,7 +215,7 @@ def test_projects_post_required_params(client):
 
 def test_projects_post_w_bad_milestones(client):
     headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
-               "milestones": "dennis"}
+               "milestones": "dennis", "idInstitution": 4}
     res = client.post('/api/projects', headers=headers)
     assert res._status_code == 400
     assert res.json["status"] == "invalid json"
@@ -225,7 +227,7 @@ def test_projects_post_w_milestones(client):
         {"goal": 5000, "requiredVotes": 42, "until": 1592094932},
     ]
     headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
-               "milestones": json.dumps(milestones)}
+               "milestones": json.dumps(milestones), "idInstitution": 4}
     res = client.post('/api/projects', headers=headers)
     assert res._status_code == 201
     assert res.json["status"] == "ok"
@@ -258,7 +260,7 @@ def test_projects_post_w_milestones(client):
 
 def test_projects_post_w_webpage(client):
     headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
-               "webpage": "http://www.example.com"}
+               "webpage": "http://www.example.com", "idInstitution": 4}
     res = client.post('/api/projects', headers=headers)
     assert res._status_code == 201
     assert res.json["status"] == "ok"
@@ -268,7 +270,7 @@ def test_projects_post_w_webpage(client):
     assert len(res.json) == 8
 
     assert res.json["id"] == 4
-    assert res.json["idinstitution"] is None
+    assert res.json["idinstitution"] == 4
     assert res.json["idsmartcontract"] == 1
     assert res.json["name"] == headers["name"]
     assert res.json["webpage"] == headers["webpage"]
@@ -277,7 +279,7 @@ def test_projects_post_w_webpage(client):
 
 def test_projects_post_w_bad_webpage(client):
     headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
-               "webpage": "notaurl#22*3\\asdf"}
+               "webpage": "notaurl#22*3\\asdf", "idInstitution": 4}
     res = client.post('/api/projects', headers=headers)
     assert res._status_code == 400
     assert res.json["error"] == "webpage is not a valid url"
@@ -355,7 +357,7 @@ def test_projects_patch_w_milestones(client):
         {"goal": 1000, "requiredVotes": 1337, "until": 1592094933},
         {"goal": 5000, "requiredVotes": 42, "until": 1592094932},
     ]
-    headers = {"authToken": TOKEN_1, "milestones": json.dumps(milestones)}
+    headers = {"authToken": TOKEN_1, "milestones": json.dumps(milestones), "idInstitution": 4}
     res = client.patch('/api/projects/1', headers=headers)
     assert res._status_code == 201
 
