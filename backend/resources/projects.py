@@ -11,6 +11,7 @@ from backend.database.db import DB_SESSION
 from backend.database.model import Milestone, Institution
 from backend.database.model import Project
 from backend.resources.helpers import auth_user, check_params_int
+from backend.smart_contracts.web3 import WEB3,PROJECT_JSON
 
 BP = Blueprint('projects', __name__, url_prefix='/api/projects')
 
@@ -160,10 +161,23 @@ def projects_post(user_inst):  # pylint:disable=unused-argument
         descriptionProject=description
         # ToDo: add user as project owner
     )
-
+    result: Institution = session.query(Institution).get(id_institution)
+    donations_sc = WEB3.eth.contract(address=result.scAddress, abi=PROJECT_JSON["abi"])
     try:
         milestones_inst: List[Milestone] = []
         for milestone in json.loads(milestones):
+            try:
+                tx = donations_sc.functions.addMilestone(WEB3.toBytes(text="Milestone"), milestone['goal'],
+                                                         milestone['until']).buildTransaction(
+                    {'nonce': WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount.address),
+                     'from': WEB3.eth.defaultAccount.address})
+                signed_tx = WEB3.eth.account.signTransaction(tx, private_key=WEB3.eth.defaultAccount.key)
+                tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+                tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash)
+            except Exception:
+                session.rollback()
+                return jsonify({'status' : 'Internal Server Error'}), 500
+
             milestones_inst.append(Milestone(
                 goalMilestone=milestone['goal'],
                 requiredVotesMilestone=milestone['requiredVotes'],
@@ -206,9 +220,23 @@ def projects_patch(user_inst, id):  # pylint:disable=invalid-name,redefined-buil
     if description is not None:
         project_inst.descriptionProject = description
 
+    result: Institution = session.query(Institution).get(id)
+    donations_sc = WEB3.eth.contract(address=result.scAddress, abi=PROJECT_JSON["abi"])
     try:
         milestones_inst: List[Milestone] = []
         for milestone in json.loads(milestones):
+            try:
+                tx = donations_sc.functions.addMilestone(WEB3.toBytes(text="Milestone"), milestone['goal'],
+                                                         milestone['until']).buildTransaction(
+                    {'nonce': WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount.address),
+                     'from': WEB3.eth.defaultAccount.address})
+                signed_tx = WEB3.eth.account.signTransaction(tx, private_key=WEB3.eth.defaultAccount.key)
+                tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+                tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash)
+            except Exception:
+                session.rollback()
+                return jsonify({'status' : 'Internal Server Error'}), 500
+
             milestones_inst.append(Milestone(
                 goalMilestone=milestone['goal'],
                 requiredVotesMilestone=milestone['requiredVotes'],
