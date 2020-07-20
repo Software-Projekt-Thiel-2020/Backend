@@ -37,12 +37,12 @@ def institutions_get():
         return jsonify({"error": "bad geo argument"}), 400
 
     session = DB_SESSION()
-    results = session.query(Institution, User).join(Institution, User.idUser == Institution.user_id)
+    results = session.query(Institution)
 
     json_data = []
 
     if username:
-        results = results.filter(User.usernameUser == username)
+        results = results.filter(Institution.user.username == username)
     if id_institution:
         results = results.filter(Institution.idInstitution == id_institution)
     if name_institution:
@@ -53,21 +53,22 @@ def institutions_get():
         else:
             results = results.filter(~Institution.vouchers.any())
 
-    for inst, user in results:
+    for result in results:
+        result: Institution = result
         if radius and latitude and longitude and \
-                distance.distance((latitude, longitude), (inst.latitude, inst.longitude)).km > radius:
+                distance.distance((latitude, longitude), (result.latitude, result.longitude)).km > radius:
             continue
         json_data.append({
-            "id": inst.idInstitution,
-            "name": inst.nameInstitution,
-            "webpage": inst.webpageInstitution,
-            "address": inst.addressInstitution,
-            "picturePath": inst.picPathInstitution,
-            "longitude": inst.longitude,
-            "latitude": inst.latitude,
-            "publickey": inst.publickeyInstitution,
-            "description": inst.descriptionInstitution,
-            "username": user.usernameUser
+            "id": result.idInstitution,
+            "name": result.nameInstitution,
+            "webpage": result.webpageInstitution,
+            "address": result.addressInstitution,
+            "picturePath": result.picPathInstitution,
+            "longitude": result.longitude,
+            "latitude": result.latitude,
+            "publickey": result.publickeyInstitution,
+            "description": result.descriptionInstitution,
+            "username": result.user.usernameUser,
         })
 
     return jsonify(json_data)
@@ -131,7 +132,8 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
                 descriptionInstitution=description,
                 latitude=latitude,
                 longitude=longitude,
-                scAddress=tx_receipt.contractAddress
+                scAddress=tx_receipt.contractAddress,
+                user=owner_inst,
             ),
             Transaction(dateTransaction=datetime.now(), smartcontract_id=2, user=owner_inst)
         ])
