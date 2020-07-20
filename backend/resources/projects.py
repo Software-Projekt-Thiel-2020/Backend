@@ -114,7 +114,9 @@ def projects_id(id):  # noqa
         'idinstitution': results.institution_id,
         'milestones': json_ms,
         'picturePath': results.picPathProject,
-        'description': results.descriptionProject
+        'description': results.descriptionProject,
+        'latitude': results.latitude,
+        'longitude': results.longitude
     }
 
     return jsonify(json_data), 200
@@ -136,6 +138,8 @@ def projects_post(user_inst):  # pylint:disable=unused-argument
     until = request.headers.get('until')
     milestones = request.headers.get('milestones', default="[]")
     description = request.headers.get('description')
+    latitude = request.headers.get('latitude')
+    longitude = request.headers.get('longitude')
 
     if None in [name, goal, required_votes, until]:
         return jsonify({'error': 'Missing parameter'}), 403
@@ -143,6 +147,13 @@ def projects_post(user_inst):  # pylint:disable=unused-argument
         check_params_int([id_institution, goal, required_votes, until])
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
+
+    if latitude and longitude is not None:
+        try:
+            float(latitude)
+            float(longitude)
+        except ValueError:
+            return jsonify({'error': 'not a valid geolocation'}), 400
 
     session = DB_SESSION()
 
@@ -157,7 +168,9 @@ def projects_post(user_inst):  # pylint:disable=unused-argument
         webpageProject=webpage,
         smartcontract_id=1,
         institution_id=id_institution,
-        descriptionProject=description
+        descriptionProject=description,
+        latitude=latitude,
+        longitude=longitude
         # ToDo: add user as project owner
     )
 
@@ -191,6 +204,8 @@ def projects_patch(user_inst, id):  # pylint:disable=invalid-name,redefined-buil
     webpage = request.headers.get('webpage', default=None)
     milestones = request.headers.get('milestones', default="[]")
     description = request.headers.get('description')
+    latitude = request.headers.get('latitude')
+    longitude = request.headers.get('longitude')
     # ToDo: is this user allowed to patch this project?
 
     session = DB_SESSION()
@@ -200,6 +215,14 @@ def projects_patch(user_inst, id):  # pylint:disable=invalid-name,redefined-buil
         return jsonify({'error': 'Project doesnt exist'}), 404
     if webpage is not None and not validators.url(webpage):
         return jsonify({'error': 'webpage is not a valid url'}), 400
+    if latitude and longitude is not None:
+        try:
+            float(latitude)
+            float(longitude)
+            project_inst.latitude = latitude
+            project_inst.longitude = longitude
+        except ValueError:
+            return jsonify({'error': 'not a valid geolocation'}), 400
 
     if webpage is not None:
         project_inst.webpageProject = webpage
