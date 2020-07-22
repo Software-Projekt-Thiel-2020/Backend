@@ -6,6 +6,7 @@ from backend.database.model import Donation
 from backend.database.model import Milestone
 from backend.database.model import Project
 from backend.resources.helpers import check_params_int, auth_user
+from backend.smart_contracts.web3 import WEB3, PROJECT_JSON
 
 BP = Blueprint('donations', __name__, url_prefix='/api/donations')
 
@@ -74,20 +75,53 @@ def donations_post(user_inst):
 
     if None in [idmilestone, amount, vote_enabled]:
         return jsonify({'error': 'Missing parameter'}), 400
+    try:
+        check_params_int([idmilestone, amount, vote_enabled])
+    except ValueError:
+        return jsonify({"error": "bad argument"}), 400
 
     session = DB_SESSION()
 
-    if session.query(Milestone).get(idmilestone) is None:
+    results: Milestone = session.query(Milestone).get(idmilestone)
+
+    if results is None:
         return jsonify({'error': 'Milestone not found'}), 400
 
-    donations_inst = Donation(
-        amountDonation=amount,
-        user=user_inst,
-        milestone_id=idmilestone,
-        voteDonation=bool(int(vote_enabled))
-    )
+    if int(amount) <= 0:
+        return jsonify({'error': 'amount cant be 0 or less'}), 400
 
-    session.add(donations_inst)
-    session.commit()
+    donations_sc = WEB3.eth.contract(address=results.project.institution.scAddress, abi=PROJECT_JSON["abi"])
+    try:
+        # Add Donation
+        tx_hash = donations_sc.functions.register().buildTransaction({
+            'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser),
+            'from': user_inst.publickeyUser
+        })
+        signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=user_inst.privatekeyUser)
+        tx_hash2 = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+        tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash2)
+        if tx_receipt.status != 1:
+            raise RuntimeError("SC Call failed!")
+        tx_hash = donations_sc.functions.donate(bool(int(vote_enabled))) \
+            .buildTransaction(
+            {'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser),
+             'from': user_inst.publickeyUser, 'value': int(amount)})
+        signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=user_inst.privatekeyUser)
+        tx_hash2 = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+        tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash2)
+        if tx_receipt.status != 1:
+            raise RuntimeError("SC Call failed!")
+        donations_inst = Donation(
+            amountDonation=amount,
+            user=user_inst,
+            milestone_id=idmilestone,
+            voteDonation=bool(int(vote_enabled))
+        )
 
-    return jsonify({'status': 'Spende wurde verbucht'}), 201
+        session.add(donations_inst)
+        session.commit()
+
+        return jsonify({'status': 'Spende wurde verbucht'}), 201
+    finally:
+        session.rollback()
+        session.close()

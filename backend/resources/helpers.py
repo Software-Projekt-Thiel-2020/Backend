@@ -17,9 +17,24 @@ def check_params_int(params: List):
     :except: ValueError if one of the Parameters isn't an int
     :return: -
     """
+    ret = []
     for param in params:
         if param:
-            int(param)
+            ret.append(int(param) if param else param)
+    return ret
+
+
+def check_params_float(params: List):
+    """
+    Checks a List of params if they are really castable to float.
+
+    :except: ValueError if one of the Parameters isn't an float
+    :return: -
+    """
+    ret = []
+    for param in params:
+        ret.append(float(param) if param else param)
+    return ret
 
 
 def auth_user(func):
@@ -65,7 +80,7 @@ def auth_user(func):
             abort(401)
         else:
             tmp = func(user_inst, *args, **kws)
-            session.commit()
+            session.commit()  # ToDo: remove here, move to resources!! replace with session.rollback() for exceptions
             return tmp
 
     return decorated_function

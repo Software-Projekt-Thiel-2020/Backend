@@ -5,8 +5,6 @@ from flask import Blueprint, request, jsonify
 from jwt import DecodeError
 from sqlalchemy.orm.exc import NoResultFound
 
-from web3.exceptions import InvalidAddress
-
 from backend.blockstack_auth import BlockstackAuth
 from backend.database.db import DB_SESSION
 from backend.database.model import User
@@ -36,10 +34,7 @@ def users_get():
 
     json_data = []
     for result in results:
-        try:
-            balance = WEB3.eth.getBalance(result.publickeyUser)
-        except InvalidAddress:
-            return jsonify({'error': 'given publickey is not valid'}), 400
+        balance = WEB3.eth.getBalance(result.publickeyUser)
 
         json_data.append({
             'id': result.idUser,
@@ -79,8 +74,6 @@ def user_id(id):  # pylint:disable=redefined-builtin,invalid-name
             balance = WEB3.eth.getBalance(results.publickeyUser)
     except NoResultFound:
         return jsonify({'error': 'User not found'}), 404
-    except InvalidAddress:
-        return jsonify({'error': 'given publickey is not valid'}), 400
 
     json_data = {
         'id': results.idUser,
