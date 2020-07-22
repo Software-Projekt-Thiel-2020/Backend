@@ -30,6 +30,7 @@ def institutions_get():
 
     try:
         check_params_int([id_institution, radius, has_vouchers])
+        # pylint: disable=unbalanced-tuple-unpacking
         radius, latitude, longitude = check_params_float([radius, latitude, longitude])
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
@@ -96,6 +97,7 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
         return jsonify({'error': 'Missing parameter'}), 400
 
     try:
+        # pylint: disable=unbalanced-tuple-unpacking
         latitude, longitude = check_params_float([latitude, longitude])
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
