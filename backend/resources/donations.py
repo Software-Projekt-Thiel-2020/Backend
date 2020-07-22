@@ -2,10 +2,10 @@
 from flask import Blueprint, request, jsonify
 
 from backend.database.db import DB_SESSION
-from backend.database.model import Donation
+from backend.database.model import Donation, User
 from backend.database.model import Milestone
 from backend.database.model import Project
-from backend.resources.helpers import check_params_int, auth_user
+from backend.resources.helpers import check_params_int, auth_user, db_session_dec
 from backend.smart_contracts.web3 import WEB3, PROJECT_JSON
 
 BP = Blueprint('donations', __name__, url_prefix='/api/donations')
@@ -125,3 +125,50 @@ def donations_post(user_inst):
     finally:
         session.rollback()
         session.close()
+
+
+def vote_transaction(user_inst: User, vote, donation: Donation):
+    """Method to make the voting Transaction."""
+    contract_address = WEB3.toChecksumAddress(donation.milestone.project.institution.scAddress)
+
+    donation_sc = WEB3.eth.contract(
+        address=contract_address,
+        abi=PROJECT_JSON["abi"]
+    )
+
+    transaction = donation_sc.functions.vote(donation.milestone.idMilestone, vote)\
+        .buildTransaction({'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser)})
+    signed_transaction = WEB3.eth.account.sign_transaction(transaction, user_inst.privatekeyUser)
+
+    WEB3.eth.sendRawTransaction(signed_transaction.rawTransaction)
+
+
+@BP.route('/vote', methods=['PATCH'])
+@auth_user
+@db_session_dec
+def milestones_vote(session, user_inst):
+    """
+    Vote for milestone.
+
+    :return: "{'status': 'ok'}", 200
+    """
+    donation_id = request.headers.get('id')
+    vote = request.headers.get('vote')  # 1 = positive, 0 = negative
+
+    if None in [donation_id, vote]:
+        return jsonify({'error': 'Missing parameter'}), 400
+
+    try:
+        donation_id, vote = check_params_int([donation_id, vote])
+    except ValueError:
+        return jsonify({"error": "bad argument"}), 400
+
+    donation = session.query(Donation).filter(Donation.idDonation == donation_id).one_or_none()
+
+    if donation is None:
+        return jsonify({"error": "milestone not found"}), 404
+
+    donation.milestone.currentVotesMilestone += 1 if vote > 0 else (-1)
+    vote_transaction(user_inst, vote, donation)
+    session.commit()
+    return jsonify({'status': 'ok'}), 201
