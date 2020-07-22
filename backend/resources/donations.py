@@ -97,7 +97,6 @@ def donations_post(user_inst):
             'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser),
             'from': user_inst.publickeyUser
         })
-        print("tx: ", tx_hash)
         signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=user_inst.privatekeyUser)
         tx_hash2 = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
         tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash2)
