@@ -16,10 +16,7 @@ WEB3: Web3 = Web3(Web3.HTTPProvider(CFG_PARSER["Ethereum"]["URI"]))
 if WEB3.isConnected():
     print("connected to ethereum node.")
 else:
-    print("could not connect to ethereum node.")
-    sys.exit(1)
-
-
+    sys.exit("could not connect to ethereum node.")
 WEB3.eth.defaultAccount = WEB3.eth.accounts[0]
 
 BASE = Path.cwd() / "backend" / "smart_contracts"
@@ -52,7 +49,7 @@ with open(str(BASE / "build" / "contracts" / "Institution.json")) as json_file:
 # kr = {'nonce': WEB3.eth.getTransactionCount(user_inst["publickeyUser"]),
 #       'from': user_inst["publickeyUser"],
 #       'gas': 2000000,
-#       'gasPrice': WEB3.toWei('50', 'gwei'),  # ToDo: ?
+#       'gasPrice': WEB3.toWei('50', 'gwei'),
 #       }
 # tx_hash3 = voucher_inst.functions.register().buildTransaction(kr)
 # print("tx: ", tx_hash3)

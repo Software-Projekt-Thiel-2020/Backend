@@ -29,6 +29,39 @@ def test_projects_get(client):
     assert res.json[2]["webpage"] == "www.swp.de"
 
 
+def test_projects_get_name(client):
+    """get without parameters."""
+    res = client.get('/api/projects?name=puter')
+    assert res._status_code == 200
+    assert len(res.json) == 1
+
+    assert res.json[0]["id"] == 1
+    assert res.json[0]["idinstitution"] == 1
+    assert res.json[0]["idsmartcontract"] == 2
+    assert res.json[0]["name"] == "Computer malt Bild"
+    assert res.json[0]["webpage"] == "www.cmb.de"
+
+
+def test_projects_get_geo(client):
+    """get without parameters."""
+    res = client.get('/api/projects?radius=1&latitude=52.030228&longitude=8.532471')
+    assert res._status_code == 200
+    assert len(res.json) == 1
+
+    assert res.json[0]["id"] == 1
+    assert res.json[0]["idinstitution"] == 1
+    assert res.json[0]["idsmartcontract"] == 2
+    assert res.json[0]["name"] == "Computer malt Bild"
+    assert res.json[0]["webpage"] == "www.cmb.de"
+
+
+def test_projects_get_bad_geo(client):
+    """get without parameters."""
+    res = client.get('/api/projects?radius=1&latitude=52.030228&longitude=aaa')
+    assert res._status_code == 400
+    assert res.json["error"] == "bad geo argument"
+
+
 def test_projects_get_w_institution(client):
     """get with id_institution."""
     res = client.get('/api/projects?idinstitution=3')
@@ -324,6 +357,24 @@ def test_projects_patch_w_webpage(client):
     assert res.json["idsmartcontract"] == 2
     assert res.json["name"] == "Computer malt Bild"
     assert res.json["webpage"] == headers["webpage"]
+
+    assert len(res.json["milestones"]) == 4
+
+
+def test_projects_patch_w_description(client):
+    headers = {"authToken": TOKEN_1, "description": "description1234"}
+    res = client.patch('/api/projects/1', headers=headers)
+    assert res._status_code == 201
+    assert res.json["status"] == "ok"
+
+    res = client.get('/api/projects/1')
+    assert res._status_code == 200
+
+    assert res.json["id"] == 1
+    assert res.json["idinstitution"] == 1
+    assert res.json["idsmartcontract"] == 2
+    assert res.json["name"] == "Computer malt Bild"
+    assert res.json["description"] == "description1234"
 
     assert len(res.json["milestones"]) == 4
 

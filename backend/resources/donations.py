@@ -87,8 +87,10 @@ def donations_post(user_inst):
     if results is None:
         return jsonify({'error': 'Milestone not found'}), 400
 
-    donations_sc = WEB3.eth.contract(address=results.project.institution.scAddress, abi=PROJECT_JSON["abi"])
+    if int(amount) <= 0:
+        return jsonify({'error': 'amount cant be 0 or less'}), 400
 
+    donations_sc = WEB3.eth.contract(address=results.project.institution.scAddress, abi=PROJECT_JSON["abi"])
     try:
         # Add Donation
         tx_hash = donations_sc.functions.register().buildTransaction({
@@ -98,18 +100,18 @@ def donations_post(user_inst):
         print("tx: ", tx_hash)
         signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=user_inst.privatekeyUser)
         tx_hash2 = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
-        WEB3.eth.waitForTransactionReceipt(tx_hash2)
-
+        tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash2)
+        if tx_receipt.status != 1:
+            raise RuntimeError("SC Call failed!")
         tx_hash = donations_sc.functions.donate(bool(int(vote_enabled))) \
             .buildTransaction(
             {'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser),
              'from': user_inst.publickeyUser, 'value': int(amount)})
         signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=user_inst.privatekeyUser)
         tx_hash2 = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
-        WEB3.eth.waitForTransactionReceipt(tx_hash2)
-
-        # ToDo: check receipt status
-
+        tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash2)
+        if tx_receipt.status != 1:
+            raise RuntimeError("SC Call failed!")
         donations_inst = Donation(
             amountDonation=amount,
             user=user_inst,
@@ -121,6 +123,6 @@ def donations_post(user_inst):
         session.commit()
 
         return jsonify({'status': 'Spende wurde verbucht'}), 201
-    except Exception:  # pylint:disable=broad-except
+    finally:
         session.rollback()
-        return jsonify({'status': 'Internal Server Error'}), 500
+        session.close()
