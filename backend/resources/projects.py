@@ -111,7 +111,7 @@ def projects_id(id):  # noqa
             'requiredVotes': row.requiredVotesMilestone,
             'currentVotes': row.currentVotesMilestone,
             'until': row.untilBlockMilestone,
-            'totalDonated': donation_sum,
+            'totalDonated': float(donation_sum),
         })
 
     json_data = {
