@@ -30,18 +30,18 @@ def file_upload(user_inst):  # pylint:disable=unused-argument
     id_proj = request.headers.get('idProject')
 
     if id_inst is None and id_proj is None:
-        return jsonify({'error': 'No project/institution given'})
+        return jsonify({'error': 'No project/institution given'}), 400
 
     if 'file' not in request.files:
-        return jsonify({'error': 'No file given'})
+        return jsonify({'error': 'No file given'}), 400
 
     file = request.files['file']
 
     if file.filename == '':
-        return jsonify({'error': 'No file given'})
+        return jsonify({'error': 'No file given'}), 400
 
     if not (file and allowed_file(file.filename)):
-        return jsonify({'error': 'File extension not allowed'})
+        return jsonify({'error': 'File extension not allowed'}), 403
 
     # Generate a new filename until on that isnt already taken is given
     while True:
