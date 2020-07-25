@@ -10,7 +10,8 @@ from web3.exceptions import InvalidAddress
 from backend.database.db import DB_SESSION
 from backend.database.model import Voucher, VoucherUser, Institution
 from backend.resources.helpers import auth_user, check_params_int
-from backend.smart_contracts.web3 import WEB3
+from backend.smart_contracts.web3 import WEB3, INSTITUTION_JSON
+from backend.smart_contracts.contract_calls.web3_voucher import add_voucher, redeem_voucher
 
 BP = Blueprint('voucher', __name__, url_prefix='/api/vouchers')
 
@@ -96,8 +97,6 @@ def voucher_post_institution(user_inst):  # pylint:disable=unused-argument
                            validTime=voucher_valid_time,
                            institution_id=institution_id,
                            )
-
-    # ToDo Blockchain
 
     session.add(voucher_inst)
     session.commit()
@@ -189,22 +188,9 @@ def voucher_post(user):
         }
         signed_transaction = WEB3.eth.account.sign_transaction(transaction, user.privatekeyUser)
         WEB3.eth.sendRawTransaction(signed_transaction.rawTransaction)
-
-        cfg_parser: configparser.ConfigParser = configparser.ConfigParser()
-        cfg_parser.read("backend_config.ini")
-
-        voucher_sc = WEB3.eth.contract(
-            address=WEB3.toChecksumAddress(cfg_parser["Voucher"]["ADDRESS"]),
-            abi=json.loads(cfg_parser["Voucher"]["ABI"])
-        )
-
-        transaction = voucher_sc.functions.addVoucher(user.publickeyUser,
-                                                      WEB3.toBytes(text=voucher.titleVoucher),
-                                                      666) \
-            .buildTransaction({'nonce': WEB3.eth.getTransactionCount(user.publickeyUser)})
-        signed_transaction = WEB3.eth.account.sign_transaction(transaction, user.privatekeyUser)
-
-        WEB3.eth.sendRawTransaction(signed_transaction.rawTransaction)
+        
+        index = add_voucher(user, inst, voucher.titleVoucher, 666) #change expires_in
+        print("index: " + str(index))
 
         session.add(voucher)
         session.add(association)
