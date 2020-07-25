@@ -5,10 +5,11 @@ from typing import List
 import validators
 from flask import Blueprint, request, jsonify
 from geopy import distance
+from sqlalchemy import func
 from sqlalchemy.orm.exc import NoResultFound
 
 from backend.database.db import DB_SESSION
-from backend.database.model import Milestone, Institution
+from backend.database.model import Milestone, Institution, Donation
 from backend.database.model import Project
 from backend.resources.helpers import auth_user, check_params_int
 from backend.smart_contracts.web3 import WEB3, PROJECT_JSON
@@ -100,6 +101,9 @@ def projects_id(id):  # noqa
 
     json_ms = []
     for row in milestoneresults:
+        donation_sum = session.query(func.sum(Donation.amountDonation)). \
+            filter(Donation.milestone_id == row.idMilestone).group_by(Donation.milestone_id).scalar()
+        donation_sum = donation_sum if donation_sum is not None else 0
         json_ms.append({
             'id': row.idMilestone,
             'idProjekt': row.project_id,
@@ -107,6 +111,7 @@ def projects_id(id):  # noqa
             'requiredVotes': row.requiredVotesMilestone,
             'currentVotes': row.currentVotesMilestone,
             'until': row.untilBlockMilestone,
+            'totalDonated': donation_sum,
         })
 
     json_data = {
