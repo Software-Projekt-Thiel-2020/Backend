@@ -9,6 +9,7 @@ from backend.database.db import DB_SESSION
 from backend.database.model import Institution, Transaction, User
 from backend.resources.helpers import auth_user, check_params_int, check_params_float
 from backend.smart_contracts.web3 import WEB3, PROJECT_JSON
+from backend.smart_contracts.contract_calls.web3_voucher import voucher_constructor
 
 BP = Blueprint('institutions', __name__, url_prefix='/api/institutions')  # set blueprint name and resource path
 
@@ -123,7 +124,9 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
         tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash)
         if tx_receipt.status != 1:
             raise RuntimeError("SC Call failed!")
-
+        
+        voucher_sc_address = voucher_constructor(publickey)
+        
         session.add_all([
             Institution(
                 nameInstitution=name,
@@ -135,6 +138,7 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
                 latitude=latitude,
                 longitude=longitude,
                 scAddress=tx_receipt.contractAddress,
+                scAddress_voucher=voucher_sc_address,
                 user=owner_inst,
             ),
             Transaction(dateTransaction=datetime.now(), smartcontract_id=2, user=owner_inst)
