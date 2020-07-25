@@ -9,7 +9,7 @@ from sqlalchemy import func
 from sqlalchemy.orm.exc import NoResultFound
 
 from backend.database.db import DB_SESSION
-from backend.database.model import Milestone, Institution, Donation
+from backend.database.model import Milestone, Institution, Donation, User
 from backend.database.model import Project
 from backend.resources.helpers import auth_user, check_params_int
 from backend.smart_contracts.web3 import WEB3, PROJECT_JSON
@@ -132,7 +132,7 @@ def projects_id(id):  # noqa
 
 @BP.route('', methods=['POST'])
 @auth_user
-def projects_post(user_inst):  # pylint:disable=unused-argument, too-many-locals
+def projects_post(user_inst: User):  # pylint:disable=unused-argument, too-many-locals
     """
     Handles POST for resource <base>/api/projects .
 
@@ -149,10 +149,11 @@ def projects_post(user_inst):  # pylint:disable=unused-argument, too-many-locals
     latitude = request.headers.get('latitude')
     longitude = request.headers.get('longitude')
 
-    if None in [name, goal, required_votes, until, id_institution]:
+    if None in [name, goal, required_votes, until, id_institution, description]:
         return jsonify({'error': 'Missing parameter'}), 403
     try:
-        check_params_int([id_institution, goal, required_votes, until])
+        # pylint:disable=unbalanced-tuple-unpacking
+        id_institution, goal, required_votes, until = check_params_int([id_institution, goal, required_votes, until])
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
@@ -177,19 +178,34 @@ def projects_post(user_inst):  # pylint:disable=unused-argument, too-many-locals
         longitude=longitude
         # ToDo: add user as project owner
     )
-    result: Institution = session.query(Institution).get(id_institution)
-    donations_sc = WEB3.eth.contract(address=result.scAddress, abi=PROJECT_JSON["abi"])
+
+    projects_sc = WEB3.eth.contract(abi=PROJECT_JSON["abi"],
+                                    bytecode=PROJECT_JSON["bytecode"])
     try:
+        description_bytes = WEB3.toBytes(text=str(str(description)[0:32]))
+        # constructor(_owner, _admin, _partial_payment, _projectTargetName, _projectTargetAmount, _minDonation)
+        ctor = projects_sc.constructor(user_inst.publickeyUser, WEB3.eth.defaultAccount, 80, description_bytes,
+                                       goal, int(WEB3.toWei(0.01, 'ether')))
+        tx_hash = ctor.buildTransaction({'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser),
+                                         'from': user_inst.publickeyUser})
+        signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=user_inst.privatekeyUser)
+        tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+        tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash)
+        if tx_receipt.status != 1:
+            raise RuntimeError("SC Call failed!")
+        project_inst.scAddress = tx_receipt.contractAddress
+
+        projects_sc = WEB3.eth.contract(address=tx_receipt.contractAddress, abi=PROJECT_JSON["abi"])
+
         milestones_inst: List[Milestone] = []
         for milestone in json.loads(milestones):
-            tx_hash = donations_sc.functions.addMilestone(WEB3.toBytes(text=milestone['name']),
-                                                          int(milestone['goal']),
-                                                          int(milestone['until'])). \
-                buildTransaction({'nonce': WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount),
-                                  'from': WEB3.eth.defaultAccount})
-            # signed_tx = WEB3.eth.account.signTransaction(tx_hash, private_key=admin_account.key)
-            # tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
-            tx_hash = WEB3.eth.sendTransaction(tx_hash)
+            tx_hash = projects_sc.functions.addMilestone(WEB3.toBytes(text=milestone['name']),
+                                                         int(milestone['goal']),
+                                                         int(milestone['until'])). \
+                buildTransaction({'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser),
+                                  'from': user_inst.publickeyUser})
+            signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=user_inst.privatekeyUser)
+            tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
             tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash)
             if tx_receipt.status != 1:
                 raise RuntimeError("SC Call failed!")
@@ -247,18 +263,17 @@ def projects_patch(user_inst, id):  # pylint:disable=invalid-name,redefined-buil
     if description is not None:
         project_inst.descriptionProject = description
 
-    result: Institution = session.query(Institution).get(id)
-    donations_sc = WEB3.eth.contract(address=result.scAddress, abi=PROJECT_JSON["abi"])
+    projects_sc = WEB3.eth.contract(address=project_inst.scAddress, abi=PROJECT_JSON["abi"])
     try:
         milestones_inst: List[Milestone] = []
         for milestone in json.loads(milestones):
-            tx_hash = donations_sc.functions.addMilestone(WEB3.toBytes(text=milestone['name']),
-                                                          int(milestone['goal']), int(milestone['until'])). \
-                buildTransaction({'nonce': WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount),
-                                  'from': WEB3.eth.defaultAccount})
-            # signed_tx = WEB3.eth.account.signTransaction(tx_hash, private_key=admin_account.key)
-            # tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
-            tx_hash = WEB3.eth.sendTransaction(tx_hash)
+            tx_hash = projects_sc.functions.addMilestone(WEB3.toBytes(text=milestone['name']),
+                                                         int(milestone['goal']),
+                                                         int(milestone['until'])). \
+                buildTransaction({'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser),
+                                  'from': user_inst.publickeyUser})
+            signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=user_inst.privatekeyUser)
+            tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
             tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash)
             if tx_receipt.status != 1:
                 raise RuntimeError("SC Call failed!")

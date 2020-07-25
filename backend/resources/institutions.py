@@ -8,7 +8,7 @@ from geopy import distance
 from backend.database.db import DB_SESSION
 from backend.database.model import Institution, Transaction, User
 from backend.resources.helpers import auth_user, check_params_int, check_params_float
-from backend.smart_contracts.web3 import WEB3, PROJECT_JSON
+from backend.smart_contracts.web3 import WEB3, INSTITUTION_JSON
 
 BP = Blueprint('institutions', __name__, url_prefix='/api/institutions')  # set blueprint name and resource path
 
@@ -38,7 +38,7 @@ def institutions_get():
         return jsonify({"error": "bad geo argument"}), 400
 
     session = DB_SESSION()
-    results = session.query(Institution).join(User)
+    results = session.query(Institution).join(Institution.user)
 
     json_data = []
 
@@ -116,9 +116,8 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
 
     try:
         # web3 default account is used for this:
-        donations_contract = WEB3.eth.contract(abi=PROJECT_JSON["abi"], bytecode=PROJECT_JSON["bytecode"])
-        ctor = donations_contract.constructor(publickey, WEB3.eth.defaultAccount, 80,
-                                              WEB3.toBytes(text="donations sc"), 100000, 20)
+        donations_contract = WEB3.eth.contract(abi=INSTITUTION_JSON["abi"], bytecode=INSTITUTION_JSON["bytecode"])
+        ctor = donations_contract.constructor()
         tx_hash = ctor.transact()
         tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash)
         if tx_receipt.status != 1:
