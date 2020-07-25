@@ -163,6 +163,7 @@ def test_projects_id_get_existant_param(client):
     assert res.json["milestones"][0]["requiredVotes"] == 112
     assert res.json["milestones"][0]["currentVotes"] == 112
     assert res.json["milestones"][0]["until"] == 600000
+    assert res.json["milestones"][0]["totalDonated"] == 300
 
     assert res.json["milestones"][1]["id"] == 2
     assert res.json["milestones"][1]["idProjekt"] == 1
@@ -170,6 +171,7 @@ def test_projects_id_get_existant_param(client):
     assert res.json["milestones"][1]["requiredVotes"] == 112
     assert res.json["milestones"][1]["currentVotes"] == 12
     assert res.json["milestones"][1]["until"] == 1200000
+    assert res.json["milestones"][1]["totalDonated"] == 200
 
     assert res.json["milestones"][2]["id"] == 3
     assert res.json["milestones"][2]["idProjekt"] == 1
@@ -177,6 +179,7 @@ def test_projects_id_get_existant_param(client):
     assert res.json["milestones"][2]["requiredVotes"] == 112
     assert res.json["milestones"][2]["currentVotes"] == 0
     assert res.json["milestones"][2]["until"] == 2400000
+    assert res.json["milestones"][2]["totalDonated"] == 100
 
     assert res.json["milestones"][3]["id"] == 7
     assert res.json["milestones"][3]["idProjekt"] == 1
@@ -184,6 +187,7 @@ def test_projects_id_get_existant_param(client):
     assert res.json["milestones"][3]["requiredVotes"] == 666
     assert res.json["milestones"][3]["currentVotes"] == 400
     assert res.json["milestones"][3]["until"] == 100000000
+    assert res.json["milestones"][3]["totalDonated"] == 0
 
 
 def test_projects_id_get_nonexistant_param(client):
