@@ -1,5 +1,8 @@
 """Tests for resource institutions."""
+from backend.smart_contracts.web3 import WEB3
 from tests.test_blockstackauth import TOKEN_1, TOKEN_2, TOKEN_3
+
+ACCOUNTS = list(WEB3.eth.accounts)
 
 
 def test_institutions_get(client):
@@ -9,22 +12,22 @@ def test_institutions_get(client):
 
     assert res.json[0]["id"] == 1
     assert res.json[0]["name"] == "MSGraphic"
-    assert res.json[0]["webpage"] == "www.msgraphic.com"
+    assert res.json[0]["webpage"] == "http://www.msgraphic.com"
     assert res.json[0]["address"] == "Address1"
 
     assert res.json[1]["id"] == 2
     assert res.json[1]["name"] == "SWP"
-    assert res.json[1]["webpage"] == "www.swp.com"
+    assert res.json[1]["webpage"] == "http://www.swp.com"
     assert res.json[1]["address"] == "Address2"
 
     assert res.json[2]["id"] == 3
     assert res.json[2]["name"] == "Asgard Inc."
-    assert res.json[2]["webpage"] == "www.asgard.as"
+    assert res.json[2]["webpage"] == "http://www.asgard.as"
     assert res.json[2]["address"] == "Address3"
 
     assert res.json[3]["id"] == 4
     assert res.json[3]["name"] == "Blackhole"
-    assert res.json[3]["webpage"] == "127.0.0.1"
+    assert res.json[3]["webpage"] == "http://127.0.0.1"
     assert res.json[3]["address"] == "Address4"
 
 
@@ -35,8 +38,62 @@ def test_institutions_get_id(client):
 
     assert res.json[0]["id"] == 1
     assert res.json[0]["name"] == "MSGraphic"
-    assert res.json[0]["webpage"] == "www.msgraphic.com"
+    assert res.json[0]["webpage"] == "http://www.msgraphic.com"
     assert res.json[0]["address"] == "Address1"
+
+
+def test_institutions_get_username(client):
+    res = client.get('/api/institutions?username=OdinsonThor')
+    assert res._status_code == 200
+    assert len(res.json) == 1
+
+    assert res.json[0]["id"] == 1
+    assert res.json[0]["name"] == "MSGraphic"
+    assert res.json[0]["webpage"] == "http://www.msgraphic.com"
+    assert res.json[0]["address"] == "Address1"
+
+
+def test_institutions_get_name(client):
+    res = client.get('/api/institutions?name=Graphic')
+    assert res._status_code == 200
+    assert len(res.json) == 1
+
+    assert res.json[0]["id"] == 1
+    assert res.json[0]["name"] == "MSGraphic"
+    assert res.json[0]["webpage"] == "http://www.msgraphic.com"
+    assert res.json[0]["address"] == "Address1"
+
+
+def test_institutions_get_hasvouchers(client):
+    res = client.get('/api/institutions?has_vouchers=1')
+    assert res._status_code == 200
+    assert len(res.json) == 1
+
+    assert res.json[0]["id"] == 1
+    assert res.json[0]["name"] == "MSGraphic"
+    assert res.json[0]["webpage"] == "http://www.msgraphic.com"
+    assert res.json[0]["address"] == "Address1"
+
+
+def test_institutions_get_hasvouchers2(client):
+    res = client.get('/api/institutions?has_vouchers=0')
+    assert res._status_code == 200
+    assert len(res.json) == 3
+
+    assert res.json[0]["id"] == 2
+    assert res.json[0]["name"] == "SWP"
+    assert res.json[0]["webpage"] == "http://www.swp.com"
+    assert res.json[0]["address"] == "Address2"
+
+    assert res.json[1]["id"] == 3
+    assert res.json[1]["name"] == "Asgard Inc."
+    assert res.json[1]["webpage"] == "http://www.asgard.as"
+    assert res.json[1]["address"] == "Address3"
+
+    assert res.json[2]["id"] == 4
+    assert res.json[2]["name"] == "Blackhole"
+    assert res.json[2]["webpage"] == "http://127.0.0.1"
+    assert res.json[2]["address"] == "Address4"
 
 
 def test_institutions_get_geo(client):
@@ -46,7 +103,7 @@ def test_institutions_get_geo(client):
 
     assert res.json[0]["id"] == 1
     assert res.json[0]["name"] == "MSGraphic"
-    assert res.json[0]["webpage"] == "www.msgraphic.com"
+    assert res.json[0]["webpage"] == "http://www.msgraphic.com"
     assert res.json[0]["address"] == "Address1"
 
 
@@ -65,21 +122,34 @@ def test_institutions_get_geo_bad(client):
     assert res._status_code == 400
 
 
+def test_institutions_get_geo_bad2(client):
+    res = client.get('/api/institutions?radius=1200&latitude=52.030228&longitude=test')
+    assert res._status_code == 400
+    assert res.json['error'] == "bad argument"
+
+
 def test_institutions_get_bad_id(client):
     res = client.get('/api/institutions?id=1337')
     assert res._status_code == 200
     assert len(res.json) == 0
 
 
-def test_institutions_post(client):
+def test_institutions_get_bad_id2(client):
+    res = client.get('/api/institutions?id=aaa')
+    assert res._status_code == 400
+    assert res.json['error'] == "bad argument"
+
+
+def test_institutions_post(client_w_eth):
     headers = {"authToken": TOKEN_1, "username": "sw2020testuser2.id.blockstack", "name": "ExampleInstitution",
-               "address": "Address", "description": "description", "latitude": 13.37, "longitude": 42.69}
-    res = client.post('/api/institutions', headers=headers)
+               "address": "Address", "description": "description", "latitude": 13.37, "longitude": 42.69,
+               "publickey": ACCOUNTS[2]}
+    res = client_w_eth.post('/api/institutions', headers=headers)
     assert res._status_code == 201
     assert len(res.json) == 1
     assert res.json["status"] == "Institution wurde erstellt"
 
-    res = client.get('/api/institutions?id=5')
+    res = client_w_eth.get('/api/institutions?id=5')
     assert res._status_code == 200
     assert len(res.json) == 1
 
@@ -92,16 +162,16 @@ def test_institutions_post(client):
     assert res.json[0]["longitude"] == 42.69
 
 
-def test_institutions_post2(client):
+def test_institutions_post2(client_w_eth):
     headers = {"authToken": TOKEN_1, "username": "sw2020testuser2.id.blockstack", "name": "ExampleInstitution",
                "address": "Address", "webpage": "https://www.example.com/", "description": "description",
-               "latitude": 13.37, "longitude": 42.69}
-    res = client.post('/api/institutions', headers=headers)
+               "latitude": 13.37, "longitude": 42.69, "publickey": ACCOUNTS[2]}
+    res = client_w_eth.post('/api/institutions', headers=headers)
     assert res._status_code == 201
     assert len(res.json) == 1
     assert res.json["status"] == "Institution wurde erstellt"
 
-    res = client.get('/api/institutions?id=5')
+    res = client_w_eth.get('/api/institutions?id=5')
     assert res._status_code == 200
     assert len(res.json) == 1
 
@@ -114,17 +184,27 @@ def test_institutions_post2(client):
 def test_institutions_post_bad_owner(client):
     headers = {"authToken": TOKEN_1, "username": "sw2020testuser1337.id.blockstack", "name": "ExampleInstitution",
                "address": "Address", "webpage": "https://www.example.com/", "description": "description",
-               "latitude": 13.37, "longitude": 42.69}
+               "latitude": 13.37, "longitude": 42.69, "publickey": ACCOUNTS[3]}
     res = client.post('/api/institutions', headers=headers)
     assert res._status_code == 400
     assert len(res.json) == 1
     assert res.json["error"] == "username not found"
 
 
+def test_institutions_post_bad_geo(client):
+    headers = {"authToken": TOKEN_1, "username": "sw2020testuser2.id.blockstack", "name": "ExampleInstitution",
+               "address": "Address", "webpage": "https://www.example.com/", "description": "description",
+               "latitude": 13.37, "longitude": "a", "publickey": ACCOUNTS[3]}
+    res = client.post('/api/institutions', headers=headers)
+    assert res._status_code == 400
+    assert len(res.json) == 1
+    assert res.json["error"] == "bad argument"
+
+
 def test_institutions_post_non_support_user(client):
     headers = {"authToken": TOKEN_2, "username": "sw2020testuser2.id.blockstack", "name": "ExampleInstitution",
                "address": "Address", "webpage": "https://www.example.com/", "description": "description",
-               "latitude": 13.37, "longitude": 42.69}
+               "latitude": 13.37, "longitude": 42.69, "publickey": ACCOUNTS[2]}
     res = client.post('/api/institutions', headers=headers)
     assert res._status_code == 403
     assert len(res.json) == 1
@@ -147,7 +227,8 @@ def test_institutions_post_no_params(client):
 
 def test_institutions_post_bad_webpage(client):
     headers = {"authToken": TOKEN_1, "name": "ExampleInstitution", "address": "Address",
-               "webpage": "NotAValidURL", "description": "description", "latitude": 13.37, "longitude": 42.69}
+               "webpage": "NotAValidURL", "description": "description", "latitude": 13.37, "longitude": 42.69,
+               "publickey": ACCOUNTS[2]}
     res = client.post('/api/institutions', headers=headers)
     assert res._status_code == 400
     assert len(res.json) == 1
@@ -157,7 +238,7 @@ def test_institutions_post_bad_webpage(client):
 def test_institutions_post_existing_name(client):
     headers = {"authToken": TOKEN_1, "username": "sw2020testuser2.id.blockstack", "name": "MSGraphic",
                "address": "Address", "webpage": "https://www.example.com/", "description": "description",
-               "latitude": 13.37, "longitude": 42.69}
+               "latitude": 13.37, "longitude": 42.69, "publickey": ACCOUNTS[2]}
     res = client.post('/api/institutions', headers=headers)
     assert res._status_code == 400
     assert len(res.json) == 1
@@ -223,6 +304,42 @@ def test_institutions_patch3(client):
     assert res.json[0]["address"] == "Address"
 
 
+def test_institutions_patch4(client):
+    test_institutions_post2(client)  # create institution
+
+    headers = {"authToken": TOKEN_2, "id": 5,
+               "latitude": 13.37, "longitude": 42.69}
+    res = client.patch('/api/institutions', headers=headers)
+    assert res._status_code == 201
+    assert len(res.json) == 1
+    assert res.json["status"] == "Institution wurde bearbeitet"
+
+    res = client.get('/api/institutions?id=5')
+    assert res._status_code == 200
+    assert len(res.json) == 1
+
+    assert res.json[0]["id"] == 5
+    assert res.json[0]["latitude"] == 13.37
+    assert res.json[0]["longitude"] == 42.69
+
+
+def test_institutions_patch5(client):
+    test_institutions_post2(client)  # create institution
+
+    headers = {"authToken": TOKEN_2, "id": 5, "description": "description1234"}
+    res = client.patch('/api/institutions', headers=headers)
+    assert res._status_code == 201
+    assert len(res.json) == 1
+    assert res.json["status"] == "Institution wurde bearbeitet"
+
+    res = client.get('/api/institutions?id=5')
+    assert res._status_code == 200
+    assert len(res.json) == 1
+
+    assert res.json[0]["id"] == 5
+    assert res.json[0]["description"] == "description1234"
+
+
 def test_institutions_patch_missing_id(client):
     test_institutions_post2(client)  # create institution
 
@@ -232,6 +349,28 @@ def test_institutions_patch_missing_id(client):
     assert res._status_code == 400
     assert len(res.json) == 1
     assert res.json["error"] == "Missing parameter"
+
+
+def test_institutions_patch_bad_geo(client):
+    test_institutions_post2(client)  # create institution
+
+    headers = {"authToken": TOKEN_2, "id": 5,  "name": "NewExampleInstitution", "address": "NewAddress",
+               "webpage": "https://www.new_example.com/", "latitude": 13.37, "longitude": "aaa"}
+    res = client.patch('/api/institutions', headers=headers)
+    assert res._status_code == 400
+    assert len(res.json) == 1
+    assert res.json["error"] == "bad argument"
+
+
+def test_institutions_patch_bad_geo2(client):
+    test_institutions_post2(client)  # create institution
+
+    headers = {"authToken": TOKEN_2, "id": 5,  "name": "NewExampleInstitution", "address": "NewAddress",
+               "webpage": "https://www.new_example.com/", "latitude": 13.37}
+    res = client.patch('/api/institutions', headers=headers)
+    assert res._status_code == 400
+    assert len(res.json) == 1
+    assert res.json["error"] == "bad geo argument"
 
 
 def test_institutions_patch_name_exists(client):

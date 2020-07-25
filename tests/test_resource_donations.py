@@ -187,16 +187,16 @@ def test_donations_get_w_project_bad_value(client):
     assert res._status_code == 400
 
 
-def test_donations_post(client):
+def test_donations_post(client_w_eth):
     headers = {"authToken": TOKEN_1, "idmilestone": 1, "amount": 1337, "voteEnabled": 1}
-    res = client.post('/api/donations', headers=headers)
+    res = client_w_eth.post('/api/donations', headers=headers)
 
     assert res._status_code == 201
     assert len(res.json) == 1
 
     assert res.json["status"] == "Spende wurde verbucht"
 
-    res = client.get('/api/donations?iduser=6')
+    res = client_w_eth.get('/api/donations?iduser=6')
     assert res._status_code == 200
     assert len(res.json) == 1
 
@@ -237,7 +237,7 @@ def test_donations_post_missing_param2(client):
 
 
 def test_donations_post_missing_param3(client):
-    headers = {"authToken": TOKEN_2, "idmilestone": 1337, "amount": 1337}
+    headers = {"authToken": TOKEN_1, "idmilestone": 1337, "amount": 1337}
     res = client.post('/api/donations', headers=headers)
 
     assert res._status_code == 400
@@ -246,8 +246,30 @@ def test_donations_post_missing_param3(client):
     assert res.json["error"] == "Missing parameter"
 
 
+def test_donations_post_bad_param(client):
+    headers = {"authToken": TOKEN_1, "idmilestone": "test", "amount": 1337, "voteEnabled": 0}
+    res = client.post('/api/donations', headers=headers)
+
+    assert res._status_code == 400
+    assert len(res.json) == 1
+
+    assert res.json["error"] == "bad argument"
+
+
+def test_donations_post_bad_param2(client):
+    headers = {"authToken": TOKEN_1, "idmilestone": 1, "amount": -1337, "voteEnabled": 0}
+    res = client.post('/api/donations', headers=headers)
+
+    assert res._status_code == 400
+    assert len(res.json) == 1
+
+    assert res.json["error"] == "amount cant be 0 or less"
+
+
 def test_donations_post_wo_auth(client):
     headers = {"idmilestone": 1337, "amount": 1337, "etherAccountKey": "89354joiternjkfsdhiu4378z"}
     res = client.post('/api/donations', headers=headers)
 
     assert res._status_code == 401
+
+

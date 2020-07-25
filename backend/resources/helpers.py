@@ -3,6 +3,7 @@ from typing import List
 
 from flask import request, abort
 from jwt import DecodeError
+from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import NoResultFound
 
 from backend.blockstack_auth import BlockstackAuth
@@ -17,9 +18,46 @@ def check_params_int(params: List):
     :except: ValueError if one of the Parameters isn't an int
     :return: -
     """
+    ret = []
     for param in params:
         if param:
-            int(param)
+            ret.append(int(param) if param else param)
+    return ret
+
+
+def check_params_float(params: List):
+    """
+    Checks a List of params if they are really castable to float.
+
+    :except: ValueError if one of the Parameters isn't an float
+    :return: -
+    """
+    ret = []
+    for param in params:
+        ret.append(float(param) if param else param)
+    return ret
+
+
+def db_session_dec(func):
+    """
+    Decorator for resources that need a DB-Session.
+
+    :param func: function to decorate
+    :return:
+    """
+
+    @wraps(func)
+    def decorated_function(*args, **kws):
+        sess: Session = None
+        try:
+            sess = DB_SESSION()
+            return func(sess, *args, **kws)
+        finally:
+            if sess:
+                sess.rollback()
+                sess.close()
+
+    return decorated_function
 
 
 def auth_user(func):
@@ -65,7 +103,8 @@ def auth_user(func):
             abort(401)
         else:
             tmp = func(user_inst, *args, **kws)
-            session.commit()
+            session.commit()  # if user_inst get's changed
+            session.close()
             return tmp
 
     return decorated_function
