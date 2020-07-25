@@ -159,34 +159,34 @@ def test_projects_id_get_existant_param(client):
     assert len(res.json["milestones"]) == 4
     assert res.json["milestones"][0]["id"] == 1
     assert res.json["milestones"][0]["idProjekt"] == 1
-    assert res.json["milestones"][0]["goal"] == 1000
+    assert res.json["milestones"][0]["goal"] == 10
     assert res.json["milestones"][0]["requiredVotes"] == 112
     assert res.json["milestones"][0]["currentVotes"] == 112
-    assert res.json["milestones"][0]["until"] == 600000
+    assert res.json["milestones"][0]["until"] == 1693094933
     assert res.json["milestones"][0]["totalDonated"] == 300
 
     assert res.json["milestones"][1]["id"] == 2
     assert res.json["milestones"][1]["idProjekt"] == 1
-    assert res.json["milestones"][1]["goal"] == 2000
+    assert res.json["milestones"][1]["goal"] == 20
     assert res.json["milestones"][1]["requiredVotes"] == 112
     assert res.json["milestones"][1]["currentVotes"] == 12
-    assert res.json["milestones"][1]["until"] == 1200000
+    assert res.json["milestones"][1]["until"] == 1693094933
     assert res.json["milestones"][1]["totalDonated"] == 200
 
     assert res.json["milestones"][2]["id"] == 3
     assert res.json["milestones"][2]["idProjekt"] == 1
-    assert res.json["milestones"][2]["goal"] == 3000
+    assert res.json["milestones"][2]["goal"] == 30
     assert res.json["milestones"][2]["requiredVotes"] == 112
     assert res.json["milestones"][2]["currentVotes"] == 0
-    assert res.json["milestones"][2]["until"] == 2400000
+    assert res.json["milestones"][2]["until"] == 1693094933
     assert res.json["milestones"][2]["totalDonated"] == 100
 
     assert res.json["milestones"][3]["id"] == 7
     assert res.json["milestones"][3]["idProjekt"] == 1
-    assert res.json["milestones"][3]["goal"] == 5000
+    assert res.json["milestones"][3]["goal"] == 50
     assert res.json["milestones"][3]["requiredVotes"] == 666
     assert res.json["milestones"][3]["currentVotes"] == 400
-    assert res.json["milestones"][3]["until"] == 100000000
+    assert res.json["milestones"][3]["until"] == 1693094933
     assert res.json["milestones"][3]["totalDonated"] == 0
 
 
@@ -224,20 +224,20 @@ def test_projects_post_w_auth_wo_params(client):
 
 def test_projects_post_w_auth_bad_params(client):
     headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
-               "idInstitution": "abc"}
+               "idInstitution": "abc", "description": "test description"}
     res = client.post('/api/projects', headers=headers)
     assert res._status_code == 400
     assert res.json["error"] == "bad argument"
 
 
-def test_projects_post_required_params(client):
+def test_projects_post_required_params(client_w_eth):
     headers = {"authToken": TOKEN_2, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
-               "idInstitution": 4}
-    res = client.post('/api/projects', headers=headers)
+               "idInstitution": 4, "description": "test description"}
+    res = client_w_eth.post('/api/projects', headers=headers)
     assert res._status_code == 201
     assert res.json["status"] == "ok"
 
-    res = client.get('/api/projects/4')
+    res = client_w_eth.get('/api/projects/4')
     assert res._status_code == 200
     assert len(res.json) == 10
 
@@ -251,7 +251,7 @@ def test_projects_post_required_params(client):
 
 def test_projects_post_w_bad_milestones(client):
     headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
-               "milestones": "dennis", "idInstitution": 4}
+               "milestones": "dennis", "idInstitution": 4, "description": "test description"}
     res = client.post('/api/projects', headers=headers)
     assert res._status_code == 400
     assert res.json["status"] == "invalid json"
@@ -262,8 +262,8 @@ def test_projects_post_w_milestones(client):
         {"name": "goal_1", "goal": 100, "requiredVotes": 1337, "until": 1693094933},
         {"name": "goal_2", "goal": 500, "requiredVotes": 42, "until": 1693094933},
     ]
-    headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
-               "milestones": json.dumps(milestones), "idInstitution": 4}
+    headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1792094933,
+               "milestones": json.dumps(milestones), "idInstitution": 4, "description": "test description"}
     res = client.post('/api/projects', headers=headers)
     assert res._status_code == 201
     assert res.json["status"] == "ok"
@@ -296,7 +296,7 @@ def test_projects_post_w_milestones(client):
 
 def test_projects_post_w_webpage(client):
     headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
-               "webpage": "http://www.example.com", "idInstitution": 4}
+               "webpage": "http://www.example.com", "idInstitution": 4, "description": "test description"}
     res = client.post('/api/projects', headers=headers)
     assert res._status_code == 201
     assert res.json["status"] == "ok"
@@ -315,7 +315,7 @@ def test_projects_post_w_webpage(client):
 
 def test_projects_post_w_bad_webpage(client):
     headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
-               "webpage": "notaurl#22*3\\asdf", "idInstitution": 4}
+               "webpage": "notaurl#22*3\\asdf", "idInstitution": 4, "description": "test description"}
     res = client.post('/api/projects', headers=headers)
     assert res._status_code == 400
     assert res.json["error"] == "webpage is not a valid url"
@@ -323,7 +323,7 @@ def test_projects_post_w_bad_webpage(client):
 
 def test_projects_post_w_institution(client):
     headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
-               "idInstitution": 3}
+               "idInstitution": 3, "description": "test description"}
     res = client.post('/api/projects', headers=headers)
     assert res._status_code == 201
     assert res.json["status"] == "ok"
@@ -342,7 +342,7 @@ def test_projects_post_w_institution(client):
 
 def test_projects_post_w_bad_institution(client):
     headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
-               "idInstitution": 30000}
+               "idInstitution": 30000, "description": "test description"}
     res = client.post('/api/projects', headers=headers)
     assert res._status_code == 400
 
@@ -406,17 +406,17 @@ def test_projects_patch_wo_auth_wo_params(client):
     assert res._status_code == 401
 
 
-def test_projects_patch_w_milestones(client):
+def test_projects_patch_w_milestones(client_w_eth):
     milestones = [
         {"name": "goal_1", "goal": 100, "requiredVotes": 1337, "until": 1693094933},
         {"name": "goal_2", "goal": 500, "requiredVotes": 42, "until": 1693094933},
     ]
     headers = {"authToken": TOKEN_1, "milestones": json.dumps(milestones), "idInstitution": 4}
-    res = client.patch('/api/projects/1', headers=headers)
+    res = client_w_eth.patch('/api/projects/1', headers=headers)
     assert res._status_code == 201
 
     assert res.json["status"] == "ok"
-    res = client.get('/api/projects/1')
+    res = client_w_eth.get('/api/projects/1')
     assert res._status_code == 200
 
     assert res.json["id"] == 1
@@ -428,31 +428,31 @@ def test_projects_patch_w_milestones(client):
     assert len(res.json["milestones"]) == 6
     assert res.json["milestones"][0]["id"] == 1
     assert res.json["milestones"][0]["idProjekt"] == 1
-    assert res.json["milestones"][0]["goal"] == 1000
+    assert res.json["milestones"][0]["goal"] == 10
     assert res.json["milestones"][0]["requiredVotes"] == 112
     assert res.json["milestones"][0]["currentVotes"] == 112
-    assert res.json["milestones"][0]["until"] == 600000
+    assert res.json["milestones"][0]["until"] == 1693094933
 
     assert res.json["milestones"][1]["id"] == 2
     assert res.json["milestones"][1]["idProjekt"] == 1
-    assert res.json["milestones"][1]["goal"] == 2000
+    assert res.json["milestones"][1]["goal"] == 20
     assert res.json["milestones"][1]["requiredVotes"] == 112
     assert res.json["milestones"][1]["currentVotes"] == 12
-    assert res.json["milestones"][1]["until"] == 1200000
+    assert res.json["milestones"][1]["until"] == 1693094933
 
     assert res.json["milestones"][2]["id"] == 3
     assert res.json["milestones"][2]["idProjekt"] == 1
-    assert res.json["milestones"][2]["goal"] == 3000
+    assert res.json["milestones"][2]["goal"] == 30
     assert res.json["milestones"][2]["requiredVotes"] == 112
     assert res.json["milestones"][2]["currentVotes"] == 0
-    assert res.json["milestones"][2]["until"] == 2400000
+    assert res.json["milestones"][2]["until"] == 1693094933
 
     assert res.json["milestones"][3]["id"] == 7
     assert res.json["milestones"][3]["idProjekt"] == 1
-    assert res.json["milestones"][3]["goal"] == 5000
+    assert res.json["milestones"][3]["goal"] == 50
     assert res.json["milestones"][3]["requiredVotes"] == 666
     assert res.json["milestones"][3]["currentVotes"] == 400
-    assert res.json["milestones"][3]["until"] == 100000000
+    assert res.json["milestones"][3]["until"] == 1693094933
 
     assert res.json["milestones"][4]["id"] == 8
     assert res.json["milestones"][4]["idProjekt"] == res.json["id"]
@@ -487,31 +487,31 @@ def test_projects_patch_wo_params(client):
     assert len(res.json["milestones"]) == 4
     assert res.json["milestones"][0]["id"] == 1
     assert res.json["milestones"][0]["idProjekt"] == 1
-    assert res.json["milestones"][0]["goal"] == 1000
+    assert res.json["milestones"][0]["goal"] == 10
     assert res.json["milestones"][0]["requiredVotes"] == 112
     assert res.json["milestones"][0]["currentVotes"] == 112
-    assert res.json["milestones"][0]["until"] == 600000
+    assert res.json["milestones"][0]["until"] == 1693094933
 
     assert res.json["milestones"][1]["id"] == 2
     assert res.json["milestones"][1]["idProjekt"] == 1
-    assert res.json["milestones"][1]["goal"] == 2000
+    assert res.json["milestones"][1]["goal"] == 20
     assert res.json["milestones"][1]["requiredVotes"] == 112
     assert res.json["milestones"][1]["currentVotes"] == 12
-    assert res.json["milestones"][1]["until"] == 1200000
+    assert res.json["milestones"][1]["until"] == 1693094933
 
     assert res.json["milestones"][2]["id"] == 3
     assert res.json["milestones"][2]["idProjekt"] == 1
-    assert res.json["milestones"][2]["goal"] == 3000
+    assert res.json["milestones"][2]["goal"] == 30
     assert res.json["milestones"][2]["requiredVotes"] == 112
     assert res.json["milestones"][2]["currentVotes"] == 0
-    assert res.json["milestones"][2]["until"] == 2400000
+    assert res.json["milestones"][2]["until"] == 1693094933
 
     assert res.json["milestones"][3]["id"] == 7
     assert res.json["milestones"][3]["idProjekt"] == 1
-    assert res.json["milestones"][3]["goal"] == 5000
+    assert res.json["milestones"][3]["goal"] == 50
     assert res.json["milestones"][3]["requiredVotes"] == 666
     assert res.json["milestones"][3]["currentVotes"] == 400
-    assert res.json["milestones"][3]["until"] == 100000000
+    assert res.json["milestones"][3]["until"] == 1693094933
 
 
 def test_projects_patch_w_bad_milestone(client):

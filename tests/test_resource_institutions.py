@@ -43,7 +43,7 @@ def test_institutions_get_id(client):
 
 
 def test_institutions_get_username(client):
-    res = client.get('/api/institutions?username=OdinsonThor')
+    res = client.get('/api/institutions?username=sw2020testuser1.id.blockstack')
     assert res._status_code == 200
     assert len(res.json) == 1
 

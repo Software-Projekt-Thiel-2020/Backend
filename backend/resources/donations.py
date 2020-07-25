@@ -90,7 +90,7 @@ def donations_post(user_inst):
     if int(amount) <= 0:
         return jsonify({'error': 'amount cant be 0 or less'}), 400
 
-    donations_sc = WEB3.eth.contract(address=results.project.institution.scAddress, abi=PROJECT_JSON["abi"])
+    donations_sc = WEB3.eth.contract(address=results.project.scAddress, abi=PROJECT_JSON["abi"])
     try:
         # Add Donation
         tx_hash = donations_sc.functions.register().buildTransaction({
