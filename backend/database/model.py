@@ -66,6 +66,7 @@ class Institution(BASE):
     longitude = Column(Float)
     descriptionInstitution = Column(TEXT)
     scAddress = Column(VARCHAR(64))
+    scAddress_voucher = Column(VARCHAR(64))
 
     projects = relationship("Project", back_populates="institution")
 
