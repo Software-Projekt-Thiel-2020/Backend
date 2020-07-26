@@ -8,7 +8,6 @@ from geopy import distance
 from sqlalchemy import func
 from sqlalchemy.orm.exc import NoResultFound
 
-from backend.database.db import DB_SESSION
 from backend.database.model import Milestone, Institution, Donation, User
 from backend.database.model import Project
 from backend.resources.helpers import auth_user, check_params_int, db_session_dec

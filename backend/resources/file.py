@@ -3,7 +3,6 @@ import uuid
 from flask import Blueprint, request, jsonify, send_from_directory, current_app
 from sqlalchemy.orm.exc import NoResultFound
 
-from backend.database.db import DB_SESSION
 from backend.database.model import Institution
 from backend.database.model import Project
 from backend.resources.helpers import auth_user, db_session_dec

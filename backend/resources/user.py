@@ -6,7 +6,6 @@ from jwt import DecodeError
 from sqlalchemy.orm.exc import NoResultFound
 
 from backend.blockstack_auth import BlockstackAuth
-from backend.database.db import DB_SESSION
 from backend.database.model import User
 from backend.resources.helpers import auth_user, db_session_dec
 from backend.smart_contracts.web3 import WEB3

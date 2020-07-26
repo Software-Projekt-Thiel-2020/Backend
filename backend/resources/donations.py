@@ -1,7 +1,6 @@
 """Project Resource."""
 from flask import Blueprint, request, jsonify
 
-from backend.database.db import DB_SESSION
 from backend.database.model import Donation
 from backend.database.model import Milestone
 from backend.database.model import Project
