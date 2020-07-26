@@ -141,6 +141,8 @@ class Donation(BASE):
     milestone_id = Column(Integer, ForeignKey('Milestone.idMilestone'))
     milestone = relationship("Milestone", back_populates="donations")
 
+    milestone_sc_id = Column(Integer)
+
 
 class Transaction(BASE):
     __tablename__ = 'Transaction'

@@ -122,6 +122,7 @@ def donations_post(session, user_inst):
             user=user_inst,
             milestone_id=results.milestones[milestone_sc_index].idMilestone,
             voteDonation=bool(int(vote_enabled)),
+            milestone_sc_id=milestone_sc_index,
         )
 
         session.add(donations_inst)
@@ -139,9 +140,10 @@ def vote_transaction(user_inst: User, vote, donation: Donation):
         address=donation.milestone.project.scAddress,
         abi=PROJECT_JSON["abi"]
     )
-    # ToDo: real milestone id instead of 0! donation.milestone.idMilestone
-    transaction = donation_sc.functions.vote(0, vote)
-    transaction = transaction.buildTransaction({'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser), 'from': user_inst.publickeyUser})
+
+    transaction = donation_sc.functions.vote(donation.milestone_sc_id, vote)
+    transaction = transaction.buildTransaction({'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser),
+                                                'from': user_inst.publickeyUser})
     signed_transaction = WEB3.eth.account.sign_transaction(transaction, user_inst.privatekeyUser)
 
     WEB3.eth.sendRawTransaction(signed_transaction.rawTransaction)
@@ -150,7 +152,7 @@ def vote_transaction(user_inst: User, vote, donation: Donation):
 @BP.route('/vote', methods=['POST'])
 @auth_user
 @db_session_dec
-def milestones_vote(session, user_inst):
+def milestones_vote(session, user_inst: User):
     """
     Vote for milestone.
 
@@ -163,7 +165,7 @@ def milestones_vote(session, user_inst):
         return jsonify({'error': 'Missing parameter'}), 400
 
     try:
-        donation_id, vote = check_params_int([donation_id, vote])  # pylint: disable=unbalanced-tuple-unpacking
+        donation_id, vote = check_params_int([donation_id, vote])  # noqa
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
@@ -175,9 +177,10 @@ def milestones_vote(session, user_inst):
     if not donation.voteDonation:
         return jsonify({"error": "didn't register to vote"}), 400
 
-    # ToDo: check if user == user_inst
+    if donation.user_id != user_inst.idUser:
+        return jsonify({"error": "unauthorized user"}), 401
 
-    donation.milestone.currentVotesMilestone += 1 if vote > 0 else (-1)
-    vote_transaction(user_inst, vote, donation)
+    donation.milestone.currentVotesMilestone += 1 if vote else (-1)
+    vote_transaction(user_inst, 0 if vote else 1, donation)
     session.commit()
     return jsonify({'status': 'ok'}), 200
