@@ -190,7 +190,7 @@ def test_donations_get_w_project_bad_value(client):
 
 
 def test_donations_post(client_w_eth):
-    headers = {"authToken": TOKEN_2, "idmilestone": 1, "amount": 1337, "voteEnabled": 1}
+    headers = {"authToken": TOKEN_2, "idproject": 1, "amount": 1337, "voteEnabled": 1}
     res = client_w_eth.post('/api/donations', headers=headers)
 
     assert res._status_code == 201
@@ -217,7 +217,7 @@ def test_donations_post2(client_w_eth):
                               'to': res.json[0]["publickey"],
                               'value': 1 * 10 ** 18})
 
-    headers = {"authToken": TOKEN_3, "idmilestone": 1, "amount": 1337, "voteEnabled": 1}
+    headers = {"authToken": TOKEN_3, "idproject": 1, "amount": 1337, "voteEnabled": 1}
     res = client_w_eth.post('/api/donations', headers=headers)
 
     assert res._status_code == 201
@@ -244,17 +244,15 @@ def test_donations_post_multiple(client_w_eth):
                               'to': res.json[0]["publickey"],
                               'value': 1 * 10 ** 18})
 
-    headers = {"authToken": TOKEN_3, "idmilestone": 1, "amount": 1337, "voteEnabled": 1}
+    headers = {"authToken": TOKEN_3, "idproject": 1, "amount": 1337, "voteEnabled": 1}
     res = client_w_eth.post('/api/donations', headers=headers)
     assert res._status_code == 201
     assert len(res.json) == 1
 
-    headers = {"authToken": TOKEN_3, "idmilestone": 1, "amount": 1337, "voteEnabled": 1}
     res = client_w_eth.post('/api/donations', headers=headers)
     assert res._status_code == 201
     assert len(res.json) == 1
 
-    headers = {"authToken": TOKEN_3, "idmilestone": 1, "amount": 1337, "voteEnabled": 1}
     res = client_w_eth.post('/api/donations', headers=headers)
     assert res._status_code == 201
     assert len(res.json) == 1
@@ -282,13 +280,13 @@ def test_donations_post_multiple(client_w_eth):
 
 
 def test_donations_post_w_nonexistant_milestone(client):
-    headers = {"authToken": TOKEN_1, "idmilestone": 1337, "amount": 1337, "voteEnabled": 0}
+    headers = {"authToken": TOKEN_1, "idproject": 1337, "amount": 1337, "voteEnabled": 0}
     res = client.post('/api/donations', headers=headers)
 
     assert res._status_code == 400
     assert len(res.json) == 1
 
-    assert res.json["error"] == "Milestone not found"
+    assert res.json["error"] == "Project not found"
 
 
 def test_donations_post_missing_param1(client):
@@ -322,7 +320,7 @@ def test_donations_post_missing_param3(client):
 
 
 def test_donations_post_bad_param(client):
-    headers = {"authToken": TOKEN_1, "idmilestone": "test", "amount": 1337, "voteEnabled": 0}
+    headers = {"authToken": TOKEN_1, "idproject": "test", "amount": 1337, "voteEnabled": 0}
     res = client.post('/api/donations', headers=headers)
 
     assert res._status_code == 400
@@ -332,7 +330,7 @@ def test_donations_post_bad_param(client):
 
 
 def test_donations_post_bad_param2(client):
-    headers = {"authToken": TOKEN_1, "idmilestone": 1, "amount": -1337, "voteEnabled": 0}
+    headers = {"authToken": TOKEN_1, "idproject": 1, "amount": -1337, "voteEnabled": 0}
     res = client.post('/api/donations', headers=headers)
 
     assert res._status_code == 400
@@ -342,7 +340,7 @@ def test_donations_post_bad_param2(client):
 
 
 def test_donations_post_wo_auth(client):
-    headers = {"idmilestone": 1337, "amount": 1337, "etherAccountKey": "89354joiternjkfsdhiu4378z"}
+    headers = {"idproject": 1337, "amount": 1337, "etherAccountKey": "89354joiternjkfsdhiu4378z"}
     res = client.post('/api/donations', headers=headers)
 
     assert res._status_code == 401
