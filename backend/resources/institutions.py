@@ -117,7 +117,7 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
     try:
         # web3 default account is used for this:
         donations_contract = WEB3.eth.contract(abi=INSTITUTION_JSON["abi"], bytecode=INSTITUTION_JSON["bytecode"])
-        ctor = donations_contract.constructor()
+        ctor = donations_contract.constructor(user_inst.publickeyUser, WEB3.eth.defaultAccount)
         tx_hash = ctor.transact()
         tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash)
         if tx_receipt.status != 1:

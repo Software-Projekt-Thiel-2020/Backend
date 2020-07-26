@@ -2,6 +2,11 @@ pragma solidity ^0.5.16;
 /// @title SmartContract zum Verwalten von Gutscheinen
 contract Institution {
 
+    modifier onlyOwner(){
+        require((msg.sender == institution) || (msg.sender == admin) );
+        _;
+    }
+	
     struct Voucher {
         uint64 expires_unixtime;
         bool used;
@@ -9,13 +14,15 @@ contract Institution {
     }
 
     address public institution;
+	address admin;
     mapping(address => Voucher[]) voucher;
 
     event newVoucher(address _owner, uint64 _index, bytes32 _description, uint64 expires_unixtime);
     event redeemVoucher(address _owner, uint64 _index, bytes32 _description);
 
-    constructor() public{
-        institution = msg.sender;
+    constructor(address _institution, address _admin) public{
+        institution = _institution;
+		admin = _admin;
     }
 
     /// @notice fuegt neuen Gutschein hinzu
@@ -23,8 +30,7 @@ contract Institution {
     /// @param _owner ethereum address des Gutschein Besitzers
     /// @param _description Beschreibung des Gutscheins in hex
     /// @param _expires_in_Days Zeit in Tagen bis der Gutschein ablaeuft
-    function addVoucher(address _owner, bytes32 _description, uint64 _expires_in_Days) public {
-        require(msg.sender == institution);
+    function addVoucher(address _owner, bytes32 _description, uint64 _expires_in_Days) onlyOwner public {
         Voucher memory v;
 
         v.expires_unixtime = uint64(now) + (_expires_in_Days * 1 days);
