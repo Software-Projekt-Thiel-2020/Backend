@@ -269,28 +269,28 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
         # ========== Institutions ==========
         voucher_contract = WEB3.eth.contract(abi=INSTITUTION_JSON["abi"], bytecode=INSTITUTION_JSON["bytecode"])
 
-        ctor = voucher_contract.constructor()
+        ctor = voucher_contract.constructor(users[5].publickeyUser, WEB3.eth.defaultAccount)
         tx_hash = ctor.buildTransaction(
             {'from': users[5].publickeyUser, 'nonce': WEB3.eth.getTransactionCount(users[5].publickeyUser)})
         signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=users[5].privatekeyUser)
         tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
         TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 0
 
-        ctor = voucher_contract.constructor()
+        ctor = voucher_contract.constructor(users[3].publickeyUser, WEB3.eth.defaultAccount)
         tx_hash = ctor.buildTransaction(
             {'from': users[3].publickeyUser, 'nonce': WEB3.eth.getTransactionCount(users[3].publickeyUser)})
         signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=users[3].privatekeyUser)
         tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
         TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 1
 
-        ctor = voucher_contract.constructor()
+        ctor = voucher_contract.constructor(users[2].publickeyUser, WEB3.eth.defaultAccount)
         tx_hash = ctor.buildTransaction(
             {'from': users[2].publickeyUser, 'nonce': WEB3.eth.getTransactionCount(users[2].publickeyUser)})
         signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=users[2].privatekeyUser)
         tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
         TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 2
 
-        ctor = voucher_contract.constructor()
+        ctor = voucher_contract.constructor(users[6].publickeyUser, WEB3.eth.defaultAccount)
         tx_hash = ctor.buildTransaction(
             {'from': users[6].publickeyUser, 'nonce': WEB3.eth.getTransactionCount(users[6].publickeyUser)})
         signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=users[6].privatekeyUser)
