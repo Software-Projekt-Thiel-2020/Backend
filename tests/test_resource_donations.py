@@ -353,5 +353,61 @@ def test_donations_vote(client_w_eth):
     res = client_w_eth.post('/api/donations/vote', headers=headers)
 
     assert res._status_code == 200
+    assert len(res.json) == 1
+    assert res.json["status"] == "ok"
+
+
+def test_donations_vote_missing(client_w_eth):
+    headers = {"authToken": TOKEN_2, "vote": 1}
+    res = client_w_eth.post('/api/donations/vote', headers=headers)
+
+    assert res._status_code == 400
+    assert len(res.json) == 1
+    assert res.json["error"] == "Missing parameter"
+
+
+def test_donations_vote_missing2(client_w_eth):
+    headers = {"authToken": TOKEN_2, "id": 3}
+    res = client_w_eth.post('/api/donations/vote', headers=headers)
+
+    assert res._status_code == 400
+    assert len(res.json) == 1
+    assert res.json["error"] == "Missing parameter"
+
+
+def test_donations_vote_bad_param(client_w_eth):
+    headers = {"authToken": TOKEN_2, "id": 3, "vote": "test"}
+    res = client_w_eth.post('/api/donations/vote', headers=headers)
+
+    assert res._status_code == 400
+    assert len(res.json) == 1
+    assert res.json["error"] == "bad argument"
+
+
+def test_donations_vote_bad_id(client_w_eth):
+    headers = {"authToken": TOKEN_2, "id": 1337, "vote": 1}
+    res = client_w_eth.post('/api/donations/vote', headers=headers)
+
+    assert res._status_code == 404
+    assert len(res.json) == 1
+    assert res.json["error"] == "donation not found"
+
+
+def test_donations_vote_didnt_register(client_w_eth):
+    headers = {"authToken": TOKEN_2, "id": 4, "vote": 1}
+    res = client_w_eth.post('/api/donations/vote', headers=headers)
+
+    assert res._status_code == 400
+    assert len(res.json) == 1
+    assert res.json["error"] == "didn't register to vote"
+
+
+def test_donations_vote_unauthorized(client_w_eth):
+    headers = {"authToken": TOKEN_2, "id": 3, "vote": 1}
+    res = client_w_eth.post('/api/donations/vote', headers=headers)
+
+    assert res._status_code == 401
+    assert len(res.json) == 1
+    assert res.json["error"] == "unauthorized user"
 
 
