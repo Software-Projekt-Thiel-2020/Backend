@@ -7,14 +7,15 @@ from geopy import distance
 
 from backend.database.db import DB_SESSION
 from backend.database.model import Institution, Transaction, User
-from backend.resources.helpers import auth_user, check_params_int, check_params_float
+from backend.resources.helpers import auth_user, check_params_int, check_params_float, db_session_dec
 from backend.smart_contracts.web3 import WEB3, INSTITUTION_JSON
 
 BP = Blueprint('institutions', __name__, url_prefix='/api/institutions')  # set blueprint name and resource path
 
 
 @BP.route('', methods=['GET'])
-def institutions_get():
+@db_session_dec
+def institutions_get(session):
     """
     Handles GET for resource <base>/api/institutions .
 
@@ -37,7 +38,6 @@ def institutions_get():
     if None in [radius, latitude, longitude] and any([radius, latitude, longitude]):
         return jsonify({"error": "bad geo argument"}), 400
 
-    session = DB_SESSION()
     results = session.query(Institution).join(Institution.user)
 
     json_data = []
@@ -77,7 +77,8 @@ def institutions_get():
 
 @BP.route('', methods=['POST'])
 @auth_user
-def institutions_post(user_inst):  # pylint:disable=unused-argument
+@db_session_dec
+def institutions_post(session, user_inst):  # pylint:disable=unused-argument
     """
     Handles POST for resource <base>/api/institutions .
     :return: json response
@@ -105,7 +106,6 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
     if webpage is not None and not validators.url(webpage):
         return jsonify({'error': 'webpage is not a valid url'}), 400
 
-    session = DB_SESSION()
     owner_inst: User = session.query(User).filter(User.usernameUser == username).one_or_none()
     if owner_inst is None:
         return jsonify({'error': 'username not found'}), 400
@@ -147,7 +147,8 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
 
 @BP.route('', methods=['PATCH'])
 @auth_user
-def institutions_patch(user_inst):  # pylint:disable=too-many-branches
+@db_session_dec
+def institutions_patch(session, user_inst):  # pylint:disable=too-many-branches
     """
     Handles PATCH for resource <base>/api/institutions .
     :return: json response
@@ -171,7 +172,6 @@ def institutions_patch(user_inst):  # pylint:disable=too-many-branches
     if None in [latitude, longitude] and any([latitude, longitude]):
         return jsonify({"error": "bad geo argument"}), 400
 
-    session = DB_SESSION()
     try:
         if name:  # check if name is already taken
             if session.query(Institution).filter(Institution.nameInstitution == name).one_or_none():

@@ -9,14 +9,15 @@ from web3.exceptions import InvalidAddress
 
 from backend.database.db import DB_SESSION
 from backend.database.model import Voucher, VoucherUser, Institution
-from backend.resources.helpers import auth_user, check_params_int
+from backend.resources.helpers import auth_user, check_params_int, db_session_dec
 from backend.smart_contracts.web3 import WEB3
 
 BP = Blueprint('voucher', __name__, url_prefix='/api/vouchers')
 
 
 @BP.route('/institution', methods=['PATCH'])
-def voucher_patch_institution():
+@db_session_dec
+def voucher_patch_institution(session):
     """
     Handles PATCH for resource <base>/api/vouchers/institutions.
 
@@ -36,7 +37,6 @@ def voucher_patch_institution():
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
-    session = DB_SESSION()
     voucher = session.query(Voucher).filter(Voucher.idVoucher == voucher_id).one_or_none()
 
     if voucher is None:
@@ -60,7 +60,8 @@ def voucher_patch_institution():
 
 @BP.route('/institution', methods=['POST'])
 @auth_user
-def voucher_post_institution(user_inst):  # pylint:disable=unused-argument
+@db_session_dec
+def voucher_post_institution(session, user_inst):  # pylint:disable=unused-argument
     """
     Handles POST for resource <base>/api/voucher/institution .
     :return: json data result (success or failure)
@@ -81,8 +82,6 @@ def voucher_post_institution(user_inst):  # pylint:disable=unused-argument
         check_params_int([voucher_price, voucher_valid_time, institution_id])
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
-
-    session = DB_SESSION()
 
     # ToDo: check institution_owner = user_inst
 
@@ -105,7 +104,8 @@ def voucher_post_institution(user_inst):  # pylint:disable=unused-argument
 
 
 @BP.route('/institution', methods=['GET'])
-def voucher_get():
+@db_session_dec
+def voucher_get(session):
     """
     Handles GET for resource <base>/api/voucher/institution .
     :return: json data of projects
@@ -119,7 +119,6 @@ def voucher_get():
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
-    session = DB_SESSION()
     results = session.query(Voucher)
 
     if id_voucher is not None:
@@ -149,7 +148,8 @@ def voucher_get():
 
 @BP.route('/user', methods=['POST'])
 @auth_user
-def voucher_post(user):
+@db_session_dec
+def voucher_post(session, user):
     """
     Handles POST for resource <base>/api/voucher/user .
     :return: json data of projects
@@ -161,8 +161,6 @@ def voucher_post(user):
         check_params_int([id_voucher])
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
-
-    session = DB_SESSION()
 
     try:
         voucher = session.query(Voucher).filter(Voucher.idVoucher == id_voucher).one()
@@ -219,7 +217,8 @@ def voucher_post(user):
 
 @BP.route('/user', methods=['DELETE'])
 @auth_user
-def voucher_delete_user(user_inst):
+@db_session_dec
+def voucher_delete_user(session, user_inst):
     """
     Handles DELETE for resource <base>/api/voucher/user .
     :return: json data of projects
@@ -233,7 +232,6 @@ def voucher_delete_user(user_inst):
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
-    session = DB_SESSION()
     voucher = session.query(VoucherUser)
     try:
         voucher = voucher.filter(VoucherUser.idVoucherUser == id_voucheruser).filter(
@@ -248,7 +246,8 @@ def voucher_delete_user(user_inst):
 
 
 @BP.route('/user', methods=['GET'])
-def voucher_get_user():
+@db_session_dec
+def voucher_get_user(session):
     """
     Handles GET for resource <base>/api/voucher/user .
     :return: json data of projects
@@ -264,8 +263,6 @@ def voucher_get_user():
         check_params_int([id_voucher, id_user, id_institution, used, expired])
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
-
-    session = DB_SESSION()
 
     results = session.query(Voucher, VoucherUser).join(Voucher, VoucherUser.id_voucher == Voucher.idVoucher)
 

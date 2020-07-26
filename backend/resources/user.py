@@ -8,14 +8,15 @@ from sqlalchemy.orm.exc import NoResultFound
 from backend.blockstack_auth import BlockstackAuth
 from backend.database.db import DB_SESSION
 from backend.database.model import User
-from backend.resources.helpers import auth_user
+from backend.resources.helpers import auth_user, db_session_dec
 from backend.smart_contracts.web3 import WEB3
 
 BP = Blueprint('user', __name__, url_prefix='/api/users')
 
 
 @BP.route('', methods=['GET'])
-def users_get():
+@db_session_dec
+def users_get(session):
     """
     Handles GET for resource <base>/api/users .
 
@@ -24,7 +25,6 @@ def users_get():
     args = request.args
     name_user = args.get('username')
 
-    session = DB_SESSION()
     results = session.query(User)
 
     if name_user:
@@ -51,7 +51,8 @@ def users_get():
 
 
 @BP.route('/<id>', methods=['GET'])
-def user_id(id):  # pylint:disable=redefined-builtin,invalid-name
+@db_session_dec
+def user_id(session, id):  # pylint:disable=redefined-builtin,invalid-name
     """
     Handles GET for resource <base>/api/users/<id> .
     :parameter id of a User
@@ -65,7 +66,6 @@ def user_id(id):  # pylint:disable=redefined-builtin,invalid-name
     except ValueError:
         return jsonify({'error': 'bad argument'}), 400
 
-    session = DB_SESSION()
     results = session.query(User)
 
     try:
@@ -122,7 +122,8 @@ def user_put(user_inst):
 
 
 @BP.route('', methods=['POST'])
-def user_post():
+@db_session_dec
+def user_post(session):
     """
     Handles POST for resource <base>/api/users .
     :return: "{'status': 'User registered'}", 200
@@ -143,8 +144,6 @@ def user_post():
         return jsonify({'error': 'Firstname and/or lastname must contain only alphanumeric characters'}), 400
 
     acc = WEB3.eth.account.create()
-
-    session = DB_SESSION()
 
     try:
         shortened_token = BlockstackAuth.short_jwt(auth_token)

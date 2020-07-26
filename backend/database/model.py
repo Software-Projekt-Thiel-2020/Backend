@@ -2,7 +2,7 @@
 from datetime import datetime
 from typing import List
 
-from sqlalchemy import Column, ForeignKey, Integer, VARCHAR, BINARY, BOOLEAN, DateTime, Float, TEXT
+from sqlalchemy import Column, ForeignKey, Integer, VARCHAR, BINARY, BOOLEAN, DateTime, Float, TEXT, BigInteger
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 from sqlalchemy.orm import relationship
 from web3.types import TxReceipt
@@ -132,7 +132,7 @@ class VoucherUser(BASE):
 class Donation(BASE):
     __tablename__ = 'Donation'
     idDonation = Column(Integer, primary_key=True)
-    amountDonation = Column(Integer)
+    amountDonation = Column(BigInteger)
     voteDonation = Column(BOOLEAN)
 
     user_id = Column(Integer, ForeignKey('User.idUser'))
