@@ -148,13 +148,14 @@ def test_projects_id_get_existant_param(client):
     """get for project id with existant id."""
     res = client.get('/api/projects/1')
     assert res._status_code == 200
-    assert len(res.json) == 10
+    assert len(res.json) == 11
 
     assert res.json["id"] == 1
     assert res.json["idinstitution"] == 1
     assert res.json["idsmartcontract"] == 2
     assert res.json["name"] == "Computer malt Bild"
     assert res.json["webpage"] == "www.cmb.de"
+    assert res.json["address"] == "Address1"
 
     assert len(res.json["milestones"]) == 4
     assert res.json["milestones"][0]["id"] == 1
@@ -239,7 +240,7 @@ def test_projects_post_required_params(client_w_eth):
 
     res = client_w_eth.get('/api/projects/4')
     assert res._status_code == 200
-    assert len(res.json) == 10
+    assert len(res.json) == 11
 
     assert res.json["id"] == 4
     assert res.json["idinstitution"] == 4
@@ -247,6 +248,7 @@ def test_projects_post_required_params(client_w_eth):
     assert res.json["name"] == headers["name"]
     assert res.json["webpage"] is None
     assert len(res.json["milestones"]) == 0
+    assert res.json["address"] == "Address4"
 
 
 def test_projects_post_w_bad_milestones(client):
@@ -270,13 +272,14 @@ def test_projects_post_w_milestones(client):
 
     res = client.get('/api/projects/4')
     assert res._status_code == 200
-    assert len(res.json) == 10
+    assert len(res.json) == 11
 
     assert res.json["id"] == 4
     assert res.json["idinstitution"] == 4
     assert res.json["idsmartcontract"] == 1
     assert res.json["name"] == headers["name"]
     assert res.json["webpage"] is None
+    assert res.json["address"] == "Address4"
 
     assert len(res.json["milestones"]) == 2
     assert res.json["milestones"][0]["id"] == 8
@@ -303,7 +306,7 @@ def test_projects_post_w_webpage(client):
 
     res = client.get('/api/projects/4')
     assert res._status_code == 200
-    assert len(res.json) == 10
+    assert len(res.json) == 11
 
     assert res.json["id"] == 4
     assert res.json["idinstitution"] == 4
@@ -311,6 +314,7 @@ def test_projects_post_w_webpage(client):
     assert res.json["name"] == headers["name"]
     assert res.json["webpage"] == headers["webpage"]
     assert len(res.json["milestones"]) == 0
+    assert res.json["address"] == "Address4"
 
 
 def test_projects_post_w_bad_webpage(client):
@@ -330,7 +334,7 @@ def test_projects_post_w_institution(client):
 
     res = client.get('/api/projects/4')
     assert res._status_code == 200
-    assert len(res.json) == 10
+    assert len(res.json) == 11
 
     assert res.json["id"] == 4
     assert res.json["idinstitution"] == headers["idInstitution"]
@@ -338,6 +342,7 @@ def test_projects_post_w_institution(client):
     assert res.json["name"] == headers["name"]
     assert res.json["webpage"] is None
     assert len(res.json["milestones"]) == 0
+    assert res.json["address"] == "Address3"
 
 
 def test_projects_post_w_bad_institution(client):

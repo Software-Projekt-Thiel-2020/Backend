@@ -125,6 +125,7 @@ def projects_id(id):  # noqa
         'description': results.descriptionProject,
         'latitude': results.latitude,
         'longitude': results.longitude,
+        'address': results.institution.addressInstitution,
     }
 
     return jsonify(json_data), 200
