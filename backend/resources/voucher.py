@@ -1,6 +1,4 @@
 """Voucher Resource."""
-import configparser
-import json
 from datetime import datetime, timedelta
 
 from flask import Blueprint, jsonify, request
@@ -10,6 +8,7 @@ from web3.exceptions import InvalidAddress
 from backend.database.model import Voucher, VoucherUser, Institution
 from backend.resources.helpers import auth_user, check_params_int, db_session_dec
 from backend.smart_contracts.web3 import WEB3
+from backend.smart_contracts.web3_voucher import add_voucher, redeem_voucher
 
 BP = Blueprint('voucher', __name__, url_prefix='/api/vouchers')
 
@@ -187,21 +186,8 @@ def voucher_post(session, user):
         signed_transaction = WEB3.eth.account.sign_transaction(transaction, user.privatekeyUser)
         WEB3.eth.sendRawTransaction(signed_transaction.rawTransaction)
 
-        cfg_parser: configparser.ConfigParser = configparser.ConfigParser()
-        cfg_parser.read("backend_config.ini")
-
-        voucher_sc = WEB3.eth.contract(
-            address=WEB3.toChecksumAddress(cfg_parser["Voucher"]["ADDRESS"]),
-            abi=json.loads(cfg_parser["Voucher"]["ABI"])
-        )
-
-        transaction = voucher_sc.functions.addVoucher(user.publickeyUser,
-                                                      WEB3.toBytes(text=voucher.titleVoucher),
-                                                      666) \
-            .buildTransaction({'nonce': WEB3.eth.getTransactionCount(user.publickeyUser)})
-        signed_transaction = WEB3.eth.account.sign_transaction(transaction, user.privatekeyUser)
-
-        WEB3.eth.sendRawTransaction(signed_transaction.rawTransaction)
+        association.index = add_voucher(
+            user, inst, voucher.titleVoucher, abs(association.expires_unixtime - datetime.now()).days)
 
         session.add(voucher)
         session.add(association)
@@ -231,14 +217,17 @@ def voucher_delete_user(session, user_inst):
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
-    voucher = session.query(VoucherUser)
+    voucher_user = session.query(VoucherUser)
     try:
-        voucher = voucher.filter(VoucherUser.idVoucherUser == id_voucheruser).filter(
+        voucher_user = voucher_user.filter(VoucherUser.idVoucherUser == id_voucheruser).filter(
             VoucherUser.id_user == user_inst.idUser).one()
+        institution = session.query(Institution).filter(
+            Institution.idInstitution == voucher_user.voucher.institution_id).one()
+        redeem_voucher(user_inst, voucher_user.redeem_id, institution.scAddress)
     except NoResultFound:
         return jsonify({'error': 'No voucher found'}), 404
 
-    voucher.usedVoucher = True
+    voucher_user.usedVoucher = True
     session.commit()
 
     return jsonify({'status': 'Gutschein wurde eingelöst'}), 201

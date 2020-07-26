@@ -88,6 +88,10 @@ def donations_post(session, user_inst):
     if int(amount) <= 0:
         return jsonify({'error': 'amount cant be 0 or less'}), 400
 
+    balance = WEB3.eth.getBalance(user_inst.publickeyUser)
+    if balance < int(amount):  # ToDo: gas-cost?
+        return jsonify({'error': 'not enough balance'}), 406
+
     donations_sc = WEB3.eth.contract(address=results.project.scAddress, abi=PROJECT_JSON["abi"])
     try:
         # Add Donation
