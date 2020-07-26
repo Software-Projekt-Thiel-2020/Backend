@@ -15,12 +15,15 @@ def voucher_constructor(institution_address):
     return tx_receipt.contractAddress
     
 def add_voucher(user_inst, institution_inst, description, expires_in_Days):
+    # TODO get master key elsewhere
+    master_key = codecs.decode('e5ca8f76cb60c5fb0e35ff69622d8697c32886c768c8c59b558f63260c52ac68', 'hex_codec')
+    
     contract = WEB3.eth.contract(address=institution_inst.scAddress_voucher, abi=INSTITUTION_JSON["abi"])
     
-    tx_hash = contract.functions.addVoucher(user_inst.publickeyUser, WEB3.toBytes(text=description), expires_in_Days).buildTransaction({
-        'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser),
+    tx_hash = contract.functions.addVoucher(WEB3.eth.defaultAccount, WEB3.toBytes(text=description), expires_in_Days).buildTransaction({
+        'nonce': WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount),
     })
-    signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=user_inst.privatekeyUser)
+    signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=master_key)
     tx_raw = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
     tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_raw)
     if tx_receipt.status != 1:
