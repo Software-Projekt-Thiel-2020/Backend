@@ -69,21 +69,21 @@ def donations_post(session, user_inst):
     Handles POST for resource <base>/api/donations .
     :return: "{'status': 'Spende wurde verbucht'}", 201
     """
-    idmilestone = request.headers.get('idmilestone', default=None)
+    idproject = request.headers.get('idproject', default=None)
     amount = request.headers.get('amount', default=None)
     vote_enabled = request.headers.get('voteEnabled', default=None)
 
-    if None in [idmilestone, amount, vote_enabled]:
+    if None in [idproject, amount, vote_enabled]:
         return jsonify({'error': 'Missing parameter'}), 400
     try:
-        check_params_int([idmilestone, amount, vote_enabled])
+        check_params_int([idproject, amount, vote_enabled])
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
-    results: Milestone = session.query(Milestone).get(idmilestone)
+    results: Project = session.query(Project).get(idproject)
 
     if results is None:
-        return jsonify({'error': 'Milestone not found'}), 400
+        return jsonify({'error': 'Project not found'}), 400
 
     if int(amount) <= 0:
         return jsonify({'error': 'amount cant be 0 or less'}), 400
@@ -92,7 +92,7 @@ def donations_post(session, user_inst):
     if balance < int(amount):  # ToDo: gas-cost?
         return jsonify({'error': 'not enough balance'}), 406
 
-    donations_sc = WEB3.eth.contract(address=results.project.scAddress, abi=PROJECT_JSON["abi"])
+    donations_sc = WEB3.eth.contract(address=results.scAddress, abi=PROJECT_JSON["abi"])
     try:
         # Add Donation
         tx_hash = donations_sc.functions.register().buildTransaction({
@@ -113,11 +113,15 @@ def donations_post(session, user_inst):
         tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash2)
         if tx_receipt.status != 1:
             raise RuntimeError("SC Call failed!")
+
+        processed_receipt = donations_sc.events.Donate().processReceipt(tx_receipt)
+        milestone_sc_index = processed_receipt[0].args.milestoneId  # pylint:disable=protected-access
+
         donations_inst = Donation(
             amountDonation=amount,
             user=user_inst,
-            milestone_id=idmilestone,
-            voteDonation=bool(int(vote_enabled))
+            milestone_id=results.milestones[milestone_sc_index].idMilestone,
+            voteDonation=bool(int(vote_enabled)),
         )
 
         session.add(donations_inst)
