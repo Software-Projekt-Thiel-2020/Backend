@@ -3,10 +3,9 @@ import uuid
 from flask import Blueprint, request, jsonify, send_from_directory, current_app
 from sqlalchemy.orm.exc import NoResultFound
 
-from backend.database.db import DB_SESSION
 from backend.database.model import Institution
 from backend.database.model import Project
-from backend.resources.helpers import auth_user
+from backend.resources.helpers import auth_user, db_session_dec
 
 BP = Blueprint('file', __name__, url_prefix='/api/file')
 
@@ -19,7 +18,8 @@ def allowed_file(filename):
 # TODO satisfy linter
 @BP.route('', methods=['POST'])
 @auth_user
-def file_upload(user_inst):  # pylint:disable=unused-argument
+@db_session_dec
+def file_upload(session, user_inst):  # pylint:disable=unused-argument
     """
     Handles uploading a file for  .
 
@@ -51,8 +51,6 @@ def file_upload(user_inst):  # pylint:disable=unused-argument
             break
 
     file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], n_filename))
-
-    session = DB_SESSION()
 
     try:
         if id_inst is not None:

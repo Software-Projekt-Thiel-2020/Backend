@@ -8,17 +8,17 @@ from geopy import distance
 from sqlalchemy import func
 from sqlalchemy.orm.exc import NoResultFound
 
-from backend.database.db import DB_SESSION
 from backend.database.model import Milestone, Institution, Donation, User
 from backend.database.model import Project
-from backend.resources.helpers import auth_user, check_params_int
+from backend.resources.helpers import auth_user, check_params_int, db_session_dec
 from backend.smart_contracts.web3 import WEB3, PROJECT_JSON
 
 BP = Blueprint('projects', __name__, url_prefix='/api/projects')
 
 
 @BP.route('', methods=['GET'])
-def projects_get():
+@db_session_dec
+def projects_get(session):
     """
     Handles GET for resource <base>/api/projects .
 
@@ -39,7 +39,6 @@ def projects_get():
     if None in [radius, latitude, longitude] and any([radius, latitude, longitude]):
         return jsonify({"error": "bad geo argument"}), 400
 
-    session = DB_SESSION()
     results = session.query(Project)
 
     if id_project:
@@ -72,7 +71,8 @@ def projects_get():
 
 
 @BP.route('/<id>', methods=['GET'])
-def projects_id(id):  # noqa
+@db_session_dec
+def projects_id(session, id):  # noqa
     """
     Handles GET for resource <base>/api/projects/<id> .
 
@@ -88,7 +88,6 @@ def projects_id(id):  # noqa
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
-    session = DB_SESSION()
     results = session.query(Project)
 
     try:
@@ -133,7 +132,8 @@ def projects_id(id):  # noqa
 
 @BP.route('', methods=['POST'])
 @auth_user
-def projects_post(user_inst: User):  # pylint:disable=unused-argument, too-many-locals
+@db_session_dec
+def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, too-many-locals
     """
     Handles POST for resource <base>/api/projects .
 
@@ -157,8 +157,6 @@ def projects_post(user_inst: User):  # pylint:disable=unused-argument, too-many-
         id_institution, goal, required_votes, until = check_params_int([id_institution, goal, required_votes, until])
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
-
-    session = DB_SESSION()
 
     if id_institution and session.query(Institution).get(id_institution) is None:
         return jsonify({'error': 'Institution not found'}), 400
@@ -230,7 +228,8 @@ def projects_post(user_inst: User):  # pylint:disable=unused-argument, too-many-
 
 @BP.route('/<id>', methods=['PATCH'])
 @auth_user
-def projects_patch(user_inst, id):  # pylint:disable=invalid-name,redefined-builtin,unused-argument
+@db_session_dec
+def projects_patch(session, user_inst, id):  # pylint:disable=invalid-name,redefined-builtin,unused-argument
     """
     Handles PATCH for resource <base>/api/projects/<id> .
 
@@ -243,7 +242,6 @@ def projects_patch(user_inst, id):  # pylint:disable=invalid-name,redefined-buil
     longitude = request.headers.get('longitude')
     # ToDo: is this user allowed to patch this project?
 
-    session = DB_SESSION()
     project_inst: Project = session.query(Project).get(id)
 
     if project_inst is None:

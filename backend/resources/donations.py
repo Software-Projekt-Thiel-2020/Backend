@@ -1,18 +1,18 @@
 """Project Resource."""
 from flask import Blueprint, request, jsonify
 
-from backend.database.db import DB_SESSION
 from backend.database.model import Donation
 from backend.database.model import Milestone
 from backend.database.model import Project
-from backend.resources.helpers import check_params_int, auth_user
+from backend.resources.helpers import check_params_int, auth_user, db_session_dec
 from backend.smart_contracts.web3 import WEB3, PROJECT_JSON
 
 BP = Blueprint('donations', __name__, url_prefix='/api/donations')
 
 
 @BP.route('', methods=['GET'])
-def donations_get():
+@db_session_dec
+def donations_get(session):
     """
     Handles GET for resource <base>/api/donations .
 
@@ -31,7 +31,6 @@ def donations_get():
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
-    session = DB_SESSION()
     results = session.query(Donation, Project)
     results = results.join(Milestone, Donation.milestone).join(Project)
     if id_donation:
@@ -64,7 +63,8 @@ def donations_get():
 
 @BP.route('', methods=['POST'])
 @auth_user
-def donations_post(user_inst):
+@db_session_dec
+def donations_post(session, user_inst):
     """
     Handles POST for resource <base>/api/donations .
     :return: "{'status': 'Spende wurde verbucht'}", 201
@@ -79,8 +79,6 @@ def donations_post(user_inst):
         check_params_int([idmilestone, amount, vote_enabled])
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
-
-    session = DB_SESSION()
 
     results: Milestone = session.query(Milestone).get(idmilestone)
 
