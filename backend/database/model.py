@@ -123,6 +123,7 @@ class VoucherUser(BASE):
     id_user = Column(Integer, ForeignKey('User.idUser'))
     usedVoucher = Column(BOOLEAN)
     expires_unixtime = Column(DateTime)
+    index = Column(Integer)
 
     voucher = relationship("Voucher", back_populates="users")
     user = relationship("User", back_populates="vouchers")
