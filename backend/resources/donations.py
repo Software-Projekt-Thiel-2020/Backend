@@ -159,7 +159,9 @@ def milestones_vote(session, user_inst):
         return jsonify({'error': 'Missing parameter'}), 400
 
     try:
-        donation_id, vote = check_params_int([donation_id, vote])
+        params = check_params_int([donation_id, vote])
+        donation_id = params[0]
+        vote = params[1]
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
