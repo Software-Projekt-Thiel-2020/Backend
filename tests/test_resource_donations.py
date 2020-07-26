@@ -188,7 +188,7 @@ def test_donations_get_w_project_bad_value(client):
 
 
 def test_donations_post(client_w_eth):
-    headers = {"authToken": TOKEN_1, "idmilestone": 1, "amount": 1337, "voteEnabled": 1}
+    headers = {"authToken": TOKEN_2, "idmilestone": 1, "amount": 1337, "voteEnabled": 1}
     res = client_w_eth.post('/api/donations', headers=headers)
 
     assert res._status_code == 201
@@ -196,13 +196,13 @@ def test_donations_post(client_w_eth):
 
     assert res.json["status"] == "Spende wurde verbucht"
 
-    res = client_w_eth.get('/api/donations?iduser=6')
+    res = client_w_eth.get('/api/donations?iduser=7')
     assert res._status_code == 200
     assert len(res.json) == 1
 
     assert res.json[0]["id"] == 5
     assert res.json[0]["amount"] == 1337
-    assert res.json[0]["userid"] == 6
+    assert res.json[0]["userid"] == 7
     assert res.json[0]["milestoneid"] == 1
 
 

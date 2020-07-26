@@ -7,7 +7,7 @@ from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 from sqlalchemy.orm import relationship
 from web3.types import TxReceipt
 
-from backend.smart_contracts.web3 import WEB3, PROJECT_JSON
+from backend.smart_contracts.web3 import WEB3, PROJECT_JSON, INSTITUTION_JSON
 
 BASE: DeclarativeMeta = declarative_base()
 
@@ -29,6 +29,7 @@ class Project(BASE):
     institution = relationship("Institution", back_populates="projects")
 
     milestones = relationship("Milestone", back_populates="project")
+    scAddress = Column(VARCHAR(64))
 
 
 class SmartContract(BASE):
@@ -122,6 +123,7 @@ class VoucherUser(BASE):
     id_user = Column(Integer, ForeignKey('User.idUser'))
     usedVoucher = Column(BOOLEAN)
     expires_unixtime = Column(DateTime)
+    redeem_id = Column(Integer)
 
     voucher = relationship("Voucher", back_populates="users")
     user = relationship("User", back_populates="vouchers")
@@ -174,7 +176,7 @@ SAMPLE_SC_DEPLOYED = False
 TX_RECEIPTS: List[TxReceipt] = []
 
 
-def add_sample_data(db_session):  # pylint:disable=too-many-statements
+def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many-locals
     """
     Adds some sample data.
 
@@ -182,28 +184,6 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
     :return: -
     """
     global SAMPLE_SC_DEPLOYED, TX_RECEIPTS  # pylint:disable=global-statement
-
-    if not SAMPLE_SC_DEPLOYED:
-        # Deploy Sample SmartContracts
-        voucher_contract = WEB3.eth.contract(abi=PROJECT_JSON["abi"], bytecode=PROJECT_JSON["bytecode"])
-
-        tx_hash = voucher_contract.constructor(WEB3.eth.accounts[1], WEB3.eth.defaultAccount, 80,
-                                               WEB3.toBytes(text="test description"), 133337, 10).transact()
-        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))
-
-        tx_hash = voucher_contract.constructor(WEB3.eth.accounts[1], WEB3.eth.defaultAccount, 80,
-                                               WEB3.toBytes(text="test description"), 133337, 10).transact()
-        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))
-
-        tx_hash = voucher_contract.constructor(WEB3.eth.accounts[1], WEB3.eth.defaultAccount, 80,
-                                               WEB3.toBytes(text="test description"), 133337, 10).transact()
-        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))
-
-        tx_hash = voucher_contract.constructor(WEB3.eth.accounts[1], WEB3.eth.defaultAccount, 80,
-                                               WEB3.toBytes(text="test description"), 133337, 10).transact()
-        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))
-
-        SAMPLE_SC_DEPLOYED = True
 
     session = db_session()
 
@@ -265,6 +245,215 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
              authToken=TOKEN_2),
     ]
 
+    if not SAMPLE_SC_DEPLOYED:
+        # Deploy Sample SmartContracts
+        WEB3.eth.sendTransaction({'from': WEB3.eth.accounts[9],
+                                  'to': users[5].publickeyUser,  # sw2020testuser1.id.blockstack
+                                  'value': 1 * 10 ** 18})
+        WEB3.eth.sendTransaction({'from': WEB3.eth.accounts[9],
+                                  'to': users[6].publickeyUser,  # sw2020testuser2.id.blockstack
+                                  'value': 1 * 10 ** 18})
+        WEB3.eth.sendTransaction({'from': WEB3.eth.accounts[9],
+                                  'to': users[3].publickeyUser,  #
+                                  'value': 1 * 10 ** 18})
+        WEB3.eth.sendTransaction({'from': WEB3.eth.accounts[9],
+                                  'to': users[2].publickeyUser,  #
+                                  'value': 1 * 10 ** 18})
+        WEB3.eth.sendTransaction({'from': WEB3.eth.accounts[9],
+                                  'to': users[1].publickeyUser,  #
+                                  'value': 1 * 10 ** 18})
+        WEB3.eth.sendTransaction({'from': WEB3.eth.accounts[9],
+                                  'to': users[0].publickeyUser,  #
+                                  'value': 1 * 10 ** 18})
+
+        # ========== Institutions ==========
+        voucher_contract = WEB3.eth.contract(abi=INSTITUTION_JSON["abi"], bytecode=INSTITUTION_JSON["bytecode"])
+
+        ctor = voucher_contract.constructor()
+        tx_hash = ctor.buildTransaction(
+            {'from': users[5].publickeyUser, 'nonce': WEB3.eth.getTransactionCount(users[5].publickeyUser)})
+        signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=users[5].privatekeyUser)
+        tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 0
+
+        ctor = voucher_contract.constructor()
+        tx_hash = ctor.buildTransaction(
+            {'from': users[3].publickeyUser, 'nonce': WEB3.eth.getTransactionCount(users[3].publickeyUser)})
+        signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=users[3].privatekeyUser)
+        tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 1
+
+        ctor = voucher_contract.constructor()
+        tx_hash = ctor.buildTransaction(
+            {'from': users[2].publickeyUser, 'nonce': WEB3.eth.getTransactionCount(users[2].publickeyUser)})
+        signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=users[2].privatekeyUser)
+        tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 2
+
+        ctor = voucher_contract.constructor()
+        tx_hash = ctor.buildTransaction(
+            {'from': users[6].publickeyUser, 'nonce': WEB3.eth.getTransactionCount(users[6].publickeyUser)})
+        signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=users[6].privatekeyUser)
+        tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 3
+
+        # ========== Projects ==========
+        project_contract = WEB3.eth.contract(abi=PROJECT_JSON["abi"], bytecode=PROJECT_JSON["bytecode"])
+        # constructor(_owner, _admin, _partial_payment, _projectTargetName, _projectTargetAmount, _minDonation)
+        tx_hash = project_contract.constructor(users[5].publickeyUser, WEB3.eth.defaultAccount, 80,
+                                               WEB3.toBytes(text="test description"), 5000, 10).transact()
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 4
+
+        tx_hash = project_contract.constructor(users[2].publickeyUser, WEB3.eth.defaultAccount, 80,
+                                               WEB3.toBytes(text="test description"), 5000, 10).transact()
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 5
+
+        tx_hash = project_contract.constructor(users[2].publickeyUser, WEB3.eth.defaultAccount, 80,
+                                               WEB3.toBytes(text="test description"), 5000, 10).transact()
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 6
+
+        # ========== Milestones ==========
+        projects_sc = WEB3.eth.contract(address=TX_RECEIPTS[4].contractAddress, abi=PROJECT_JSON["abi"])
+        # project 0
+        tx_hash = projects_sc.functions.addMilestone(WEB3.toBytes(text="1"), 10, 1693094933). \
+            buildTransaction({'nonce': WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount),
+                              'from': WEB3.eth.defaultAccount})
+        tx_hash = WEB3.eth.sendTransaction(tx_hash)
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 7
+
+        tx_hash = projects_sc.functions.addMilestone(WEB3.toBytes(text="2"), 20, 1693094933). \
+            buildTransaction({'nonce': WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount),
+                              'from': WEB3.eth.defaultAccount})
+        tx_hash = WEB3.eth.sendTransaction(tx_hash)
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 8
+
+        tx_hash = projects_sc.functions.addMilestone(WEB3.toBytes(text="3"), 30, 1693094933). \
+            buildTransaction({'nonce': WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount),
+                              'from': WEB3.eth.defaultAccount})
+        tx_hash = WEB3.eth.sendTransaction(tx_hash)
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 9
+
+        tx_hash = projects_sc.functions.addMilestone(WEB3.toBytes(text="7"), 50, 1693094933). \
+            buildTransaction({'nonce': WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount),
+                              'from': WEB3.eth.defaultAccount})
+        tx_hash = WEB3.eth.sendTransaction(tx_hash)
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 10
+
+        # project 1
+        projects_sc = WEB3.eth.contract(address=TX_RECEIPTS[5].contractAddress, abi=PROJECT_JSON["abi"])
+
+        tx_hash = projects_sc.functions.addMilestone(WEB3.toBytes(text="4"), 10, 1693094933). \
+            buildTransaction({'nonce': WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount),
+                              'from': WEB3.eth.defaultAccount})
+        tx_hash = WEB3.eth.sendTransaction(tx_hash)
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 11
+
+        tx_hash = projects_sc.functions.addMilestone(WEB3.toBytes(text="5"), 20, 1693094933). \
+            buildTransaction({'nonce': WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount),
+                              'from': WEB3.eth.defaultAccount})
+        tx_hash = WEB3.eth.sendTransaction(tx_hash)
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 12
+        # project 2
+        projects_sc = WEB3.eth.contract(address=TX_RECEIPTS[6].contractAddress, abi=PROJECT_JSON["abi"])
+        tx_hash = projects_sc.functions.addMilestone(WEB3.toBytes(text="6"), 30, 1693094933). \
+            buildTransaction({'nonce': WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount),
+                              'from': WEB3.eth.defaultAccount})
+        tx_hash = WEB3.eth.sendTransaction(tx_hash)
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 13
+
+        # ========== Donations ==========
+        projects_sc = WEB3.eth.contract(address=TX_RECEIPTS[4].contractAddress, abi=PROJECT_JSON["abi"])
+        # register()
+        # donate(bool _wantsToVote)
+        tx_hash = projects_sc.functions.register(). \
+            buildTransaction({'nonce': WEB3.eth.getTransactionCount(users[0].publickeyUser),
+                              'from': users[0].publickeyUser})
+        signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=users[0].privatekeyUser)
+        tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 14
+        tx_hash = projects_sc.functions.donate(True). \
+            buildTransaction({'nonce': WEB3.eth.getTransactionCount(users[0].publickeyUser),
+                              'from': users[0].publickeyUser,
+                              'value': 300})
+        signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=users[0].privatekeyUser)
+        tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 15
+
+        tx_hash = projects_sc.functions.register(). \
+            buildTransaction({'nonce': WEB3.eth.getTransactionCount(users[1].publickeyUser),
+                              'from': users[1].publickeyUser})
+        signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=users[1].privatekeyUser)
+        tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 16
+        tx_hash = projects_sc.functions.donate(True). \
+            buildTransaction({'nonce': WEB3.eth.getTransactionCount(users[1].publickeyUser),
+                              'from': users[1].publickeyUser,
+                              'value': 200})
+        signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=users[1].privatekeyUser)
+        tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 17
+
+        tx_hash = projects_sc.functions.register(). \
+            buildTransaction({'nonce': WEB3.eth.getTransactionCount(users[2].publickeyUser),
+                              'from': users[2].publickeyUser})
+        signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=users[2].privatekeyUser)
+        tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 18
+        tx_hash = projects_sc.functions.donate(True). \
+            buildTransaction({'nonce': WEB3.eth.getTransactionCount(users[2].publickeyUser),
+                              'from': users[2].publickeyUser,
+                              'value': 100})
+        signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=users[2].privatekeyUser)
+        tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 19
+
+        tx_hash = projects_sc.functions.register(). \
+            buildTransaction({'nonce': WEB3.eth.getTransactionCount(users[3].publickeyUser),
+                              'from': users[3].publickeyUser})
+        signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=users[3].privatekeyUser)
+        tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 20
+        tx_hash = projects_sc.functions.donate(True). \
+            buildTransaction({'nonce': WEB3.eth.getTransactionCount(users[3].publickeyUser),
+                              'from': users[3].publickeyUser,
+                              'value': 400})
+        signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=users[3].privatekeyUser)
+        tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 21
+
+        # ========== Vouchers ==========
+        voucher_contract = WEB3.eth.contract(address=TX_RECEIPTS[0].contractAddress, abi=INSTITUTION_JSON["abi"])
+        # addVoucher(address _owner, bytes32 _description, uint64 _expires_in_Days)
+        tx_hash = voucher_contract.functions.addVoucher(users[0].publickeyUser, WEB3.toBytes(text="test"), 1). \
+            buildTransaction({'nonce': WEB3.eth.getTransactionCount(users[5].publickeyUser),
+                              'from': users[5].publickeyUser})
+        signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=users[5].privatekeyUser)
+        tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 22
+
+        tx_hash = voucher_contract.functions.addVoucher(users[1].publickeyUser, WEB3.toBytes(text="test"), 1). \
+            buildTransaction({'nonce': WEB3.eth.getTransactionCount(users[5].publickeyUser),
+                              'from': users[5].publickeyUser})
+        signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=users[5].privatekeyUser)
+        tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 23
+
+        tx_hash = voucher_contract.functions.addVoucher(users[5].publickeyUser, WEB3.toBytes(text="test"), 1). \
+            buildTransaction({'nonce': WEB3.eth.getTransactionCount(users[5].publickeyUser),
+                              'from': users[5].publickeyUser})
+        signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=users[5].privatekeyUser)
+        tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 24
+
+        tx_hash = voucher_contract.functions.addVoucher(users[6].publickeyUser, WEB3.toBytes(text="test"), 1). \
+            buildTransaction({'nonce': WEB3.eth.getTransactionCount(users[5].publickeyUser),
+                              'from': users[5].publickeyUser})
+        signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=users[5].privatekeyUser)
+        tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
+        TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 25
+
+        SAMPLE_SC_DEPLOYED = True
+
     institutions: List[Institution] = [
         Institution(idInstitution=1,
                     nameInstitution="MSGraphic",
@@ -318,7 +507,7 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
     institutions[2].smartcontract = smartcontracts[0]
     institutions[3].smartcontract = smartcontracts[0]
 
-    institutions[0].user = users[4]
+    institutions[0].user = users[5]
     institutions[1].user = users[3]
     institutions[2].user = users[2]
     institutions[3].user = users[6]
@@ -328,17 +517,20 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
                 nameProject="Computer malt Bild",
                 webpageProject="www.cmb.de",
                 picPathProject="c3637aac-145a-4942-96f4-34bbefb48689.png",
-                descriptionProject="# Computer malt Bild\nDer Computer malt ein Bild für Sie!"),
+                descriptionProject="# Computer malt Bild\nDer Computer malt ein Bild für Sie!",
+                scAddress=TX_RECEIPTS[4].contractAddress),
         Project(idProject=2,
                 nameProject="Rangaroek verteidigen",
                 webpageProject="www.asgard.as",
                 picPathProject="182713b2-1862-416f-bfc9-b07b952c0bea.png",
-                descriptionProject="# Rangaroek verteidigen\nRangaroek muss verteidigt werden!"),
+                descriptionProject="# Rangaroek verteidigen\nRangaroek muss verteidigt werden!",
+                scAddress=TX_RECEIPTS[5].contractAddress),
         Project(idProject=3,
                 nameProject="Softwareprojekt 2020",
                 webpageProject="www.swp.de",
                 picPathProject="4eb9a451-2be6-4f98-bb62-3d5673d0c120.png",
-                descriptionProject="# Softwareprojekt 2020\nDies ist eine sehr ausführliche Beschreibung!"),
+                descriptionProject="# Softwareprojekt 2020\nDies ist eine sehr ausführliche Beschreibung!",
+                scAddress=TX_RECEIPTS[6].contractAddress),
     ]
     # set SmartContract to Project
     projects[0].smartcontract = smartcontracts[1]
@@ -350,20 +542,20 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
     projects[2].institution = institutions[2]
 
     milestones: List[Milestone] = [
-        Milestone(idMilestone=1, goalMilestone=1000, requiredVotesMilestone=112, currentVotesMilestone=112,
-                  untilBlockMilestone=600000),
-        Milestone(idMilestone=2, goalMilestone=2000, requiredVotesMilestone=112, currentVotesMilestone=12,
-                  untilBlockMilestone=1200000),
-        Milestone(idMilestone=3, goalMilestone=3000, requiredVotesMilestone=112, currentVotesMilestone=0,
-                  untilBlockMilestone=2400000),
-        Milestone(idMilestone=4, goalMilestone=1000, requiredVotesMilestone=88, currentVotesMilestone=0,
-                  untilBlockMilestone=121212121),
-        Milestone(idMilestone=5, goalMilestone=2000, requiredVotesMilestone=88, currentVotesMilestone=12,
-                  untilBlockMilestone=321123448),
-        Milestone(idMilestone=6, goalMilestone=3000, requiredVotesMilestone=88, currentVotesMilestone=44,
-                  untilBlockMilestone=654654832),
-        Milestone(idMilestone=7, goalMilestone=5000, requiredVotesMilestone=666, currentVotesMilestone=400,
-                  untilBlockMilestone=100000000),
+        Milestone(idMilestone=1, goalMilestone=10, requiredVotesMilestone=112, currentVotesMilestone=112,
+                  untilBlockMilestone=1693094933),
+        Milestone(idMilestone=2, goalMilestone=20, requiredVotesMilestone=112, currentVotesMilestone=12,
+                  untilBlockMilestone=1693094933),
+        Milestone(idMilestone=3, goalMilestone=30, requiredVotesMilestone=112, currentVotesMilestone=0,
+                  untilBlockMilestone=1693094933),
+        Milestone(idMilestone=4, goalMilestone=10, requiredVotesMilestone=88, currentVotesMilestone=0,
+                  untilBlockMilestone=1693094933),
+        Milestone(idMilestone=5, goalMilestone=20, requiredVotesMilestone=88, currentVotesMilestone=12,
+                  untilBlockMilestone=1693094933),
+        Milestone(idMilestone=6, goalMilestone=30, requiredVotesMilestone=88, currentVotesMilestone=44,
+                  untilBlockMilestone=1693094933),
+        Milestone(idMilestone=7, goalMilestone=50, requiredVotesMilestone=666, currentVotesMilestone=400,
+                  untilBlockMilestone=1693094933),
     ]
     # set Project to Milestone
     milestones[0].project = projects[0]
@@ -425,16 +617,20 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
     associations: List[VoucherUser] = [
         VoucherUser(idVoucherUser=1,
                     usedVoucher=False,
-                    expires_unixtime=datetime(2020, 1, 1)),
+                    expires_unixtime=datetime(2020, 1, 1),
+                    redeem_id=0),
         VoucherUser(idVoucherUser=2,
                     usedVoucher=False,
-                    expires_unixtime=datetime(2022, 5, 17)),
+                    expires_unixtime=datetime(2022, 5, 17),
+                    redeem_id=0),
         VoucherUser(idVoucherUser=3,
                     usedVoucher=False,
-                    expires_unixtime=datetime(2022, 1, 13)),
+                    expires_unixtime=datetime(2022, 1, 13),
+                    redeem_id=0),
         VoucherUser(idVoucherUser=4,
                     usedVoucher=True,
-                    expires_unixtime=datetime(2021, 5, 17)),
+                    expires_unixtime=datetime(2021, 5, 17),
+                    redeem_id=0),
     ]
 
     # set Institution to Vouchers
@@ -447,10 +643,10 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements
     associations[2].voucher = vouchers[0]
     associations[3].voucher = vouchers[1]
 
-    users[0].vouchers.append(associations[0])
-    users[1].vouchers.append(associations[1])
-    users[5].vouchers.append(associations[2])
-    users[6].vouchers.append(associations[3])
+    associations[0].user = users[0]
+    associations[1].user = users[1]
+    associations[2].user = users[5]
+    associations[3].user = users[6]
 
     # All objects created, Add and commit to DB:
     objects = [*smartcontracts, *users, *institutions, *projects, *milestones, *vouchers, *transactions,
