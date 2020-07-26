@@ -120,13 +120,13 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
         donations_contract = WEB3.eth.contract(abi=PROJECT_JSON["abi"], bytecode=PROJECT_JSON["bytecode"])
         ctor = donations_contract.constructor(publickey, WEB3.eth.defaultAccount, 80,
                                               WEB3.toBytes(text="donations sc"), 100000, 20)
-        tx_hash = ctor.transact()
-        tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash)
-        if tx_receipt.status != 1:
+        transaction = ctor.transact()
+        transaction = WEB3.eth.waitForTransactionReceipt(transaction)
+        if transaction.status != 1:
             raise RuntimeError("SC Call failed!")
-        
+
         voucher_sc_address = voucher_constructor(publickey)
-        
+
         session.add_all([
             Institution(
                 nameInstitution=name,
@@ -137,7 +137,7 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
                 descriptionInstitution=description,
                 latitude=latitude,
                 longitude=longitude,
-                scAddress=tx_receipt.contractAddress,
+                scAddress=transaction.contractAddress,
                 scAddress_voucher=voucher_sc_address,
                 user=owner_inst,
             ),
