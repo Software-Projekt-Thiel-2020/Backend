@@ -103,7 +103,7 @@ class User(BASE):
     lastnameUser = Column(VARCHAR(45))
     emailUser = Column(VARCHAR(45))
     publickeyUser = Column(VARCHAR(64))
-    privatekeyUser = Column(BINARY(128))
+    privatekeyUser = Column(BINARY(32))
     authToken = Column(VARCHAR(2048))
     group = Column(VARCHAR(32))
 

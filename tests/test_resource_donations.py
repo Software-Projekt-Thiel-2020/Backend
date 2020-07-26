@@ -1,5 +1,7 @@
 """Tests for resource donations."""
-from tests.test_blockstackauth import TOKEN_1, TOKEN_2
+from backend.smart_contracts.web3 import WEB3
+from tests.test_blockstackauth import TOKEN_1, TOKEN_2, TOKEN_3
+from tests.test_resource_user import test_user_post
 
 
 def test_donations_get(client):
@@ -203,6 +205,33 @@ def test_donations_post(client_w_eth):
     assert res.json[0]["id"] == 5
     assert res.json[0]["amount"] == 1337
     assert res.json[0]["userid"] == 7
+    assert res.json[0]["milestoneid"] == 1
+
+
+def test_donations_post2(client_w_eth):
+    test_user_post(client_w_eth)
+    res = client_w_eth.get('/api/users?username=sw2020testuser1337.id.blockstack')
+    assert res._status_code == 200
+
+    WEB3.eth.sendTransaction({'from': WEB3.eth.accounts[9],
+                              'to': res.json[0]["publickey"],
+                              'value': 1 * 10 ** 18})
+
+    headers = {"authToken": TOKEN_3, "idmilestone": 1, "amount": 1337, "voteEnabled": 1}
+    res = client_w_eth.post('/api/donations', headers=headers)
+
+    assert res._status_code == 201
+    assert len(res.json) == 1
+
+    assert res.json["status"] == "Spende wurde verbucht"
+
+    res = client_w_eth.get('/api/donations?iduser=8')
+    assert res._status_code == 200
+    assert len(res.json) == 1
+
+    assert res.json[0]["id"] == 5
+    assert res.json[0]["amount"] == 1337
+    assert res.json[0]["userid"] == 8
     assert res.json[0]["milestoneid"] == 1
 
 
