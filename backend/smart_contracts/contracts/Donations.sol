@@ -168,12 +168,13 @@ contract Project {
 
 
     function register() public {
-        require(!donors[msg.sender].exists);
-	require(msg.sender != owner);
-	require(msg.sender != admin);
-        Donor memory d;
-        d.exists = true;
-        donors[msg.sender] = d;
+        if (!donors[msg.sender].exists) {
+            require(msg.sender != owner);
+            require(msg.sender != admin);
+            Donor memory d;
+            d.exists = true;
+            donors[msg.sender] = d;
+        }
     }
 
     /// @notice Funktion zum Spenden
@@ -231,9 +232,10 @@ contract Project {
         emit Retract(amount, activeMilestone, msg.sender);
 
         donated_amount -= amount;
-        d.donated_for_milestone = 0;
-        d.donated_amount = 0;
-        donors[msg.sender] = d;
+//        d.donated_for_milestone = 0;
+//        d.donated_amount = 0;
+//        donors[msg.sender] = d;
+        delete donors[msg.sender];
     }
 
     /// @notice fuegt neue Meilensteine hinzu

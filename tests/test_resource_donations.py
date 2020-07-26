@@ -235,6 +235,52 @@ def test_donations_post2(client_w_eth):
     assert res.json[0]["milestoneid"] == 1
 
 
+def test_donations_post_multiple(client_w_eth):
+    test_user_post(client_w_eth)
+    res = client_w_eth.get('/api/users?username=sw2020testuser1337.id.blockstack')
+    assert res._status_code == 200
+
+    WEB3.eth.sendTransaction({'from': WEB3.eth.accounts[9],
+                              'to': res.json[0]["publickey"],
+                              'value': 1 * 10 ** 18})
+
+    headers = {"authToken": TOKEN_3, "idmilestone": 1, "amount": 1337, "voteEnabled": 1}
+    res = client_w_eth.post('/api/donations', headers=headers)
+    assert res._status_code == 201
+    assert len(res.json) == 1
+
+    headers = {"authToken": TOKEN_3, "idmilestone": 1, "amount": 1337, "voteEnabled": 1}
+    res = client_w_eth.post('/api/donations', headers=headers)
+    assert res._status_code == 201
+    assert len(res.json) == 1
+
+    headers = {"authToken": TOKEN_3, "idmilestone": 1, "amount": 1337, "voteEnabled": 1}
+    res = client_w_eth.post('/api/donations', headers=headers)
+    assert res._status_code == 201
+    assert len(res.json) == 1
+
+    assert res.json["status"] == "Spende wurde verbucht"
+
+    res = client_w_eth.get('/api/donations?iduser=8')
+    assert res._status_code == 200
+    assert len(res.json) == 3
+
+    assert res.json[0]["id"] == 5
+    assert res.json[0]["amount"] == 1337
+    assert res.json[0]["userid"] == 8
+    assert res.json[0]["milestoneid"] == 1
+
+    assert res.json[1]["id"] == 6
+    assert res.json[1]["amount"] == 1337
+    assert res.json[1]["userid"] == 8
+    assert res.json[1]["milestoneid"] == 1
+
+    assert res.json[2]["id"] == 7
+    assert res.json[2]["amount"] == 1337
+    assert res.json[2]["userid"] == 8
+    assert res.json[2]["milestoneid"] == 1
+
+
 def test_donations_post_w_nonexistant_milestone(client):
     headers = {"authToken": TOKEN_1, "idmilestone": 1337, "amount": 1337, "voteEnabled": 0}
     res = client.post('/api/donations', headers=headers)

@@ -141,14 +141,14 @@
     "absolutePath": "/C/Users/maxif/PycharmProjects/Backend/backend/smart_contracts/contracts/Voucher.sol",
     "exportedSymbols": {
       "Institution": [
-        1115
+        1101
       ]
     },
-    "id": 1116,
+    "id": 1102,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 929,
+        "id": 915,
         "literals": [
           "solidity",
           "^",
@@ -164,16 +164,16 @@
         "contractKind": "contract",
         "documentation": "@title SmartContract zum Verwalten von Gutscheinen",
         "fullyImplemented": true,
-        "id": 1115,
+        "id": 1101,
         "linearizedBaseContracts": [
-          1115
+          1101
         ],
         "name": "Institution",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 946,
+              "id": 932,
               "nodeType": "Block",
               "src": "128:90:2",
               "statements": [
@@ -187,7 +187,7 @@
                           "typeIdentifier": "t_bool",
                           "typeString": "bool"
                         },
-                        "id": 942,
+                        "id": 928,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -201,7 +201,7 @@
                                 "typeIdentifier": "t_address",
                                 "typeString": "address"
                               },
-                              "id": 935,
+                              "id": 921,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
@@ -210,18 +210,18 @@
                                 "argumentTypes": null,
                                 "expression": {
                                   "argumentTypes": null,
-                                  "id": 932,
+                                  "id": 918,
                                   "name": "msg",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 1130,
+                                  "referencedDeclaration": 1116,
                                   "src": "147:3:2",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_magic_message",
                                     "typeString": "msg"
                                   }
                                 },
-                                "id": 933,
+                                "id": 919,
                                 "isConstant": false,
                                 "isLValue": false,
                                 "isPure": false,
@@ -239,11 +239,11 @@
                               "operator": "==",
                               "rightExpression": {
                                 "argumentTypes": null,
-                                "id": 934,
+                                "id": 920,
                                 "name": "institution",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 956,
+                                "referencedDeclaration": 942,
                                 "src": "161:11:2",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_address",
@@ -257,7 +257,7 @@
                               }
                             }
                           ],
-                          "id": 936,
+                          "id": 922,
                           "isConstant": false,
                           "isInlineArray": false,
                           "isLValue": false,
@@ -281,7 +281,7 @@
                                 "typeIdentifier": "t_address",
                                 "typeString": "address"
                               },
-                              "id": 940,
+                              "id": 926,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
@@ -290,18 +290,18 @@
                                 "argumentTypes": null,
                                 "expression": {
                                   "argumentTypes": null,
-                                  "id": 937,
+                                  "id": 923,
                                   "name": "msg",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 1130,
+                                  "referencedDeclaration": 1116,
                                   "src": "178:3:2",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_magic_message",
                                     "typeString": "msg"
                                   }
                                 },
-                                "id": 938,
+                                "id": 924,
                                 "isConstant": false,
                                 "isLValue": false,
                                 "isPure": false,
@@ -319,11 +319,11 @@
                               "operator": "==",
                               "rightExpression": {
                                 "argumentTypes": null,
-                                "id": 939,
+                                "id": 925,
                                 "name": "admin",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 958,
+                                "referencedDeclaration": 944,
                                 "src": "192:5:2",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_address",
@@ -337,7 +337,7 @@
                               }
                             }
                           ],
-                          "id": 941,
+                          "id": 927,
                           "isConstant": false,
                           "isInlineArray": false,
                           "isLValue": false,
@@ -364,21 +364,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 931,
+                      "id": 917,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        1133,
-                        1134
+                        1119,
+                        1120
                       ],
-                      "referencedDeclaration": 1133,
+                      "referencedDeclaration": 1119,
                       "src": "138:7:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 943,
+                    "id": 929,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -392,23 +392,23 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 944,
+                  "id": 930,
                   "nodeType": "ExpressionStatement",
                   "src": "138:62:2"
                 },
                 {
-                  "id": 945,
+                  "id": 931,
                   "nodeType": "PlaceholderStatement",
                   "src": "210:1:2"
                 }
               ]
             },
             "documentation": null,
-            "id": 947,
+            "id": 933,
             "name": "onlyOwner",
             "nodeType": "ModifierDefinition",
             "parameters": {
-              "id": 930,
+              "id": 916,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "126:2:2"
@@ -418,14 +418,14 @@
           },
           {
             "canonicalName": "Institution.Voucher",
-            "id": 954,
+            "id": 940,
             "members": [
               {
                 "constant": false,
-                "id": 949,
+                "id": 935,
                 "name": "expires_unixtime",
                 "nodeType": "VariableDeclaration",
-                "scope": 954,
+                "scope": 940,
                 "src": "250:23:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -434,7 +434,7 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 948,
+                  "id": 934,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
                   "src": "250:6:2",
@@ -448,10 +448,10 @@
               },
               {
                 "constant": false,
-                "id": 951,
+                "id": 937,
                 "name": "used",
                 "nodeType": "VariableDeclaration",
-                "scope": 954,
+                "scope": 940,
                 "src": "283:9:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -460,7 +460,7 @@
                   "typeString": "bool"
                 },
                 "typeName": {
-                  "id": 950,
+                  "id": 936,
                   "name": "bool",
                   "nodeType": "ElementaryTypeName",
                   "src": "283:4:2",
@@ -474,10 +474,10 @@
               },
               {
                 "constant": false,
-                "id": 953,
+                "id": 939,
                 "name": "description",
                 "nodeType": "VariableDeclaration",
-                "scope": 954,
+                "scope": 940,
                 "src": "302:19:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -486,7 +486,7 @@
                   "typeString": "bytes32"
                 },
                 "typeName": {
-                  "id": 952,
+                  "id": 938,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
                   "src": "302:7:2",
@@ -501,16 +501,16 @@
             ],
             "name": "Voucher",
             "nodeType": "StructDefinition",
-            "scope": 1115,
+            "scope": 1101,
             "src": "225:103:2",
             "visibility": "public"
           },
           {
             "constant": false,
-            "id": 956,
+            "id": 942,
             "name": "institution",
             "nodeType": "VariableDeclaration",
-            "scope": 1115,
+            "scope": 1101,
             "src": "334:26:2",
             "stateVariable": true,
             "storageLocation": "default",
@@ -519,7 +519,7 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 955,
+              "id": 941,
               "name": "address",
               "nodeType": "ElementaryTypeName",
               "src": "334:7:2",
@@ -534,10 +534,10 @@
           },
           {
             "constant": false,
-            "id": 958,
+            "id": 944,
             "name": "admin",
             "nodeType": "VariableDeclaration",
-            "scope": 1115,
+            "scope": 1101,
             "src": "363:13:2",
             "stateVariable": true,
             "storageLocation": "default",
@@ -546,7 +546,7 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 957,
+              "id": 943,
               "name": "address",
               "nodeType": "ElementaryTypeName",
               "src": "363:7:2",
@@ -561,21 +561,21 @@
           },
           {
             "constant": false,
-            "id": 963,
+            "id": 949,
             "name": "voucher",
             "nodeType": "VariableDeclaration",
-            "scope": 1115,
+            "scope": 1101,
             "src": "382:37:2",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$954_storage_$dyn_storage_$",
+              "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$940_storage_$dyn_storage_$",
               "typeString": "mapping(address => struct Institution.Voucher[])"
             },
             "typeName": {
-              "id": 962,
+              "id": 948,
               "keyType": {
-                "id": 959,
+                "id": 945,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
                 "src": "390:7:2",
@@ -587,28 +587,28 @@
               "nodeType": "Mapping",
               "src": "382:29:2",
               "typeDescriptions": {
-                "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$954_storage_$dyn_storage_$",
+                "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$940_storage_$dyn_storage_$",
                 "typeString": "mapping(address => struct Institution.Voucher[])"
               },
               "valueType": {
                 "baseType": {
                   "contractScope": null,
-                  "id": 960,
+                  "id": 946,
                   "name": "Voucher",
                   "nodeType": "UserDefinedTypeName",
-                  "referencedDeclaration": 954,
+                  "referencedDeclaration": 940,
                   "src": "401:7:2",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Voucher_$954_storage_ptr",
+                    "typeIdentifier": "t_struct$_Voucher_$940_storage_ptr",
                     "typeString": "struct Institution.Voucher"
                   }
                 },
-                "id": 961,
+                "id": 947,
                 "length": null,
                 "nodeType": "ArrayTypeName",
                 "src": "401:9:2",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_array$_t_struct$_Voucher_$954_storage_$dyn_storage_ptr",
+                  "typeIdentifier": "t_array$_t_struct$_Voucher_$940_storage_$dyn_storage_ptr",
                   "typeString": "struct Institution.Voucher[]"
                 }
               }
@@ -619,20 +619,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 973,
+            "id": 959,
             "name": "newVoucher",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 972,
+              "id": 958,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 965,
+                  "id": 951,
                   "indexed": false,
                   "name": "_owner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 973,
+                  "scope": 959,
                   "src": "443:14:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -641,7 +641,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 964,
+                    "id": 950,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "443:7:2",
@@ -656,11 +656,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 967,
+                  "id": 953,
                   "indexed": false,
                   "name": "_index",
                   "nodeType": "VariableDeclaration",
-                  "scope": 973,
+                  "scope": 959,
                   "src": "459:13:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -669,7 +669,7 @@
                     "typeString": "uint64"
                   },
                   "typeName": {
-                    "id": 966,
+                    "id": 952,
                     "name": "uint64",
                     "nodeType": "ElementaryTypeName",
                     "src": "459:6:2",
@@ -683,11 +683,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 969,
+                  "id": 955,
                   "indexed": false,
                   "name": "_description",
                   "nodeType": "VariableDeclaration",
-                  "scope": 973,
+                  "scope": 959,
                   "src": "474:20:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -696,7 +696,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 968,
+                    "id": 954,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "474:7:2",
@@ -710,11 +710,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 971,
+                  "id": 957,
                   "indexed": false,
                   "name": "expires_unixtime",
                   "nodeType": "VariableDeclaration",
-                  "scope": 973,
+                  "scope": 959,
                   "src": "496:23:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -723,7 +723,7 @@
                     "typeString": "uint64"
                   },
                   "typeName": {
-                    "id": 970,
+                    "id": 956,
                     "name": "uint64",
                     "nodeType": "ElementaryTypeName",
                     "src": "496:6:2",
@@ -743,20 +743,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 981,
+            "id": 967,
             "name": "redeemVoucher",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 980,
+              "id": 966,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 975,
+                  "id": 961,
                   "indexed": false,
                   "name": "_owner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 981,
+                  "scope": 967,
                   "src": "546:14:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -765,7 +765,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 974,
+                    "id": 960,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "546:7:2",
@@ -780,11 +780,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 977,
+                  "id": 963,
                   "indexed": false,
                   "name": "_index",
                   "nodeType": "VariableDeclaration",
-                  "scope": 981,
+                  "scope": 967,
                   "src": "562:13:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -793,7 +793,7 @@
                     "typeString": "uint64"
                   },
                   "typeName": {
-                    "id": 976,
+                    "id": 962,
                     "name": "uint64",
                     "nodeType": "ElementaryTypeName",
                     "src": "562:6:2",
@@ -807,11 +807,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 979,
+                  "id": 965,
                   "indexed": false,
                   "name": "_description",
                   "nodeType": "VariableDeclaration",
-                  "scope": 981,
+                  "scope": 967,
                   "src": "577:20:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -820,7 +820,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 978,
+                    "id": 964,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "577:7:2",
@@ -839,25 +839,25 @@
           },
           {
             "body": {
-              "id": 996,
+              "id": 982,
               "nodeType": "Block",
               "src": "661:61:2",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 990,
+                    "id": 976,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 988,
+                      "id": 974,
                       "name": "institution",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 956,
+                      "referencedDeclaration": 942,
                       "src": "671:11:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -868,11 +868,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 989,
+                      "id": 975,
                       "name": "_institution",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 983,
+                      "referencedDeclaration": 969,
                       "src": "685:12:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -885,25 +885,25 @@
                       "typeString": "address"
                     }
                   },
-                  "id": 991,
+                  "id": 977,
                   "nodeType": "ExpressionStatement",
                   "src": "671:26:2"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 994,
+                    "id": 980,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 992,
+                      "id": 978,
                       "name": "admin",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 958,
+                      "referencedDeclaration": 944,
                       "src": "701:5:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -914,11 +914,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 993,
+                      "id": 979,
                       "name": "_admin",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 985,
+                      "referencedDeclaration": 971,
                       "src": "709:6:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -931,29 +931,29 @@
                       "typeString": "address"
                     }
                   },
-                  "id": 995,
+                  "id": 981,
                   "nodeType": "ExpressionStatement",
                   "src": "701:14:2"
                 }
               ]
             },
             "documentation": null,
-            "id": 997,
+            "id": 983,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 986,
+              "id": 972,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 983,
+                  "id": 969,
                   "name": "_institution",
                   "nodeType": "VariableDeclaration",
-                  "scope": 997,
+                  "scope": 983,
                   "src": "617:20:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -962,7 +962,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 982,
+                    "id": 968,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "617:7:2",
@@ -977,10 +977,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 985,
+                  "id": 971,
                   "name": "_admin",
                   "nodeType": "VariableDeclaration",
-                  "scope": 997,
+                  "scope": 983,
                   "src": "639:14:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -989,7 +989,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 984,
+                    "id": 970,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "639:7:2",
@@ -1006,12 +1006,12 @@
               "src": "616:38:2"
             },
             "returnParameters": {
-              "id": 987,
+              "id": 973,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "661:0:2"
             },
-            "scope": 1115,
+            "scope": 1101,
             "src": "605:117:2",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1019,37 +1019,37 @@
           },
           {
             "body": {
-              "id": 1055,
+              "id": 1041,
               "nodeType": "Block",
               "src": "1164:308:2",
               "statements": [
                 {
                   "assignments": [
-                    1009
+                    995
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 1009,
+                      "id": 995,
                       "name": "v",
                       "nodeType": "VariableDeclaration",
-                      "scope": 1055,
+                      "scope": 1041,
                       "src": "1174:16:2",
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Voucher_$954_memory_ptr",
+                        "typeIdentifier": "t_struct$_Voucher_$940_memory_ptr",
                         "typeString": "struct Institution.Voucher"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 1008,
+                        "id": 994,
                         "name": "Voucher",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 954,
+                        "referencedDeclaration": 940,
                         "src": "1174:7:2",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Voucher_$954_storage_ptr",
+                          "typeIdentifier": "t_struct$_Voucher_$940_storage_ptr",
                           "typeString": "struct Institution.Voucher"
                         }
                       },
@@ -1057,7 +1057,7 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 1010,
+                  "id": 996,
                   "initialValue": null,
                   "nodeType": "VariableDeclarationStatement",
                   "src": "1174:16:2"
@@ -1065,7 +1065,7 @@
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 1022,
+                    "id": 1008,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1074,25 +1074,25 @@
                       "argumentTypes": null,
                       "expression": {
                         "argumentTypes": null,
-                        "id": 1011,
+                        "id": 997,
                         "name": "v",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1009,
+                        "referencedDeclaration": 995,
                         "src": "1201:1:2",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Voucher_$954_memory_ptr",
+                          "typeIdentifier": "t_struct$_Voucher_$940_memory_ptr",
                           "typeString": "struct Institution.Voucher memory"
                         }
                       },
-                      "id": 1013,
+                      "id": 999,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": true,
                       "memberName": "expires_unixtime",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 949,
+                      "referencedDeclaration": 935,
                       "src": "1201:18:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint64",
@@ -1107,7 +1107,7 @@
                         "typeIdentifier": "t_uint64",
                         "typeString": "uint64"
                       },
-                      "id": 1021,
+                      "id": 1007,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -1117,11 +1117,11 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 1015,
+                            "id": 1001,
                             "name": "now",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 1132,
+                            "referencedDeclaration": 1118,
                             "src": "1229:3:2",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
@@ -1136,7 +1136,7 @@
                               "typeString": "uint256"
                             }
                           ],
-                          "id": 1014,
+                          "id": 1000,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1149,7 +1149,7 @@
                           },
                           "typeName": "uint64"
                         },
-                        "id": 1016,
+                        "id": 1002,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1174,18 +1174,18 @@
                               "typeIdentifier": "t_uint64",
                               "typeString": "uint64"
                             },
-                            "id": 1019,
+                            "id": 1005,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
                             "lValueRequested": false,
                             "leftExpression": {
                               "argumentTypes": null,
-                              "id": 1017,
+                              "id": 1003,
                               "name": "_expires_in_Days",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 1003,
+                              "referencedDeclaration": 989,
                               "src": "1237:16:2",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_uint64",
@@ -1197,7 +1197,7 @@
                             "rightExpression": {
                               "argumentTypes": null,
                               "hexValue": "31",
-                              "id": 1018,
+                              "id": 1004,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
@@ -1219,7 +1219,7 @@
                             }
                           }
                         ],
-                        "id": 1020,
+                        "id": 1006,
                         "isConstant": false,
                         "isInlineArray": false,
                         "isLValue": false,
@@ -1244,14 +1244,14 @@
                       "typeString": "uint64"
                     }
                   },
-                  "id": 1023,
+                  "id": 1009,
                   "nodeType": "ExpressionStatement",
                   "src": "1201:62:2"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 1028,
+                    "id": 1014,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1260,25 +1260,25 @@
                       "argumentTypes": null,
                       "expression": {
                         "argumentTypes": null,
-                        "id": 1024,
+                        "id": 1010,
                         "name": "v",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1009,
+                        "referencedDeclaration": 995,
                         "src": "1273:1:2",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Voucher_$954_memory_ptr",
+                          "typeIdentifier": "t_struct$_Voucher_$940_memory_ptr",
                           "typeString": "struct Institution.Voucher memory"
                         }
                       },
-                      "id": 1026,
+                      "id": 1012,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": true,
                       "memberName": "description",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 953,
+                      "referencedDeclaration": 939,
                       "src": "1273:13:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
@@ -1289,11 +1289,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 1027,
+                      "id": 1013,
                       "name": "_description",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1001,
+                      "referencedDeclaration": 987,
                       "src": "1289:12:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
@@ -1306,21 +1306,21 @@
                       "typeString": "bytes32"
                     }
                   },
-                  "id": 1029,
+                  "id": 1015,
                   "nodeType": "ExpressionStatement",
                   "src": "1273:28:2"
                 },
                 {
                   "assignments": [
-                    1031
+                    1017
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 1031,
+                      "id": 1017,
                       "name": "index",
                       "nodeType": "VariableDeclaration",
-                      "scope": 1055,
+                      "scope": 1041,
                       "src": "1311:12:2",
                       "stateVariable": false,
                       "storageLocation": "default",
@@ -1329,7 +1329,7 @@
                         "typeString": "uint64"
                       },
                       "typeName": {
-                        "id": 1030,
+                        "id": 1016,
                         "name": "uint64",
                         "nodeType": "ElementaryTypeName",
                         "src": "1311:6:2",
@@ -1342,7 +1342,7 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 1038,
+                  "id": 1024,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
@@ -1352,25 +1352,25 @@
                           "argumentTypes": null,
                           "baseExpression": {
                             "argumentTypes": null,
-                            "id": 1033,
+                            "id": 1019,
                             "name": "voucher",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 963,
+                            "referencedDeclaration": 949,
                             "src": "1333:7:2",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$954_storage_$dyn_storage_$",
+                              "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$940_storage_$dyn_storage_$",
                               "typeString": "mapping(address => struct Institution.Voucher storage ref[] storage ref)"
                             }
                           },
-                          "id": 1035,
+                          "id": 1021,
                           "indexExpression": {
                             "argumentTypes": null,
-                            "id": 1034,
+                            "id": 1020,
                             "name": "_owner",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 999,
+                            "referencedDeclaration": 985,
                             "src": "1341:6:2",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -1384,11 +1384,11 @@
                           "nodeType": "IndexAccess",
                           "src": "1333:15:2",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_array$_t_struct$_Voucher_$954_storage_$dyn_storage",
+                            "typeIdentifier": "t_array$_t_struct$_Voucher_$940_storage_$dyn_storage",
                             "typeString": "struct Institution.Voucher storage ref[] storage ref"
                           }
                         },
-                        "id": 1036,
+                        "id": 1022,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
@@ -1410,7 +1410,7 @@
                           "typeString": "uint256"
                         }
                       ],
-                      "id": 1032,
+                      "id": 1018,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -1423,7 +1423,7 @@
                       },
                       "typeName": "uint64"
                     },
-                    "id": 1037,
+                    "id": 1023,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1446,14 +1446,14 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 1043,
+                        "id": 1029,
                         "name": "v",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1009,
+                        "referencedDeclaration": 995,
                         "src": "1387:1:2",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Voucher_$954_memory_ptr",
+                          "typeIdentifier": "t_struct$_Voucher_$940_memory_ptr",
                           "typeString": "struct Institution.Voucher memory"
                         }
                       }
@@ -1461,7 +1461,7 @@
                     "expression": {
                       "argumentTypes": [
                         {
-                          "typeIdentifier": "t_struct$_Voucher_$954_memory_ptr",
+                          "typeIdentifier": "t_struct$_Voucher_$940_memory_ptr",
                           "typeString": "struct Institution.Voucher memory"
                         }
                       ],
@@ -1469,25 +1469,25 @@
                         "argumentTypes": null,
                         "baseExpression": {
                           "argumentTypes": null,
-                          "id": 1039,
+                          "id": 1025,
                           "name": "voucher",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 963,
+                          "referencedDeclaration": 949,
                           "src": "1366:7:2",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$954_storage_$dyn_storage_$",
+                            "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$940_storage_$dyn_storage_$",
                             "typeString": "mapping(address => struct Institution.Voucher storage ref[] storage ref)"
                           }
                         },
-                        "id": 1041,
+                        "id": 1027,
                         "indexExpression": {
                           "argumentTypes": null,
-                          "id": 1040,
+                          "id": 1026,
                           "name": "_owner",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 999,
+                          "referencedDeclaration": 985,
                           "src": "1374:6:2",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -1501,11 +1501,11 @@
                         "nodeType": "IndexAccess",
                         "src": "1366:15:2",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_array$_t_struct$_Voucher_$954_storage_$dyn_storage",
+                          "typeIdentifier": "t_array$_t_struct$_Voucher_$940_storage_$dyn_storage",
                           "typeString": "struct Institution.Voucher storage ref[] storage ref"
                         }
                       },
-                      "id": 1042,
+                      "id": 1028,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -1515,11 +1515,11 @@
                       "referencedDeclaration": null,
                       "src": "1366:20:2",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_arraypush_nonpayable$_t_struct$_Voucher_$954_storage_$returns$_t_uint256_$",
+                        "typeIdentifier": "t_function_arraypush_nonpayable$_t_struct$_Voucher_$940_storage_$returns$_t_uint256_$",
                         "typeString": "function (struct Institution.Voucher storage ref) returns (uint256)"
                       }
                     },
-                    "id": 1044,
+                    "id": 1030,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1533,7 +1533,7 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 1045,
+                  "id": 1031,
                   "nodeType": "ExpressionStatement",
                   "src": "1366:23:2"
                 },
@@ -1543,11 +1543,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 1047,
+                        "id": 1033,
                         "name": "_owner",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 999,
+                        "referencedDeclaration": 985,
                         "src": "1416:6:2",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1556,11 +1556,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 1048,
+                        "id": 1034,
                         "name": "index",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1031,
+                        "referencedDeclaration": 1017,
                         "src": "1424:5:2",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint64",
@@ -1571,25 +1571,25 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 1049,
+                          "id": 1035,
                           "name": "v",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1009,
+                          "referencedDeclaration": 995,
                           "src": "1431:1:2",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_Voucher_$954_memory_ptr",
+                            "typeIdentifier": "t_struct$_Voucher_$940_memory_ptr",
                             "typeString": "struct Institution.Voucher memory"
                           }
                         },
-                        "id": 1050,
+                        "id": 1036,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
                         "lValueRequested": false,
                         "memberName": "description",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 953,
+                        "referencedDeclaration": 939,
                         "src": "1431:13:2",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -1600,25 +1600,25 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 1051,
+                          "id": 1037,
                           "name": "v",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1009,
+                          "referencedDeclaration": 995,
                           "src": "1446:1:2",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_Voucher_$954_memory_ptr",
+                            "typeIdentifier": "t_struct$_Voucher_$940_memory_ptr",
                             "typeString": "struct Institution.Voucher memory"
                           }
                         },
-                        "id": 1052,
+                        "id": 1038,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
                         "lValueRequested": false,
                         "memberName": "expires_unixtime",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 949,
+                        "referencedDeclaration": 935,
                         "src": "1446:18:2",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint64",
@@ -1645,18 +1645,18 @@
                           "typeString": "uint64"
                         }
                       ],
-                      "id": 1046,
+                      "id": 1032,
                       "name": "newVoucher",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 973,
+                      "referencedDeclaration": 959,
                       "src": "1405:10:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_address_$_t_uint64_$_t_bytes32_$_t_uint64_$returns$__$",
                         "typeString": "function (address,uint64,bytes32,uint64)"
                       }
                     },
-                    "id": 1053,
+                    "id": 1039,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1670,27 +1670,27 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1054,
+                  "id": 1040,
                   "nodeType": "EmitStatement",
                   "src": "1400:65:2"
                 }
               ]
             },
             "documentation": "@notice fuegt neuen Gutschein hinzu\n @notice das Ablaufdatum wird in Tagen angegeben, Schalttage sind selber zu berechnen\n @param _owner ethereum address des Gutschein Besitzers\n @param _description Beschreibung des Gutscheins in hex\n @param _expires_in_Days Zeit in Tagen bis der Gutschein ablaeuft",
-            "id": 1056,
+            "id": 1042,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": null,
-                "id": 1006,
+                "id": 992,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 1005,
+                  "id": 991,
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 947,
+                  "referencedDeclaration": 933,
                   "src": "1147:9:2",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -1704,15 +1704,15 @@
             "name": "addVoucher",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1004,
+              "id": 990,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 999,
+                  "id": 985,
                   "name": "_owner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1056,
+                  "scope": 1042,
                   "src": "1084:14:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1721,7 +1721,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 998,
+                    "id": 984,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1084:7:2",
@@ -1736,10 +1736,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1001,
+                  "id": 987,
                   "name": "_description",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1056,
+                  "scope": 1042,
                   "src": "1100:20:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1748,7 +1748,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1000,
+                    "id": 986,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1100:7:2",
@@ -1762,10 +1762,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1003,
+                  "id": 989,
                   "name": "_expires_in_Days",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1056,
+                  "scope": 1042,
                   "src": "1122:23:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1774,7 +1774,7 @@
                     "typeString": "uint64"
                   },
                   "typeName": {
-                    "id": 1002,
+                    "id": 988,
                     "name": "uint64",
                     "nodeType": "ElementaryTypeName",
                     "src": "1122:6:2",
@@ -1790,12 +1790,12 @@
               "src": "1083:63:2"
             },
             "returnParameters": {
-              "id": 1007,
+              "id": 993,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1164:0:2"
             },
-            "scope": 1115,
+            "scope": 1101,
             "src": "1064:408:2",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1803,7 +1803,7 @@
           },
           {
             "body": {
-              "id": 1113,
+              "id": 1099,
               "nodeType": "Block",
               "src": "1710:321:2",
               "statements": [
@@ -1817,7 +1817,7 @@
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         },
-                        "id": 1068,
+                        "id": 1054,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1828,34 +1828,34 @@
                             "argumentTypes": null,
                             "baseExpression": {
                               "argumentTypes": null,
-                              "id": 1062,
+                              "id": 1048,
                               "name": "voucher",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 963,
+                              "referencedDeclaration": 949,
                               "src": "1728:7:2",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$954_storage_$dyn_storage_$",
+                                "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$940_storage_$dyn_storage_$",
                                 "typeString": "mapping(address => struct Institution.Voucher storage ref[] storage ref)"
                               }
                             },
-                            "id": 1065,
+                            "id": 1051,
                             "indexExpression": {
                               "argumentTypes": null,
                               "expression": {
                                 "argumentTypes": null,
-                                "id": 1063,
+                                "id": 1049,
                                 "name": "msg",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 1130,
+                                "referencedDeclaration": 1116,
                                 "src": "1736:3:2",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_magic_message",
                                   "typeString": "msg"
                                 }
                               },
-                              "id": 1064,
+                              "id": 1050,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
@@ -1876,11 +1876,11 @@
                             "nodeType": "IndexAccess",
                             "src": "1728:19:2",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_array$_t_struct$_Voucher_$954_storage_$dyn_storage",
+                              "typeIdentifier": "t_array$_t_struct$_Voucher_$940_storage_$dyn_storage",
                               "typeString": "struct Institution.Voucher storage ref[] storage ref"
                             }
                           },
-                          "id": 1066,
+                          "id": 1052,
                           "isConstant": false,
                           "isLValue": true,
                           "isPure": false,
@@ -1898,11 +1898,11 @@
                         "operator": ">",
                         "rightExpression": {
                           "argumentTypes": null,
-                          "id": 1067,
+                          "id": 1053,
                           "name": "_index",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1058,
+                          "referencedDeclaration": 1044,
                           "src": "1757:6:2",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint64",
@@ -1923,21 +1923,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 1061,
+                      "id": 1047,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        1133,
-                        1134
+                        1119,
+                        1120
                       ],
-                      "referencedDeclaration": 1133,
+                      "referencedDeclaration": 1119,
                       "src": "1720:7:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 1069,
+                    "id": 1055,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1951,37 +1951,37 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1070,
+                  "id": 1056,
                   "nodeType": "ExpressionStatement",
                   "src": "1720:44:2"
                 },
                 {
                   "assignments": [
-                    1072
+                    1058
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 1072,
+                      "id": 1058,
                       "name": "v",
                       "nodeType": "VariableDeclaration",
-                      "scope": 1113,
+                      "scope": 1099,
                       "src": "1774:16:2",
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Voucher_$954_memory_ptr",
+                        "typeIdentifier": "t_struct$_Voucher_$940_memory_ptr",
                         "typeString": "struct Institution.Voucher"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 1071,
+                        "id": 1057,
                         "name": "Voucher",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 954,
+                        "referencedDeclaration": 940,
                         "src": "1774:7:2",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Voucher_$954_storage_ptr",
+                          "typeIdentifier": "t_struct$_Voucher_$940_storage_ptr",
                           "typeString": "struct Institution.Voucher"
                         }
                       },
@@ -1989,41 +1989,41 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 1079,
+                  "id": 1065,
                   "initialValue": {
                     "argumentTypes": null,
                     "baseExpression": {
                       "argumentTypes": null,
                       "baseExpression": {
                         "argumentTypes": null,
-                        "id": 1073,
+                        "id": 1059,
                         "name": "voucher",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 963,
+                        "referencedDeclaration": 949,
                         "src": "1793:7:2",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$954_storage_$dyn_storage_$",
+                          "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$940_storage_$dyn_storage_$",
                           "typeString": "mapping(address => struct Institution.Voucher storage ref[] storage ref)"
                         }
                       },
-                      "id": 1076,
+                      "id": 1062,
                       "indexExpression": {
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 1074,
+                          "id": 1060,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1130,
+                          "referencedDeclaration": 1116,
                           "src": "1801:3:2",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
                             "typeString": "msg"
                           }
                         },
-                        "id": 1075,
+                        "id": 1061,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -2044,18 +2044,18 @@
                       "nodeType": "IndexAccess",
                       "src": "1793:19:2",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_array$_t_struct$_Voucher_$954_storage_$dyn_storage",
+                        "typeIdentifier": "t_array$_t_struct$_Voucher_$940_storage_$dyn_storage",
                         "typeString": "struct Institution.Voucher storage ref[] storage ref"
                       }
                     },
-                    "id": 1078,
+                    "id": 1064,
                     "indexExpression": {
                       "argumentTypes": null,
-                      "id": 1077,
+                      "id": 1063,
                       "name": "_index",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1058,
+                      "referencedDeclaration": 1044,
                       "src": "1813:6:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint64",
@@ -2069,7 +2069,7 @@
                     "nodeType": "IndexAccess",
                     "src": "1793:27:2",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Voucher_$954_storage",
+                      "typeIdentifier": "t_struct$_Voucher_$940_storage",
                       "typeString": "struct Institution.Voucher storage ref"
                     }
                   },
@@ -2086,7 +2086,7 @@
                           "typeIdentifier": "t_bool",
                           "typeString": "bool"
                         },
-                        "id": 1084,
+                        "id": 1070,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -2095,25 +2095,25 @@
                           "argumentTypes": null,
                           "expression": {
                             "argumentTypes": null,
-                            "id": 1081,
+                            "id": 1067,
                             "name": "v",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 1072,
+                            "referencedDeclaration": 1058,
                             "src": "1838:1:2",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Voucher_$954_memory_ptr",
+                              "typeIdentifier": "t_struct$_Voucher_$940_memory_ptr",
                               "typeString": "struct Institution.Voucher memory"
                             }
                           },
-                          "id": 1082,
+                          "id": 1068,
                           "isConstant": false,
                           "isLValue": true,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "used",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 951,
+                          "referencedDeclaration": 937,
                           "src": "1838:6:2",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bool",
@@ -2125,7 +2125,7 @@
                         "rightExpression": {
                           "argumentTypes": null,
                           "hexValue": "66616c7365",
-                          "id": 1083,
+                          "id": 1069,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -2154,21 +2154,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 1080,
+                      "id": 1066,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        1133,
-                        1134
+                        1119,
+                        1120
                       ],
-                      "referencedDeclaration": 1133,
+                      "referencedDeclaration": 1119,
                       "src": "1830:7:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 1085,
+                    "id": 1071,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2182,7 +2182,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1086,
+                  "id": 1072,
                   "nodeType": "ExpressionStatement",
                   "src": "1830:24:2"
                 },
@@ -2196,7 +2196,7 @@
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         },
-                        "id": 1092,
+                        "id": 1078,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -2205,25 +2205,25 @@
                           "argumentTypes": null,
                           "expression": {
                             "argumentTypes": null,
-                            "id": 1088,
+                            "id": 1074,
                             "name": "v",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 1072,
+                            "referencedDeclaration": 1058,
                             "src": "1872:1:2",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Voucher_$954_memory_ptr",
+                              "typeIdentifier": "t_struct$_Voucher_$940_memory_ptr",
                               "typeString": "struct Institution.Voucher memory"
                             }
                           },
-                          "id": 1089,
+                          "id": 1075,
                           "isConstant": false,
                           "isLValue": true,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "expires_unixtime",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 949,
+                          "referencedDeclaration": 935,
                           "src": "1872:18:2",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint64",
@@ -2236,18 +2236,18 @@
                           "argumentTypes": null,
                           "expression": {
                             "argumentTypes": null,
-                            "id": 1090,
+                            "id": 1076,
                             "name": "block",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 1120,
+                            "referencedDeclaration": 1106,
                             "src": "1894:5:2",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_block",
                               "typeString": "block"
                             }
                           },
-                          "id": 1091,
+                          "id": 1077,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -2275,21 +2275,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 1087,
+                      "id": 1073,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        1133,
-                        1134
+                        1119,
+                        1120
                       ],
-                      "referencedDeclaration": 1133,
+                      "referencedDeclaration": 1119,
                       "src": "1864:7:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 1093,
+                    "id": 1079,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2303,14 +2303,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1094,
+                  "id": 1080,
                   "nodeType": "ExpressionStatement",
                   "src": "1864:46:2"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 1103,
+                    "id": 1089,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2323,34 +2323,34 @@
                           "argumentTypes": null,
                           "baseExpression": {
                             "argumentTypes": null,
-                            "id": 1095,
+                            "id": 1081,
                             "name": "voucher",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 963,
+                            "referencedDeclaration": 949,
                             "src": "1921:7:2",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$954_storage_$dyn_storage_$",
+                              "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$940_storage_$dyn_storage_$",
                               "typeString": "mapping(address => struct Institution.Voucher storage ref[] storage ref)"
                             }
                           },
-                          "id": 1099,
+                          "id": 1085,
                           "indexExpression": {
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 1096,
+                              "id": 1082,
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 1130,
+                              "referencedDeclaration": 1116,
                               "src": "1929:3:2",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
                                 "typeString": "msg"
                               }
                             },
-                            "id": 1097,
+                            "id": 1083,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
@@ -2371,18 +2371,18 @@
                           "nodeType": "IndexAccess",
                           "src": "1921:19:2",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_array$_t_struct$_Voucher_$954_storage_$dyn_storage",
+                            "typeIdentifier": "t_array$_t_struct$_Voucher_$940_storage_$dyn_storage",
                             "typeString": "struct Institution.Voucher storage ref[] storage ref"
                           }
                         },
-                        "id": 1100,
+                        "id": 1086,
                         "indexExpression": {
                           "argumentTypes": null,
-                          "id": 1098,
+                          "id": 1084,
                           "name": "_index",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1058,
+                          "referencedDeclaration": 1044,
                           "src": "1941:6:2",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint64",
@@ -2396,18 +2396,18 @@
                         "nodeType": "IndexAccess",
                         "src": "1921:27:2",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Voucher_$954_storage",
+                          "typeIdentifier": "t_struct$_Voucher_$940_storage",
                           "typeString": "struct Institution.Voucher storage ref"
                         }
                       },
-                      "id": 1101,
+                      "id": 1087,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": true,
                       "memberName": "used",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 951,
+                      "referencedDeclaration": 937,
                       "src": "1921:32:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bool",
@@ -2419,7 +2419,7 @@
                     "rightHandSide": {
                       "argumentTypes": null,
                       "hexValue": "74727565",
-                      "id": 1102,
+                      "id": 1088,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -2440,7 +2440,7 @@
                       "typeString": "bool"
                     }
                   },
-                  "id": 1104,
+                  "id": 1090,
                   "nodeType": "ExpressionStatement",
                   "src": "1921:39:2"
                 },
@@ -2452,18 +2452,18 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 1106,
+                          "id": 1092,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1130,
+                          "referencedDeclaration": 1116,
                           "src": "1990:3:2",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
                             "typeString": "msg"
                           }
                         },
-                        "id": 1107,
+                        "id": 1093,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -2479,11 +2479,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 1108,
+                        "id": 1094,
                         "name": "_index",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1058,
+                        "referencedDeclaration": 1044,
                         "src": "2002:6:2",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint64",
@@ -2494,25 +2494,25 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 1109,
+                          "id": 1095,
                           "name": "v",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1072,
+                          "referencedDeclaration": 1058,
                           "src": "2010:1:2",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_Voucher_$954_memory_ptr",
+                            "typeIdentifier": "t_struct$_Voucher_$940_memory_ptr",
                             "typeString": "struct Institution.Voucher memory"
                           }
                         },
-                        "id": 1110,
+                        "id": 1096,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
                         "lValueRequested": false,
                         "memberName": "description",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 953,
+                        "referencedDeclaration": 939,
                         "src": "2010:13:2",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -2535,18 +2535,18 @@
                           "typeString": "bytes32"
                         }
                       ],
-                      "id": 1105,
+                      "id": 1091,
                       "name": "redeemVoucher",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 981,
+                      "referencedDeclaration": 967,
                       "src": "1976:13:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_address_$_t_uint64_$_t_bytes32_$returns$__$",
                         "typeString": "function (address,uint64,bytes32)"
                       }
                     },
-                    "id": 1111,
+                    "id": 1097,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2560,29 +2560,29 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1112,
+                  "id": 1098,
                   "nodeType": "EmitStatement",
                   "src": "1971:53:2"
                 }
               ]
             },
             "documentation": "@notice Funktion zum einloesen des Gutscheins\n @notice nur der Besitzer des Gutscheins kann diesen einloesen\n @param _index index des Gutscheins der eingeloest werden soll",
-            "id": 1114,
+            "id": 1100,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "redeem",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1059,
+              "id": 1045,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1058,
+                  "id": 1044,
                   "name": "_index",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1114,
+                  "scope": 1100,
                   "src": "1688:13:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2591,7 +2591,7 @@
                     "typeString": "uint64"
                   },
                   "typeName": {
-                    "id": 1057,
+                    "id": 1043,
                     "name": "uint64",
                     "nodeType": "ElementaryTypeName",
                     "src": "1688:6:2",
@@ -2607,19 +2607,19 @@
               "src": "1687:15:2"
             },
             "returnParameters": {
-              "id": 1060,
+              "id": 1046,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1710:0:2"
             },
-            "scope": 1115,
+            "scope": 1101,
             "src": "1672:359:2",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 1116,
+        "scope": 1102,
         "src": "80:1953:2"
       }
     ],
@@ -2629,14 +2629,14 @@
     "absolutePath": "/C/Users/maxif/PycharmProjects/Backend/backend/smart_contracts/contracts/Voucher.sol",
     "exportedSymbols": {
       "Institution": [
-        1115
+        1101
       ]
     },
-    "id": 1116,
+    "id": 1102,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 929,
+        "id": 915,
         "literals": [
           "solidity",
           "^",
@@ -2652,16 +2652,16 @@
         "contractKind": "contract",
         "documentation": "@title SmartContract zum Verwalten von Gutscheinen",
         "fullyImplemented": true,
-        "id": 1115,
+        "id": 1101,
         "linearizedBaseContracts": [
-          1115
+          1101
         ],
         "name": "Institution",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 946,
+              "id": 932,
               "nodeType": "Block",
               "src": "128:90:2",
               "statements": [
@@ -2675,7 +2675,7 @@
                           "typeIdentifier": "t_bool",
                           "typeString": "bool"
                         },
-                        "id": 942,
+                        "id": 928,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -2689,7 +2689,7 @@
                                 "typeIdentifier": "t_address",
                                 "typeString": "address"
                               },
-                              "id": 935,
+                              "id": 921,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
@@ -2698,18 +2698,18 @@
                                 "argumentTypes": null,
                                 "expression": {
                                   "argumentTypes": null,
-                                  "id": 932,
+                                  "id": 918,
                                   "name": "msg",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 1130,
+                                  "referencedDeclaration": 1116,
                                   "src": "147:3:2",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_magic_message",
                                     "typeString": "msg"
                                   }
                                 },
-                                "id": 933,
+                                "id": 919,
                                 "isConstant": false,
                                 "isLValue": false,
                                 "isPure": false,
@@ -2727,11 +2727,11 @@
                               "operator": "==",
                               "rightExpression": {
                                 "argumentTypes": null,
-                                "id": 934,
+                                "id": 920,
                                 "name": "institution",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 956,
+                                "referencedDeclaration": 942,
                                 "src": "161:11:2",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_address",
@@ -2745,7 +2745,7 @@
                               }
                             }
                           ],
-                          "id": 936,
+                          "id": 922,
                           "isConstant": false,
                           "isInlineArray": false,
                           "isLValue": false,
@@ -2769,7 +2769,7 @@
                                 "typeIdentifier": "t_address",
                                 "typeString": "address"
                               },
-                              "id": 940,
+                              "id": 926,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
@@ -2778,18 +2778,18 @@
                                 "argumentTypes": null,
                                 "expression": {
                                   "argumentTypes": null,
-                                  "id": 937,
+                                  "id": 923,
                                   "name": "msg",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 1130,
+                                  "referencedDeclaration": 1116,
                                   "src": "178:3:2",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_magic_message",
                                     "typeString": "msg"
                                   }
                                 },
-                                "id": 938,
+                                "id": 924,
                                 "isConstant": false,
                                 "isLValue": false,
                                 "isPure": false,
@@ -2807,11 +2807,11 @@
                               "operator": "==",
                               "rightExpression": {
                                 "argumentTypes": null,
-                                "id": 939,
+                                "id": 925,
                                 "name": "admin",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 958,
+                                "referencedDeclaration": 944,
                                 "src": "192:5:2",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_address",
@@ -2825,7 +2825,7 @@
                               }
                             }
                           ],
-                          "id": 941,
+                          "id": 927,
                           "isConstant": false,
                           "isInlineArray": false,
                           "isLValue": false,
@@ -2852,21 +2852,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 931,
+                      "id": 917,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        1133,
-                        1134
+                        1119,
+                        1120
                       ],
-                      "referencedDeclaration": 1133,
+                      "referencedDeclaration": 1119,
                       "src": "138:7:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 943,
+                    "id": 929,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2880,23 +2880,23 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 944,
+                  "id": 930,
                   "nodeType": "ExpressionStatement",
                   "src": "138:62:2"
                 },
                 {
-                  "id": 945,
+                  "id": 931,
                   "nodeType": "PlaceholderStatement",
                   "src": "210:1:2"
                 }
               ]
             },
             "documentation": null,
-            "id": 947,
+            "id": 933,
             "name": "onlyOwner",
             "nodeType": "ModifierDefinition",
             "parameters": {
-              "id": 930,
+              "id": 916,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "126:2:2"
@@ -2906,14 +2906,14 @@
           },
           {
             "canonicalName": "Institution.Voucher",
-            "id": 954,
+            "id": 940,
             "members": [
               {
                 "constant": false,
-                "id": 949,
+                "id": 935,
                 "name": "expires_unixtime",
                 "nodeType": "VariableDeclaration",
-                "scope": 954,
+                "scope": 940,
                 "src": "250:23:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2922,7 +2922,7 @@
                   "typeString": "uint64"
                 },
                 "typeName": {
-                  "id": 948,
+                  "id": 934,
                   "name": "uint64",
                   "nodeType": "ElementaryTypeName",
                   "src": "250:6:2",
@@ -2936,10 +2936,10 @@
               },
               {
                 "constant": false,
-                "id": 951,
+                "id": 937,
                 "name": "used",
                 "nodeType": "VariableDeclaration",
-                "scope": 954,
+                "scope": 940,
                 "src": "283:9:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2948,7 +2948,7 @@
                   "typeString": "bool"
                 },
                 "typeName": {
-                  "id": 950,
+                  "id": 936,
                   "name": "bool",
                   "nodeType": "ElementaryTypeName",
                   "src": "283:4:2",
@@ -2962,10 +2962,10 @@
               },
               {
                 "constant": false,
-                "id": 953,
+                "id": 939,
                 "name": "description",
                 "nodeType": "VariableDeclaration",
-                "scope": 954,
+                "scope": 940,
                 "src": "302:19:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2974,7 +2974,7 @@
                   "typeString": "bytes32"
                 },
                 "typeName": {
-                  "id": 952,
+                  "id": 938,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
                   "src": "302:7:2",
@@ -2989,16 +2989,16 @@
             ],
             "name": "Voucher",
             "nodeType": "StructDefinition",
-            "scope": 1115,
+            "scope": 1101,
             "src": "225:103:2",
             "visibility": "public"
           },
           {
             "constant": false,
-            "id": 956,
+            "id": 942,
             "name": "institution",
             "nodeType": "VariableDeclaration",
-            "scope": 1115,
+            "scope": 1101,
             "src": "334:26:2",
             "stateVariable": true,
             "storageLocation": "default",
@@ -3007,7 +3007,7 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 955,
+              "id": 941,
               "name": "address",
               "nodeType": "ElementaryTypeName",
               "src": "334:7:2",
@@ -3022,10 +3022,10 @@
           },
           {
             "constant": false,
-            "id": 958,
+            "id": 944,
             "name": "admin",
             "nodeType": "VariableDeclaration",
-            "scope": 1115,
+            "scope": 1101,
             "src": "363:13:2",
             "stateVariable": true,
             "storageLocation": "default",
@@ -3034,7 +3034,7 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 957,
+              "id": 943,
               "name": "address",
               "nodeType": "ElementaryTypeName",
               "src": "363:7:2",
@@ -3049,21 +3049,21 @@
           },
           {
             "constant": false,
-            "id": 963,
+            "id": 949,
             "name": "voucher",
             "nodeType": "VariableDeclaration",
-            "scope": 1115,
+            "scope": 1101,
             "src": "382:37:2",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$954_storage_$dyn_storage_$",
+              "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$940_storage_$dyn_storage_$",
               "typeString": "mapping(address => struct Institution.Voucher[])"
             },
             "typeName": {
-              "id": 962,
+              "id": 948,
               "keyType": {
-                "id": 959,
+                "id": 945,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
                 "src": "390:7:2",
@@ -3075,28 +3075,28 @@
               "nodeType": "Mapping",
               "src": "382:29:2",
               "typeDescriptions": {
-                "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$954_storage_$dyn_storage_$",
+                "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$940_storage_$dyn_storage_$",
                 "typeString": "mapping(address => struct Institution.Voucher[])"
               },
               "valueType": {
                 "baseType": {
                   "contractScope": null,
-                  "id": 960,
+                  "id": 946,
                   "name": "Voucher",
                   "nodeType": "UserDefinedTypeName",
-                  "referencedDeclaration": 954,
+                  "referencedDeclaration": 940,
                   "src": "401:7:2",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Voucher_$954_storage_ptr",
+                    "typeIdentifier": "t_struct$_Voucher_$940_storage_ptr",
                     "typeString": "struct Institution.Voucher"
                   }
                 },
-                "id": 961,
+                "id": 947,
                 "length": null,
                 "nodeType": "ArrayTypeName",
                 "src": "401:9:2",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_array$_t_struct$_Voucher_$954_storage_$dyn_storage_ptr",
+                  "typeIdentifier": "t_array$_t_struct$_Voucher_$940_storage_$dyn_storage_ptr",
                   "typeString": "struct Institution.Voucher[]"
                 }
               }
@@ -3107,20 +3107,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 973,
+            "id": 959,
             "name": "newVoucher",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 972,
+              "id": 958,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 965,
+                  "id": 951,
                   "indexed": false,
                   "name": "_owner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 973,
+                  "scope": 959,
                   "src": "443:14:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3129,7 +3129,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 964,
+                    "id": 950,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "443:7:2",
@@ -3144,11 +3144,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 967,
+                  "id": 953,
                   "indexed": false,
                   "name": "_index",
                   "nodeType": "VariableDeclaration",
-                  "scope": 973,
+                  "scope": 959,
                   "src": "459:13:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3157,7 +3157,7 @@
                     "typeString": "uint64"
                   },
                   "typeName": {
-                    "id": 966,
+                    "id": 952,
                     "name": "uint64",
                     "nodeType": "ElementaryTypeName",
                     "src": "459:6:2",
@@ -3171,11 +3171,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 969,
+                  "id": 955,
                   "indexed": false,
                   "name": "_description",
                   "nodeType": "VariableDeclaration",
-                  "scope": 973,
+                  "scope": 959,
                   "src": "474:20:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3184,7 +3184,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 968,
+                    "id": 954,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "474:7:2",
@@ -3198,11 +3198,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 971,
+                  "id": 957,
                   "indexed": false,
                   "name": "expires_unixtime",
                   "nodeType": "VariableDeclaration",
-                  "scope": 973,
+                  "scope": 959,
                   "src": "496:23:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3211,7 +3211,7 @@
                     "typeString": "uint64"
                   },
                   "typeName": {
-                    "id": 970,
+                    "id": 956,
                     "name": "uint64",
                     "nodeType": "ElementaryTypeName",
                     "src": "496:6:2",
@@ -3231,20 +3231,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 981,
+            "id": 967,
             "name": "redeemVoucher",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 980,
+              "id": 966,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 975,
+                  "id": 961,
                   "indexed": false,
                   "name": "_owner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 981,
+                  "scope": 967,
                   "src": "546:14:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3253,7 +3253,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 974,
+                    "id": 960,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "546:7:2",
@@ -3268,11 +3268,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 977,
+                  "id": 963,
                   "indexed": false,
                   "name": "_index",
                   "nodeType": "VariableDeclaration",
-                  "scope": 981,
+                  "scope": 967,
                   "src": "562:13:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3281,7 +3281,7 @@
                     "typeString": "uint64"
                   },
                   "typeName": {
-                    "id": 976,
+                    "id": 962,
                     "name": "uint64",
                     "nodeType": "ElementaryTypeName",
                     "src": "562:6:2",
@@ -3295,11 +3295,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 979,
+                  "id": 965,
                   "indexed": false,
                   "name": "_description",
                   "nodeType": "VariableDeclaration",
-                  "scope": 981,
+                  "scope": 967,
                   "src": "577:20:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3308,7 +3308,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 978,
+                    "id": 964,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "577:7:2",
@@ -3327,25 +3327,25 @@
           },
           {
             "body": {
-              "id": 996,
+              "id": 982,
               "nodeType": "Block",
               "src": "661:61:2",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 990,
+                    "id": 976,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 988,
+                      "id": 974,
                       "name": "institution",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 956,
+                      "referencedDeclaration": 942,
                       "src": "671:11:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -3356,11 +3356,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 989,
+                      "id": 975,
                       "name": "_institution",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 983,
+                      "referencedDeclaration": 969,
                       "src": "685:12:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -3373,25 +3373,25 @@
                       "typeString": "address"
                     }
                   },
-                  "id": 991,
+                  "id": 977,
                   "nodeType": "ExpressionStatement",
                   "src": "671:26:2"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 994,
+                    "id": 980,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 992,
+                      "id": 978,
                       "name": "admin",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 958,
+                      "referencedDeclaration": 944,
                       "src": "701:5:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -3402,11 +3402,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 993,
+                      "id": 979,
                       "name": "_admin",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 985,
+                      "referencedDeclaration": 971,
                       "src": "709:6:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -3419,29 +3419,29 @@
                       "typeString": "address"
                     }
                   },
-                  "id": 995,
+                  "id": 981,
                   "nodeType": "ExpressionStatement",
                   "src": "701:14:2"
                 }
               ]
             },
             "documentation": null,
-            "id": 997,
+            "id": 983,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 986,
+              "id": 972,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 983,
+                  "id": 969,
                   "name": "_institution",
                   "nodeType": "VariableDeclaration",
-                  "scope": 997,
+                  "scope": 983,
                   "src": "617:20:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3450,7 +3450,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 982,
+                    "id": 968,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "617:7:2",
@@ -3465,10 +3465,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 985,
+                  "id": 971,
                   "name": "_admin",
                   "nodeType": "VariableDeclaration",
-                  "scope": 997,
+                  "scope": 983,
                   "src": "639:14:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3477,7 +3477,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 984,
+                    "id": 970,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "639:7:2",
@@ -3494,12 +3494,12 @@
               "src": "616:38:2"
             },
             "returnParameters": {
-              "id": 987,
+              "id": 973,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "661:0:2"
             },
-            "scope": 1115,
+            "scope": 1101,
             "src": "605:117:2",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -3507,37 +3507,37 @@
           },
           {
             "body": {
-              "id": 1055,
+              "id": 1041,
               "nodeType": "Block",
               "src": "1164:308:2",
               "statements": [
                 {
                   "assignments": [
-                    1009
+                    995
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 1009,
+                      "id": 995,
                       "name": "v",
                       "nodeType": "VariableDeclaration",
-                      "scope": 1055,
+                      "scope": 1041,
                       "src": "1174:16:2",
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Voucher_$954_memory_ptr",
+                        "typeIdentifier": "t_struct$_Voucher_$940_memory_ptr",
                         "typeString": "struct Institution.Voucher"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 1008,
+                        "id": 994,
                         "name": "Voucher",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 954,
+                        "referencedDeclaration": 940,
                         "src": "1174:7:2",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Voucher_$954_storage_ptr",
+                          "typeIdentifier": "t_struct$_Voucher_$940_storage_ptr",
                           "typeString": "struct Institution.Voucher"
                         }
                       },
@@ -3545,7 +3545,7 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 1010,
+                  "id": 996,
                   "initialValue": null,
                   "nodeType": "VariableDeclarationStatement",
                   "src": "1174:16:2"
@@ -3553,7 +3553,7 @@
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 1022,
+                    "id": 1008,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -3562,25 +3562,25 @@
                       "argumentTypes": null,
                       "expression": {
                         "argumentTypes": null,
-                        "id": 1011,
+                        "id": 997,
                         "name": "v",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1009,
+                        "referencedDeclaration": 995,
                         "src": "1201:1:2",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Voucher_$954_memory_ptr",
+                          "typeIdentifier": "t_struct$_Voucher_$940_memory_ptr",
                           "typeString": "struct Institution.Voucher memory"
                         }
                       },
-                      "id": 1013,
+                      "id": 999,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": true,
                       "memberName": "expires_unixtime",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 949,
+                      "referencedDeclaration": 935,
                       "src": "1201:18:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint64",
@@ -3595,7 +3595,7 @@
                         "typeIdentifier": "t_uint64",
                         "typeString": "uint64"
                       },
-                      "id": 1021,
+                      "id": 1007,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -3605,11 +3605,11 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 1015,
+                            "id": 1001,
                             "name": "now",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 1132,
+                            "referencedDeclaration": 1118,
                             "src": "1229:3:2",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
@@ -3624,7 +3624,7 @@
                               "typeString": "uint256"
                             }
                           ],
-                          "id": 1014,
+                          "id": 1000,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -3637,7 +3637,7 @@
                           },
                           "typeName": "uint64"
                         },
-                        "id": 1016,
+                        "id": 1002,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -3662,18 +3662,18 @@
                               "typeIdentifier": "t_uint64",
                               "typeString": "uint64"
                             },
-                            "id": 1019,
+                            "id": 1005,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
                             "lValueRequested": false,
                             "leftExpression": {
                               "argumentTypes": null,
-                              "id": 1017,
+                              "id": 1003,
                               "name": "_expires_in_Days",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 1003,
+                              "referencedDeclaration": 989,
                               "src": "1237:16:2",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_uint64",
@@ -3685,7 +3685,7 @@
                             "rightExpression": {
                               "argumentTypes": null,
                               "hexValue": "31",
-                              "id": 1018,
+                              "id": 1004,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
@@ -3707,7 +3707,7 @@
                             }
                           }
                         ],
-                        "id": 1020,
+                        "id": 1006,
                         "isConstant": false,
                         "isInlineArray": false,
                         "isLValue": false,
@@ -3732,14 +3732,14 @@
                       "typeString": "uint64"
                     }
                   },
-                  "id": 1023,
+                  "id": 1009,
                   "nodeType": "ExpressionStatement",
                   "src": "1201:62:2"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 1028,
+                    "id": 1014,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -3748,25 +3748,25 @@
                       "argumentTypes": null,
                       "expression": {
                         "argumentTypes": null,
-                        "id": 1024,
+                        "id": 1010,
                         "name": "v",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1009,
+                        "referencedDeclaration": 995,
                         "src": "1273:1:2",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Voucher_$954_memory_ptr",
+                          "typeIdentifier": "t_struct$_Voucher_$940_memory_ptr",
                           "typeString": "struct Institution.Voucher memory"
                         }
                       },
-                      "id": 1026,
+                      "id": 1012,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": true,
                       "memberName": "description",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 953,
+                      "referencedDeclaration": 939,
                       "src": "1273:13:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
@@ -3777,11 +3777,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 1027,
+                      "id": 1013,
                       "name": "_description",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1001,
+                      "referencedDeclaration": 987,
                       "src": "1289:12:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
@@ -3794,21 +3794,21 @@
                       "typeString": "bytes32"
                     }
                   },
-                  "id": 1029,
+                  "id": 1015,
                   "nodeType": "ExpressionStatement",
                   "src": "1273:28:2"
                 },
                 {
                   "assignments": [
-                    1031
+                    1017
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 1031,
+                      "id": 1017,
                       "name": "index",
                       "nodeType": "VariableDeclaration",
-                      "scope": 1055,
+                      "scope": 1041,
                       "src": "1311:12:2",
                       "stateVariable": false,
                       "storageLocation": "default",
@@ -3817,7 +3817,7 @@
                         "typeString": "uint64"
                       },
                       "typeName": {
-                        "id": 1030,
+                        "id": 1016,
                         "name": "uint64",
                         "nodeType": "ElementaryTypeName",
                         "src": "1311:6:2",
@@ -3830,7 +3830,7 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 1038,
+                  "id": 1024,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
@@ -3840,25 +3840,25 @@
                           "argumentTypes": null,
                           "baseExpression": {
                             "argumentTypes": null,
-                            "id": 1033,
+                            "id": 1019,
                             "name": "voucher",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 963,
+                            "referencedDeclaration": 949,
                             "src": "1333:7:2",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$954_storage_$dyn_storage_$",
+                              "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$940_storage_$dyn_storage_$",
                               "typeString": "mapping(address => struct Institution.Voucher storage ref[] storage ref)"
                             }
                           },
-                          "id": 1035,
+                          "id": 1021,
                           "indexExpression": {
                             "argumentTypes": null,
-                            "id": 1034,
+                            "id": 1020,
                             "name": "_owner",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 999,
+                            "referencedDeclaration": 985,
                             "src": "1341:6:2",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -3872,11 +3872,11 @@
                           "nodeType": "IndexAccess",
                           "src": "1333:15:2",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_array$_t_struct$_Voucher_$954_storage_$dyn_storage",
+                            "typeIdentifier": "t_array$_t_struct$_Voucher_$940_storage_$dyn_storage",
                             "typeString": "struct Institution.Voucher storage ref[] storage ref"
                           }
                         },
-                        "id": 1036,
+                        "id": 1022,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
@@ -3898,7 +3898,7 @@
                           "typeString": "uint256"
                         }
                       ],
-                      "id": 1032,
+                      "id": 1018,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -3911,7 +3911,7 @@
                       },
                       "typeName": "uint64"
                     },
-                    "id": 1037,
+                    "id": 1023,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -3934,14 +3934,14 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 1043,
+                        "id": 1029,
                         "name": "v",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1009,
+                        "referencedDeclaration": 995,
                         "src": "1387:1:2",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Voucher_$954_memory_ptr",
+                          "typeIdentifier": "t_struct$_Voucher_$940_memory_ptr",
                           "typeString": "struct Institution.Voucher memory"
                         }
                       }
@@ -3949,7 +3949,7 @@
                     "expression": {
                       "argumentTypes": [
                         {
-                          "typeIdentifier": "t_struct$_Voucher_$954_memory_ptr",
+                          "typeIdentifier": "t_struct$_Voucher_$940_memory_ptr",
                           "typeString": "struct Institution.Voucher memory"
                         }
                       ],
@@ -3957,25 +3957,25 @@
                         "argumentTypes": null,
                         "baseExpression": {
                           "argumentTypes": null,
-                          "id": 1039,
+                          "id": 1025,
                           "name": "voucher",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 963,
+                          "referencedDeclaration": 949,
                           "src": "1366:7:2",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$954_storage_$dyn_storage_$",
+                            "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$940_storage_$dyn_storage_$",
                             "typeString": "mapping(address => struct Institution.Voucher storage ref[] storage ref)"
                           }
                         },
-                        "id": 1041,
+                        "id": 1027,
                         "indexExpression": {
                           "argumentTypes": null,
-                          "id": 1040,
+                          "id": 1026,
                           "name": "_owner",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 999,
+                          "referencedDeclaration": 985,
                           "src": "1374:6:2",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -3989,11 +3989,11 @@
                         "nodeType": "IndexAccess",
                         "src": "1366:15:2",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_array$_t_struct$_Voucher_$954_storage_$dyn_storage",
+                          "typeIdentifier": "t_array$_t_struct$_Voucher_$940_storage_$dyn_storage",
                           "typeString": "struct Institution.Voucher storage ref[] storage ref"
                         }
                       },
-                      "id": 1042,
+                      "id": 1028,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -4003,11 +4003,11 @@
                       "referencedDeclaration": null,
                       "src": "1366:20:2",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_arraypush_nonpayable$_t_struct$_Voucher_$954_storage_$returns$_t_uint256_$",
+                        "typeIdentifier": "t_function_arraypush_nonpayable$_t_struct$_Voucher_$940_storage_$returns$_t_uint256_$",
                         "typeString": "function (struct Institution.Voucher storage ref) returns (uint256)"
                       }
                     },
-                    "id": 1044,
+                    "id": 1030,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -4021,7 +4021,7 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 1045,
+                  "id": 1031,
                   "nodeType": "ExpressionStatement",
                   "src": "1366:23:2"
                 },
@@ -4031,11 +4031,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 1047,
+                        "id": 1033,
                         "name": "_owner",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 999,
+                        "referencedDeclaration": 985,
                         "src": "1416:6:2",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -4044,11 +4044,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 1048,
+                        "id": 1034,
                         "name": "index",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1031,
+                        "referencedDeclaration": 1017,
                         "src": "1424:5:2",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint64",
@@ -4059,25 +4059,25 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 1049,
+                          "id": 1035,
                           "name": "v",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1009,
+                          "referencedDeclaration": 995,
                           "src": "1431:1:2",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_Voucher_$954_memory_ptr",
+                            "typeIdentifier": "t_struct$_Voucher_$940_memory_ptr",
                             "typeString": "struct Institution.Voucher memory"
                           }
                         },
-                        "id": 1050,
+                        "id": 1036,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
                         "lValueRequested": false,
                         "memberName": "description",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 953,
+                        "referencedDeclaration": 939,
                         "src": "1431:13:2",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -4088,25 +4088,25 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 1051,
+                          "id": 1037,
                           "name": "v",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1009,
+                          "referencedDeclaration": 995,
                           "src": "1446:1:2",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_Voucher_$954_memory_ptr",
+                            "typeIdentifier": "t_struct$_Voucher_$940_memory_ptr",
                             "typeString": "struct Institution.Voucher memory"
                           }
                         },
-                        "id": 1052,
+                        "id": 1038,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
                         "lValueRequested": false,
                         "memberName": "expires_unixtime",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 949,
+                        "referencedDeclaration": 935,
                         "src": "1446:18:2",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint64",
@@ -4133,18 +4133,18 @@
                           "typeString": "uint64"
                         }
                       ],
-                      "id": 1046,
+                      "id": 1032,
                       "name": "newVoucher",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 973,
+                      "referencedDeclaration": 959,
                       "src": "1405:10:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_address_$_t_uint64_$_t_bytes32_$_t_uint64_$returns$__$",
                         "typeString": "function (address,uint64,bytes32,uint64)"
                       }
                     },
-                    "id": 1053,
+                    "id": 1039,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -4158,27 +4158,27 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1054,
+                  "id": 1040,
                   "nodeType": "EmitStatement",
                   "src": "1400:65:2"
                 }
               ]
             },
             "documentation": "@notice fuegt neuen Gutschein hinzu\n @notice das Ablaufdatum wird in Tagen angegeben, Schalttage sind selber zu berechnen\n @param _owner ethereum address des Gutschein Besitzers\n @param _description Beschreibung des Gutscheins in hex\n @param _expires_in_Days Zeit in Tagen bis der Gutschein ablaeuft",
-            "id": 1056,
+            "id": 1042,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": null,
-                "id": 1006,
+                "id": 992,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 1005,
+                  "id": 991,
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 947,
+                  "referencedDeclaration": 933,
                   "src": "1147:9:2",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -4192,15 +4192,15 @@
             "name": "addVoucher",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1004,
+              "id": 990,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 999,
+                  "id": 985,
                   "name": "_owner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1056,
+                  "scope": 1042,
                   "src": "1084:14:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4209,7 +4209,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 998,
+                    "id": 984,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1084:7:2",
@@ -4224,10 +4224,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1001,
+                  "id": 987,
                   "name": "_description",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1056,
+                  "scope": 1042,
                   "src": "1100:20:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4236,7 +4236,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1000,
+                    "id": 986,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1100:7:2",
@@ -4250,10 +4250,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1003,
+                  "id": 989,
                   "name": "_expires_in_Days",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1056,
+                  "scope": 1042,
                   "src": "1122:23:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4262,7 +4262,7 @@
                     "typeString": "uint64"
                   },
                   "typeName": {
-                    "id": 1002,
+                    "id": 988,
                     "name": "uint64",
                     "nodeType": "ElementaryTypeName",
                     "src": "1122:6:2",
@@ -4278,12 +4278,12 @@
               "src": "1083:63:2"
             },
             "returnParameters": {
-              "id": 1007,
+              "id": 993,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1164:0:2"
             },
-            "scope": 1115,
+            "scope": 1101,
             "src": "1064:408:2",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -4291,7 +4291,7 @@
           },
           {
             "body": {
-              "id": 1113,
+              "id": 1099,
               "nodeType": "Block",
               "src": "1710:321:2",
               "statements": [
@@ -4305,7 +4305,7 @@
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         },
-                        "id": 1068,
+                        "id": 1054,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -4316,34 +4316,34 @@
                             "argumentTypes": null,
                             "baseExpression": {
                               "argumentTypes": null,
-                              "id": 1062,
+                              "id": 1048,
                               "name": "voucher",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 963,
+                              "referencedDeclaration": 949,
                               "src": "1728:7:2",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$954_storage_$dyn_storage_$",
+                                "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$940_storage_$dyn_storage_$",
                                 "typeString": "mapping(address => struct Institution.Voucher storage ref[] storage ref)"
                               }
                             },
-                            "id": 1065,
+                            "id": 1051,
                             "indexExpression": {
                               "argumentTypes": null,
                               "expression": {
                                 "argumentTypes": null,
-                                "id": 1063,
+                                "id": 1049,
                                 "name": "msg",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 1130,
+                                "referencedDeclaration": 1116,
                                 "src": "1736:3:2",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_magic_message",
                                   "typeString": "msg"
                                 }
                               },
-                              "id": 1064,
+                              "id": 1050,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
@@ -4364,11 +4364,11 @@
                             "nodeType": "IndexAccess",
                             "src": "1728:19:2",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_array$_t_struct$_Voucher_$954_storage_$dyn_storage",
+                              "typeIdentifier": "t_array$_t_struct$_Voucher_$940_storage_$dyn_storage",
                               "typeString": "struct Institution.Voucher storage ref[] storage ref"
                             }
                           },
-                          "id": 1066,
+                          "id": 1052,
                           "isConstant": false,
                           "isLValue": true,
                           "isPure": false,
@@ -4386,11 +4386,11 @@
                         "operator": ">",
                         "rightExpression": {
                           "argumentTypes": null,
-                          "id": 1067,
+                          "id": 1053,
                           "name": "_index",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1058,
+                          "referencedDeclaration": 1044,
                           "src": "1757:6:2",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint64",
@@ -4411,21 +4411,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 1061,
+                      "id": 1047,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        1133,
-                        1134
+                        1119,
+                        1120
                       ],
-                      "referencedDeclaration": 1133,
+                      "referencedDeclaration": 1119,
                       "src": "1720:7:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 1069,
+                    "id": 1055,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -4439,37 +4439,37 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1070,
+                  "id": 1056,
                   "nodeType": "ExpressionStatement",
                   "src": "1720:44:2"
                 },
                 {
                   "assignments": [
-                    1072
+                    1058
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 1072,
+                      "id": 1058,
                       "name": "v",
                       "nodeType": "VariableDeclaration",
-                      "scope": 1113,
+                      "scope": 1099,
                       "src": "1774:16:2",
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Voucher_$954_memory_ptr",
+                        "typeIdentifier": "t_struct$_Voucher_$940_memory_ptr",
                         "typeString": "struct Institution.Voucher"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 1071,
+                        "id": 1057,
                         "name": "Voucher",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 954,
+                        "referencedDeclaration": 940,
                         "src": "1774:7:2",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Voucher_$954_storage_ptr",
+                          "typeIdentifier": "t_struct$_Voucher_$940_storage_ptr",
                           "typeString": "struct Institution.Voucher"
                         }
                       },
@@ -4477,41 +4477,41 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 1079,
+                  "id": 1065,
                   "initialValue": {
                     "argumentTypes": null,
                     "baseExpression": {
                       "argumentTypes": null,
                       "baseExpression": {
                         "argumentTypes": null,
-                        "id": 1073,
+                        "id": 1059,
                         "name": "voucher",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 963,
+                        "referencedDeclaration": 949,
                         "src": "1793:7:2",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$954_storage_$dyn_storage_$",
+                          "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$940_storage_$dyn_storage_$",
                           "typeString": "mapping(address => struct Institution.Voucher storage ref[] storage ref)"
                         }
                       },
-                      "id": 1076,
+                      "id": 1062,
                       "indexExpression": {
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 1074,
+                          "id": 1060,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1130,
+                          "referencedDeclaration": 1116,
                           "src": "1801:3:2",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
                             "typeString": "msg"
                           }
                         },
-                        "id": 1075,
+                        "id": 1061,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -4532,18 +4532,18 @@
                       "nodeType": "IndexAccess",
                       "src": "1793:19:2",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_array$_t_struct$_Voucher_$954_storage_$dyn_storage",
+                        "typeIdentifier": "t_array$_t_struct$_Voucher_$940_storage_$dyn_storage",
                         "typeString": "struct Institution.Voucher storage ref[] storage ref"
                       }
                     },
-                    "id": 1078,
+                    "id": 1064,
                     "indexExpression": {
                       "argumentTypes": null,
-                      "id": 1077,
+                      "id": 1063,
                       "name": "_index",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1058,
+                      "referencedDeclaration": 1044,
                       "src": "1813:6:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint64",
@@ -4557,7 +4557,7 @@
                     "nodeType": "IndexAccess",
                     "src": "1793:27:2",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Voucher_$954_storage",
+                      "typeIdentifier": "t_struct$_Voucher_$940_storage",
                       "typeString": "struct Institution.Voucher storage ref"
                     }
                   },
@@ -4574,7 +4574,7 @@
                           "typeIdentifier": "t_bool",
                           "typeString": "bool"
                         },
-                        "id": 1084,
+                        "id": 1070,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -4583,25 +4583,25 @@
                           "argumentTypes": null,
                           "expression": {
                             "argumentTypes": null,
-                            "id": 1081,
+                            "id": 1067,
                             "name": "v",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 1072,
+                            "referencedDeclaration": 1058,
                             "src": "1838:1:2",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Voucher_$954_memory_ptr",
+                              "typeIdentifier": "t_struct$_Voucher_$940_memory_ptr",
                               "typeString": "struct Institution.Voucher memory"
                             }
                           },
-                          "id": 1082,
+                          "id": 1068,
                           "isConstant": false,
                           "isLValue": true,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "used",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 951,
+                          "referencedDeclaration": 937,
                           "src": "1838:6:2",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bool",
@@ -4613,7 +4613,7 @@
                         "rightExpression": {
                           "argumentTypes": null,
                           "hexValue": "66616c7365",
-                          "id": 1083,
+                          "id": 1069,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -4642,21 +4642,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 1080,
+                      "id": 1066,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        1133,
-                        1134
+                        1119,
+                        1120
                       ],
-                      "referencedDeclaration": 1133,
+                      "referencedDeclaration": 1119,
                       "src": "1830:7:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 1085,
+                    "id": 1071,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -4670,7 +4670,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1086,
+                  "id": 1072,
                   "nodeType": "ExpressionStatement",
                   "src": "1830:24:2"
                 },
@@ -4684,7 +4684,7 @@
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         },
-                        "id": 1092,
+                        "id": 1078,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -4693,25 +4693,25 @@
                           "argumentTypes": null,
                           "expression": {
                             "argumentTypes": null,
-                            "id": 1088,
+                            "id": 1074,
                             "name": "v",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 1072,
+                            "referencedDeclaration": 1058,
                             "src": "1872:1:2",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Voucher_$954_memory_ptr",
+                              "typeIdentifier": "t_struct$_Voucher_$940_memory_ptr",
                               "typeString": "struct Institution.Voucher memory"
                             }
                           },
-                          "id": 1089,
+                          "id": 1075,
                           "isConstant": false,
                           "isLValue": true,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "expires_unixtime",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 949,
+                          "referencedDeclaration": 935,
                           "src": "1872:18:2",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint64",
@@ -4724,18 +4724,18 @@
                           "argumentTypes": null,
                           "expression": {
                             "argumentTypes": null,
-                            "id": 1090,
+                            "id": 1076,
                             "name": "block",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 1120,
+                            "referencedDeclaration": 1106,
                             "src": "1894:5:2",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_block",
                               "typeString": "block"
                             }
                           },
-                          "id": 1091,
+                          "id": 1077,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -4763,21 +4763,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 1087,
+                      "id": 1073,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        1133,
-                        1134
+                        1119,
+                        1120
                       ],
-                      "referencedDeclaration": 1133,
+                      "referencedDeclaration": 1119,
                       "src": "1864:7:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 1093,
+                    "id": 1079,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -4791,14 +4791,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1094,
+                  "id": 1080,
                   "nodeType": "ExpressionStatement",
                   "src": "1864:46:2"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 1103,
+                    "id": 1089,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -4811,34 +4811,34 @@
                           "argumentTypes": null,
                           "baseExpression": {
                             "argumentTypes": null,
-                            "id": 1095,
+                            "id": 1081,
                             "name": "voucher",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 963,
+                            "referencedDeclaration": 949,
                             "src": "1921:7:2",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$954_storage_$dyn_storage_$",
+                              "typeIdentifier": "t_mapping$_t_address_$_t_array$_t_struct$_Voucher_$940_storage_$dyn_storage_$",
                               "typeString": "mapping(address => struct Institution.Voucher storage ref[] storage ref)"
                             }
                           },
-                          "id": 1099,
+                          "id": 1085,
                           "indexExpression": {
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 1096,
+                              "id": 1082,
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 1130,
+                              "referencedDeclaration": 1116,
                               "src": "1929:3:2",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
                                 "typeString": "msg"
                               }
                             },
-                            "id": 1097,
+                            "id": 1083,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
@@ -4859,18 +4859,18 @@
                           "nodeType": "IndexAccess",
                           "src": "1921:19:2",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_array$_t_struct$_Voucher_$954_storage_$dyn_storage",
+                            "typeIdentifier": "t_array$_t_struct$_Voucher_$940_storage_$dyn_storage",
                             "typeString": "struct Institution.Voucher storage ref[] storage ref"
                           }
                         },
-                        "id": 1100,
+                        "id": 1086,
                         "indexExpression": {
                           "argumentTypes": null,
-                          "id": 1098,
+                          "id": 1084,
                           "name": "_index",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1058,
+                          "referencedDeclaration": 1044,
                           "src": "1941:6:2",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint64",
@@ -4884,18 +4884,18 @@
                         "nodeType": "IndexAccess",
                         "src": "1921:27:2",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Voucher_$954_storage",
+                          "typeIdentifier": "t_struct$_Voucher_$940_storage",
                           "typeString": "struct Institution.Voucher storage ref"
                         }
                       },
-                      "id": 1101,
+                      "id": 1087,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": true,
                       "memberName": "used",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 951,
+                      "referencedDeclaration": 937,
                       "src": "1921:32:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bool",
@@ -4907,7 +4907,7 @@
                     "rightHandSide": {
                       "argumentTypes": null,
                       "hexValue": "74727565",
-                      "id": 1102,
+                      "id": 1088,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -4928,7 +4928,7 @@
                       "typeString": "bool"
                     }
                   },
-                  "id": 1104,
+                  "id": 1090,
                   "nodeType": "ExpressionStatement",
                   "src": "1921:39:2"
                 },
@@ -4940,18 +4940,18 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 1106,
+                          "id": 1092,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1130,
+                          "referencedDeclaration": 1116,
                           "src": "1990:3:2",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
                             "typeString": "msg"
                           }
                         },
-                        "id": 1107,
+                        "id": 1093,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -4967,11 +4967,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 1108,
+                        "id": 1094,
                         "name": "_index",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1058,
+                        "referencedDeclaration": 1044,
                         "src": "2002:6:2",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint64",
@@ -4982,25 +4982,25 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 1109,
+                          "id": 1095,
                           "name": "v",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1072,
+                          "referencedDeclaration": 1058,
                           "src": "2010:1:2",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_Voucher_$954_memory_ptr",
+                            "typeIdentifier": "t_struct$_Voucher_$940_memory_ptr",
                             "typeString": "struct Institution.Voucher memory"
                           }
                         },
-                        "id": 1110,
+                        "id": 1096,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
                         "lValueRequested": false,
                         "memberName": "description",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 953,
+                        "referencedDeclaration": 939,
                         "src": "2010:13:2",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -5023,18 +5023,18 @@
                           "typeString": "bytes32"
                         }
                       ],
-                      "id": 1105,
+                      "id": 1091,
                       "name": "redeemVoucher",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 981,
+                      "referencedDeclaration": 967,
                       "src": "1976:13:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_address_$_t_uint64_$_t_bytes32_$returns$__$",
                         "typeString": "function (address,uint64,bytes32)"
                       }
                     },
-                    "id": 1111,
+                    "id": 1097,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -5048,29 +5048,29 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1112,
+                  "id": 1098,
                   "nodeType": "EmitStatement",
                   "src": "1971:53:2"
                 }
               ]
             },
             "documentation": "@notice Funktion zum einloesen des Gutscheins\n @notice nur der Besitzer des Gutscheins kann diesen einloesen\n @param _index index des Gutscheins der eingeloest werden soll",
-            "id": 1114,
+            "id": 1100,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "redeem",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1059,
+              "id": 1045,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1058,
+                  "id": 1044,
                   "name": "_index",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1114,
+                  "scope": 1100,
                   "src": "1688:13:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -5079,7 +5079,7 @@
                     "typeString": "uint64"
                   },
                   "typeName": {
-                    "id": 1057,
+                    "id": 1043,
                     "name": "uint64",
                     "nodeType": "ElementaryTypeName",
                     "src": "1688:6:2",
@@ -5095,19 +5095,19 @@
               "src": "1687:15:2"
             },
             "returnParameters": {
-              "id": 1060,
+              "id": 1046,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1710:0:2"
             },
-            "scope": 1115,
+            "scope": 1101,
             "src": "1672:359:2",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 1116,
+        "scope": 1102,
         "src": "80:1953:2"
       }
     ],
@@ -5119,7 +5119,7 @@
   },
   "networks": {},
   "schemaVersion": "3.2.0",
-  "updatedAt": "2020-07-26T14:25:03.007Z",
+  "updatedAt": "2020-07-26T17:55:53.944Z",
   "devdoc": {
     "methods": {
       "addVoucher(address,bytes32,uint64)": {

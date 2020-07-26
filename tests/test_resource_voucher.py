@@ -422,23 +422,23 @@ def test_voucher_user_delete_bad_user(client):
 
 
 def test_voucher_user_post(client_w_eth):
-    headers = {"authToken": TOKEN_1, "idVoucher": 2}
+    headers = {"authToken": TOKEN_2, "idVoucher": 2}
     res = client_w_eth.post('/api/vouchers/user', headers=headers)
     assert res._status_code == 200
 
-    res = client_w_eth.get('/api/vouchers/user?idUser=6')
+    res = client_w_eth.get('/api/vouchers/user?idUser=7')
     assert res._status_code == 200
     assert len(res.json) == 2
 
-    assert res.json[0]["id"] == 3
-    assert res.json[0]["userid"] == 6
-    assert res.json[0]["idvoucher"] == 1
-    assert res.json[0]["untilTime"] == datetime(2022, 1, 13).timestamp()
-    assert not res.json[0]["used"]
-    assert res.json[0]["price"] == 1000
+    assert res.json[0]["id"] == 4
+    assert res.json[0]["userid"] == 7
+    assert res.json[0]["idvoucher"] == 2
+    assert res.json[0]["untilTime"] == datetime(2021, 5, 17).timestamp()
+    assert res.json[0]["used"]
+    assert res.json[0]["price"] == 2000
 
     assert res.json[1]["id"] == 5
-    assert res.json[1]["userid"] == 6
+    assert res.json[1]["userid"] == 7
     assert res.json[1]["idvoucher"] == 2
     assert abs(int(res.json[1]["untilTime"]) - int((datetime.now() + timedelta(0, 2 * 31536000)).timestamp())) <= 3
     assert not res.json[1]["used"]
@@ -446,20 +446,20 @@ def test_voucher_user_post(client_w_eth):
 
 
 def test_voucher_user_post2(client_w_eth):
-    headers = {"authToken": TOKEN_1, "idVoucher": 1}
+    headers = {"authToken": TOKEN_2, "idVoucher": 1}
     res = client_w_eth.post('/api/vouchers/user', headers=headers)
     assert res._status_code == 406
 
-    res = client_w_eth.get('/api/vouchers/user?idUser=6')
+    res = client_w_eth.get('/api/vouchers/user?idUser=7')
     assert res._status_code == 200
     assert len(res.json) == 1
 
-    assert res.json[0]["id"] == 3
-    assert res.json[0]["userid"] == 6
-    assert res.json[0]["idvoucher"] == 1
-    assert res.json[0]["untilTime"] == datetime(2022, 1, 13).timestamp()
-    assert not res.json[0]["used"]
-    assert res.json[0]["price"] == 1000
+    assert res.json[0]["id"] == 4
+    assert res.json[0]["userid"] == 7
+    assert res.json[0]["idvoucher"] == 2
+    assert res.json[0]["untilTime"] == datetime(2021, 5, 17).timestamp()
+    assert res.json[0]["used"]
+    assert res.json[0]["price"] == 2000
 
 
 def test_voucher_user_post_bad_voucherid(client_w_eth):
