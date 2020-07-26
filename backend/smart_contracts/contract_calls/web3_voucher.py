@@ -20,8 +20,9 @@ def add_voucher(user_inst, institution_inst, description, expires_in_Days):
     
     contract = WEB3.eth.contract(address=institution_inst.scAddress_voucher, abi=INSTITUTION_JSON["abi"])
     
-    tx_hash = contract.functions.addVoucher(WEB3.eth.defaultAccount, WEB3.toBytes(text=description), expires_in_Days).buildTransaction({
+    tx_hash = contract.functions.addVoucher(user_inst.publickeyUser, WEB3.toBytes(text=description), expires_in_Days).buildTransaction({
         'nonce': WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount),
+        'from': WEB3.eth.defaultAccount
     })
     signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=master_key)
     tx_raw = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
