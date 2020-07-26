@@ -19,7 +19,6 @@ def add_voucher(user_inst, institution_inst, description, expires_in_Days):
     master_key = codecs.decode('e5ca8f76cb60c5fb0e35ff69622d8697c32886c768c8c59b558f63260c52ac68', 'hex_codec')
     
     contract = WEB3.eth.contract(address=institution_inst.scAddress_voucher, abi=INSTITUTION_JSON["abi"])
-    
     tx_hash = contract.functions.addVoucher(user_inst.publickeyUser, WEB3.toBytes(text=description), expires_in_Days).buildTransaction({
         'nonce': WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount),
         'from': WEB3.eth.defaultAccount
@@ -36,8 +35,7 @@ def add_voucher(user_inst, institution_inst, description, expires_in_Days):
     return index
 
 def redeem_voucher(user_inst, index, sc_address):
-    contract = WEB3.eth.contract(address=sc_address, abi=INSTITUTION_JSON["abi"])
-    
+    contract = WEB3.eth.contract(address=sc_address, abi=INSTITUTION_JSON["abi"]) 
     tx_hash = contract.functions.redeem(index).buildTransaction({
         'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser),
         'from': user_inst.publickeyUser

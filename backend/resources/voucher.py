@@ -189,8 +189,7 @@ def voucher_post(user):
         signed_transaction = WEB3.eth.account.sign_transaction(transaction, user.privatekeyUser)
         WEB3.eth.sendRawTransaction(signed_transaction.rawTransaction)
         
-        index = add_voucher(user, inst, voucher.titleVoucher, 666) #change expires_in
-        print("index: " + str(index))
+        association.index = add_voucher(user, inst, voucher.titleVoucher, abs(association.expires_unixtime - datetime.now()).days)
 
         session.add(voucher)
         session.add(association)
@@ -220,14 +219,19 @@ def voucher_delete_user(user_inst):
         return jsonify({"error": "bad argument"}), 400
 
     session = DB_SESSION()
-    voucher = session.query(VoucherUser)
+    voucherUser = session.query(VoucherUser)
     try:
-        voucher = voucher.filter(VoucherUser.idVoucherUser == id_voucheruser).filter(
+        voucherUser = voucherUser.filter(VoucherUser.idVoucherUser == id_voucheruser).filter(
             VoucherUser.id_user == user_inst.idUser).one()
+        institution = session.query(Institution).filter(Institution.idInstitution == voucherUser.voucher.institution_id).one()
+        print(institution.scAddress_voucher)
+        print("index: " + str(voucherUser.index))
+        print(user_inst.publickeyUser)
+        redeem_voucher(user_inst, voucherUser.index, institution.scAddress_voucher)
     except NoResultFound:
         return jsonify({'error': 'No voucher found'}), 404
 
-    voucher.usedVoucher = True
+    voucherUser.usedVoucher = True
     session.commit()
 
     return jsonify({'status': 'Gutschein wurde eingelöst'}), 201
