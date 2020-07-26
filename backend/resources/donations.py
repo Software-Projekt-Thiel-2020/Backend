@@ -135,15 +135,13 @@ def donations_post(session, user_inst):
 
 def vote_transaction(user_inst: User, vote, donation: Donation):
     """Method to make the voting Transaction."""
-    contract_address = WEB3.toChecksumAddress(donation.milestone.project.institution.scAddress)
-
     donation_sc = WEB3.eth.contract(
-        address=contract_address,
+        address=donation.milestone.project.scAddress,
         abi=PROJECT_JSON["abi"]
     )
-
-    transaction = donation_sc.functions.vote(donation.milestone.idMilestone, vote)\
-        .buildTransaction({'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser)})
+    # ToDo: real milestone id instead of 0! donation.milestone.idMilestone
+    transaction = donation_sc.functions.vote(0, vote)
+    transaction = transaction.buildTransaction({'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser), 'from': user_inst.publickeyUser})
     signed_transaction = WEB3.eth.account.sign_transaction(transaction, user_inst.privatekeyUser)
 
     WEB3.eth.sendRawTransaction(signed_transaction.rawTransaction)

@@ -346,3 +346,12 @@ def test_donations_post_wo_auth(client):
     assert res._status_code == 401
 
 
+def test_donations_vote(client_w_eth):
+    test_donations_post(client_w_eth)
+
+    headers = {"authToken": TOKEN_2, "id": 5, "vote": 1}
+    res = client_w_eth.post('/api/donations/vote', headers=headers)
+
+    assert res._status_code == 200
+
+
