@@ -17,6 +17,8 @@ def create_app(test_config=None):
     """
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
+        ROOT_DIR=os.path.join(app.root_path, '../'),
+        TEST_UPLOAD_FOLDER=os.path.join(app.root_path, "../tests/test_files"),
         SECRET_KEY=os.urandom(24),
         DATABASE=os.path.join(app.instance_path, 'backend.sqlite'),
         UPLOAD_FOLDER=os.path.join(app.root_path, '../files'),
