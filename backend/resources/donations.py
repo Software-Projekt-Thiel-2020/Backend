@@ -146,7 +146,9 @@ def vote_transaction(user_inst: User, vote, donation: Donation):
                                                 'from': user_inst.publickeyUser})
     signed_transaction = WEB3.eth.account.sign_transaction(transaction, user_inst.privatekeyUser)
 
-    WEB3.eth.sendRawTransaction(signed_transaction.rawTransaction)
+    tx_hash = WEB3.eth.sendRawTransaction(signed_transaction.rawTransaction)
+    tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash)
+    return tx_receipt
 
 
 @BP.route('/vote', methods=['POST'])
@@ -180,7 +182,15 @@ def milestones_vote(session, user_inst: User):
     if donation.user_id != user_inst.idUser:
         return jsonify({"error": "unauthorized user"}), 401
 
+    if donation.voted is not None:  # ToDo
+        return jsonify({"error": "already voted"}), 400
+
     donation.milestone.currentVotesMilestone += 1 if vote else (-1)
-    vote_transaction(user_inst, 0 if vote else 1, donation)
+
+    tx_receipt = vote_transaction(user_inst, 0 if vote else 1, donation)
+    if tx_receipt.status != 1:
+        raise RuntimeError("SC Call failed!")
+
+    donation.voted = 1 if vote else (-1)
     session.commit()
     return jsonify({'status': 'ok'}), 200

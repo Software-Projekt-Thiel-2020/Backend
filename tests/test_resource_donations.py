@@ -357,6 +357,44 @@ def test_donations_vote(client_w_eth):
     assert res.json["status"] == "ok"
 
 
+def test_donations_vote2(client_w_eth):
+    headers = {"authToken": TOKEN_2, "idproject": 1, "amount": 1337000000, "voteEnabled": 1}
+    res = client_w_eth.post('/api/donations', headers=headers)
+    assert res._status_code == 201
+    headers = {"authToken": TOKEN_2, "idproject": 1, "amount": 1337000000, "voteEnabled": 1}
+    res = client_w_eth.post('/api/donations', headers=headers)
+    assert res._status_code == 201
+
+    headers = {"authToken": TOKEN_2, "id": 5, "vote": 1}
+    res = client_w_eth.post('/api/donations/vote', headers=headers)
+
+    assert res._status_code == 200
+    assert len(res.json) == 1
+    assert res.json["status"] == "ok"
+
+    headers = {"authToken": TOKEN_2, "id": 6, "vote": 0}
+    res = client_w_eth.post('/api/donations/vote', headers=headers)
+
+    assert res._status_code == 400
+    assert len(res.json) == 1
+    assert res.json["error"] == "already voted"
+
+
+def test_donations_vote_double(client_w_eth):
+    test_donations_post(client_w_eth)
+
+    headers = {"authToken": TOKEN_2, "id": 5, "vote": 1}
+    res = client_w_eth.post('/api/donations/vote', headers=headers)
+    assert res._status_code == 200
+    assert len(res.json) == 1
+    assert res.json["status"] == "ok"
+
+    res = client_w_eth.post('/api/donations/vote', headers=headers)
+    assert res._status_code == 400
+    assert len(res.json) == 1
+    assert res.json["error"] == "already voted"
+
+
 def test_donations_vote_missing(client_w_eth):
     headers = {"authToken": TOKEN_2, "vote": 1}
     res = client_w_eth.post('/api/donations/vote', headers=headers)

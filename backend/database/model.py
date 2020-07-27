@@ -142,6 +142,7 @@ class Donation(BASE):
     milestone = relationship("Milestone", back_populates="donations")
 
     milestone_sc_id = Column(Integer)
+    voted = Column(Integer)
 
 
 class Transaction(BASE):
