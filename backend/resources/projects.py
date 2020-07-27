@@ -30,6 +30,7 @@ def projects_get(session):
     latitude = request.args.get('latitude', type=float)
     longitude = request.args.get('longitude', type=float)
     name_project = request.args.get('name')
+    username = request.args.get('username')
 
     try:
         check_params_int([id_project, id_institution])
@@ -39,7 +40,7 @@ def projects_get(session):
     if None in [radius, latitude, longitude] and any([radius, latitude, longitude]):
         return jsonify({"error": "bad geo argument"}), 400
 
-    results = session.query(Project)
+    results = session.query(Project).join(Project.institution).join(Institution.user)
 
     if id_project:
         results = results.filter(Project.idProject == id_project)
@@ -47,6 +48,8 @@ def projects_get(session):
         results = results.filter(Project.institution_id == id_institution)
     if name_project:
         results = results.filter(Project.nameProject.ilike("%" + name_project + "%"))
+    if username:
+        results = results.filter(User.usernameUser == username)
 
     json_data = []
     for result in results:

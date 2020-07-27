@@ -42,6 +42,19 @@ def test_projects_get_name(client):
     assert res.json[0]["webpage"] == "www.cmb.de"
 
 
+def test_projects_get_userid(client):
+    """get without parameters."""
+    res = client.get('/api/projects?username=sw2020testuser1.id.blockstack')
+    assert res._status_code == 200
+    assert len(res.json) == 1
+
+    assert res.json[0]["id"] == 1
+    assert res.json[0]["idinstitution"] == 1
+    assert res.json[0]["idsmartcontract"] == 2
+    assert res.json[0]["name"] == "Computer malt Bild"
+    assert res.json[0]["webpage"] == "www.cmb.de"
+
+
 def test_projects_get_geo(client):
     """get without parameters."""
     res = client.get('/api/projects?radius=1&latitude=52.030228&longitude=8.532471')
