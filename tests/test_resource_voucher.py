@@ -328,12 +328,12 @@ def test_voucher_user_expired2(client):
     assert res.json[2]["price"] == 2000
 
 
-def test_voucher_user_delete(client):
+def test_voucher_user_delete(client_w_eth):
     headers = {"authToken": TOKEN_1, "id": 3}
-    res = client.delete('/api/vouchers/user', headers=headers)
+    res = client_w_eth.delete('/api/vouchers/user', headers=headers)
     assert res._status_code == 201
 
-    res = client.get('/api/vouchers/user?used=0')
+    res = client_w_eth.get('/api/vouchers/user?used=0')
     assert res._status_code == 200
     assert len(res.json) == 2
 
@@ -351,7 +351,7 @@ def test_voucher_user_delete(client):
     assert not res.json[1]["used"]
     assert res.json[1]["price"] == 2000
 
-    res = client.get('/api/vouchers/user?used=1')
+    res = client_w_eth.get('/api/vouchers/user?used=1')
     assert res._status_code == 200
     assert len(res.json) == 2
 

@@ -245,17 +245,17 @@ def test_institutions_post_existing_name(client):
     assert res.json["error"] == "name already exists"
 
 
-def test_institutions_patch(client):
-    test_institutions_post2(client)  # create institution
+def test_institutions_patch(client_w_eth):
+    test_institutions_post2(client_w_eth)  # create institution
 
     headers = {"authToken": TOKEN_2, "id": 5, "name": "NewExampleInstitution", "address": "NewAddress",
                "webpage": "https://www.new_example.com/"}
-    res = client.patch('/api/institutions', headers=headers)
+    res = client_w_eth.patch('/api/institutions', headers=headers)
     assert res._status_code == 201
     assert len(res.json) == 1
     assert res.json["status"] == "Institution wurde bearbeitet"
 
-    res = client.get('/api/institutions?id=5')
+    res = client_w_eth.get('/api/institutions?id=5')
     assert res._status_code == 200
     assert len(res.json) == 1
 
@@ -265,17 +265,17 @@ def test_institutions_patch(client):
     assert res.json[0]["address"] == "NewAddress"
 
 
-def test_institutions_patch2(client):
-    test_institutions_post2(client)  # create institution
+def test_institutions_patch2(client_w_eth):
+    test_institutions_post2(client_w_eth)  # create institution
 
     headers = {"authToken": TOKEN_2, "id": 5, "address": "NewAddress",
                "webpage": "https://www.new_example.com/"}
-    res = client.patch('/api/institutions', headers=headers)
+    res = client_w_eth.patch('/api/institutions', headers=headers)
     assert res._status_code == 201
     assert len(res.json) == 1
     assert res.json["status"] == "Institution wurde bearbeitet"
 
-    res = client.get('/api/institutions?id=5')
+    res = client_w_eth.get('/api/institutions?id=5')
     assert res._status_code == 200
     assert len(res.json) == 1
 
@@ -285,16 +285,16 @@ def test_institutions_patch2(client):
     assert res.json[0]["address"] == "NewAddress"
 
 
-def test_institutions_patch3(client):
-    test_institutions_post2(client)  # create institution
+def test_institutions_patch3(client_w_eth):
+    test_institutions_post2(client_w_eth)  # create institution
 
     headers = {"authToken": TOKEN_2, "id": 5, "webpage": "https://www.new_example.com/"}
-    res = client.patch('/api/institutions', headers=headers)
+    res = client_w_eth.patch('/api/institutions', headers=headers)
     assert res._status_code == 201
     assert len(res.json) == 1
     assert res.json["status"] == "Institution wurde bearbeitet"
 
-    res = client.get('/api/institutions?id=5')
+    res = client_w_eth.get('/api/institutions?id=5')
     assert res._status_code == 200
     assert len(res.json) == 1
 
@@ -304,17 +304,17 @@ def test_institutions_patch3(client):
     assert res.json[0]["address"] == "Address"
 
 
-def test_institutions_patch4(client):
-    test_institutions_post2(client)  # create institution
+def test_institutions_patch4(client_w_eth):
+    test_institutions_post2(client_w_eth)  # create institution
 
     headers = {"authToken": TOKEN_2, "id": 5,
                "latitude": 13.37, "longitude": 42.69}
-    res = client.patch('/api/institutions', headers=headers)
+    res = client_w_eth.patch('/api/institutions', headers=headers)
     assert res._status_code == 201
     assert len(res.json) == 1
     assert res.json["status"] == "Institution wurde bearbeitet"
 
-    res = client.get('/api/institutions?id=5')
+    res = client_w_eth.get('/api/institutions?id=5')
     assert res._status_code == 200
     assert len(res.json) == 1
 
@@ -323,16 +323,16 @@ def test_institutions_patch4(client):
     assert res.json[0]["longitude"] == 42.69
 
 
-def test_institutions_patch5(client):
-    test_institutions_post2(client)  # create institution
+def test_institutions_patch5(client_w_eth):
+    test_institutions_post2(client_w_eth)  # create institution
 
     headers = {"authToken": TOKEN_2, "id": 5, "description": "description1234"}
-    res = client.patch('/api/institutions', headers=headers)
+    res = client_w_eth.patch('/api/institutions', headers=headers)
     assert res._status_code == 201
     assert len(res.json) == 1
     assert res.json["status"] == "Institution wurde bearbeitet"
 
-    res = client.get('/api/institutions?id=5')
+    res = client_w_eth.get('/api/institutions?id=5')
     assert res._status_code == 200
     assert len(res.json) == 1
 
@@ -340,45 +340,45 @@ def test_institutions_patch5(client):
     assert res.json[0]["description"] == "description1234"
 
 
-def test_institutions_patch_missing_id(client):
-    test_institutions_post2(client)  # create institution
+def test_institutions_patch_missing_id(client_w_eth):
+    test_institutions_post2(client_w_eth)  # create institution
 
     headers = {"authToken": TOKEN_2, "name": "NewExampleInstitution", "address": "NewAddress",
                "webpage": "https://www.new_example.com/"}
-    res = client.patch('/api/institutions', headers=headers)
+    res = client_w_eth.patch('/api/institutions', headers=headers)
     assert res._status_code == 400
     assert len(res.json) == 1
     assert res.json["error"] == "Missing parameter"
 
 
-def test_institutions_patch_bad_geo(client):
-    test_institutions_post2(client)  # create institution
+def test_institutions_patch_bad_geo(client_w_eth):
+    test_institutions_post2(client_w_eth)  # create institution
 
     headers = {"authToken": TOKEN_2, "id": 5,  "name": "NewExampleInstitution", "address": "NewAddress",
                "webpage": "https://www.new_example.com/", "latitude": 13.37, "longitude": "aaa"}
-    res = client.patch('/api/institutions', headers=headers)
+    res = client_w_eth.patch('/api/institutions', headers=headers)
     assert res._status_code == 400
     assert len(res.json) == 1
     assert res.json["error"] == "bad argument"
 
 
-def test_institutions_patch_bad_geo2(client):
-    test_institutions_post2(client)  # create institution
+def test_institutions_patch_bad_geo2(client_w_eth):
+    test_institutions_post2(client_w_eth)  # create institution
 
     headers = {"authToken": TOKEN_2, "id": 5,  "name": "NewExampleInstitution", "address": "NewAddress",
                "webpage": "https://www.new_example.com/", "latitude": 13.37}
-    res = client.patch('/api/institutions', headers=headers)
+    res = client_w_eth.patch('/api/institutions', headers=headers)
     assert res._status_code == 400
     assert len(res.json) == 1
     assert res.json["error"] == "bad geo argument"
 
 
-def test_institutions_patch_name_exists(client):
-    test_institutions_post2(client)  # create institution
+def test_institutions_patch_name_exists(client_w_eth):
+    test_institutions_post2(client_w_eth)  # create institution
 
     headers = {"authToken": TOKEN_2, "id": 5, "name": "MSGraphic", "address": "NewAddress",
                "webpage": "https://www.new_example.com/"}
-    res = client.patch('/api/institutions', headers=headers)
+    res = client_w_eth.patch('/api/institutions', headers=headers)
     assert res._status_code == 400
     assert len(res.json) == 1
     assert res.json["error"] == "name already exists"
@@ -393,21 +393,21 @@ def test_institutions_patch_id_doesnt_exist(client):
     assert res.json["error"] == "Institution does not exist"
 
 
-def test_institutions_patch_wrong_user(client):
-    test_institutions_post2(client)  # create institution
+def test_institutions_patch_wrong_user(client_w_eth):
+    test_institutions_post2(client_w_eth)  # create institution
 
     headers = {"authToken": TOKEN_1, "id": 5, "name": "NewExampleInstitution", "address": "NewAddress",
                "webpage": "https://www.new_example.com/"}
-    res = client.patch('/api/institutions', headers=headers)
+    res = client_w_eth.patch('/api/institutions', headers=headers)
     assert res._status_code == 403
     assert len(res.json) == 1
     assert res.json["error"] == "no permission"
 
 
-def test_institutions_patch_bad_user(client):
-    test_institutions_post2(client)  # create institution
+def test_institutions_patch_bad_user(client_w_eth):
+    test_institutions_post2(client_w_eth)  # create institution
 
     headers = {"authToken": TOKEN_3, "id": 5, "name": "NewExampleInstitution", "address": "NewAddress",
                "webpage": "https://www.new_example.com/"}
-    res = client.patch('/api/institutions', headers=headers)
+    res = client_w_eth.patch('/api/institutions', headers=headers)
     assert res._status_code == 404
