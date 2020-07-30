@@ -124,6 +124,7 @@ class VoucherUser(BASE):
     usedVoucher = Column(BOOLEAN)
     expires_unixtime = Column(DateTime)
     redeem_id = Column(Integer)
+    boughtVoucherUser = Column(DateTime, default=datetime.utcnow)
 
     voucher = relationship("Voucher", back_populates="users")
     user = relationship("User", back_populates="vouchers")
@@ -621,18 +622,22 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
         VoucherUser(idVoucherUser=1,
                     usedVoucher=False,
                     expires_unixtime=datetime(2020, 1, 1),
+                    boughtVoucherUser=datetime(1970, 1, 1),
                     redeem_id=0),
         VoucherUser(idVoucherUser=2,
                     usedVoucher=False,
                     expires_unixtime=datetime(2022, 5, 17),
+                    boughtVoucherUser=datetime(2020, 2, 1),
                     redeem_id=0),
         VoucherUser(idVoucherUser=3,
                     usedVoucher=False,
                     expires_unixtime=datetime(2022, 1, 13),
+                    boughtVoucherUser=datetime(2013, 1, 1),
                     redeem_id=0),
         VoucherUser(idVoucherUser=4,
                     usedVoucher=True,
                     expires_unixtime=datetime(2021, 5, 17),
+                    boughtVoucherUser=datetime(2006, 6, 6),
                     redeem_id=0),
     ]
 
