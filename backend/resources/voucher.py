@@ -282,6 +282,7 @@ def voucher_get_user(session):
             "used": vuser.usedVoucher,
             "untilTime": vuser.expires_unixtime.timestamp(),
             "price": vouch.priceVoucher,
+            "bought": vuser.boughtVoucherUser,
         })
 
     return jsonify(json_data), 200

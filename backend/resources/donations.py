@@ -56,7 +56,8 @@ def donations_get(session):
             'projectid': project.idProject,
             'projectname': project.nameProject,
             'projectpic': project.picPathProject,
-            'voted': donation.voted
+            'voted': donation.voted,
+            'timeofdonation': donation.timeOfDonation,
         })
 
     return jsonify(json_data)
