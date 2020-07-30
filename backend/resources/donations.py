@@ -56,6 +56,7 @@ def donations_get(session):
             'projectid': project.idProject,
             'projectname': project.nameProject,
             'projectpic': project.picPathProject,
+            'voted': donation.voted
         })
 
     return jsonify(json_data)
@@ -182,10 +183,7 @@ def milestones_vote(session, user_inst: User):
     if donation.user_id != user_inst.idUser:
         return jsonify({"error": "unauthorized user"}), 401
 
-    already_voted = session.query(Donation).filter(Donation.user == user_inst).filter(
-        Donation.milestone_sc_id == donation.milestone_sc_id).filter(Donation.voted != None).one_or_none()  # noqa
-
-    if already_voted is not None:
+    if donation.voted is not None:
         return jsonify({"error": "already voted"}), 400
 
     donation.milestone.currentVotesMilestone += 1 if vote else (-1)
@@ -194,6 +192,14 @@ def milestones_vote(session, user_inst: User):
     if tx_receipt.status != 1:
         raise RuntimeError("SC Call failed!")
 
-    donation.voted = 1 if vote else (-1)
+    voted = 1 if vote else (-1)
+
+    donations_milestone = session.query(Donation).filter(Donation.user == user_inst).\
+        filter(Donation.milestone_sc_id == donation.milestone_sc_id)  # noqa
+
+    for don in donations_milestone:
+        don.voted = voted
+        session.add(don)
+
     session.commit()
     return jsonify({'status': 'ok'}), 200
