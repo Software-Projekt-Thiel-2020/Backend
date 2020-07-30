@@ -1,7 +1,7 @@
 """Project Resource."""
 from flask import Blueprint, request, jsonify
 
-from backend.database.model import Donation
+from backend.database.model import Donation, User
 from backend.database.model import Milestone
 from backend.database.model import Project
 from backend.resources.helpers import check_params_int, auth_user, db_session_dec
@@ -56,6 +56,7 @@ def donations_get(session):
             'projectid': project.idProject,
             'projectname': project.nameProject,
             'projectpic': project.picPathProject,
+            'voted': donation.voted
         })
 
     return jsonify(json_data)
@@ -122,6 +123,7 @@ def donations_post(session, user_inst):
             user=user_inst,
             milestone_id=results.milestones[milestone_sc_index].idMilestone,
             voteDonation=bool(int(vote_enabled)),
+            milestone_sc_id=milestone_sc_index,
         )
 
         session.add(donations_inst)
@@ -131,3 +133,73 @@ def donations_post(session, user_inst):
     finally:
         session.rollback()
         session.close()
+
+
+def vote_transaction(user_inst: User, vote, donation: Donation):
+    """Method to make the voting Transaction."""
+    donation_sc = WEB3.eth.contract(
+        address=donation.milestone.project.scAddress,
+        abi=PROJECT_JSON["abi"]
+    )
+
+    transaction = donation_sc.functions.vote(donation.milestone_sc_id, vote)
+    transaction = transaction.buildTransaction({'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser),
+                                                'from': user_inst.publickeyUser})
+    signed_transaction = WEB3.eth.account.sign_transaction(transaction, user_inst.privatekeyUser)
+
+    tx_hash = WEB3.eth.sendRawTransaction(signed_transaction.rawTransaction)
+    tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash)
+    return tx_receipt
+
+
+@BP.route('/vote', methods=['POST'])
+@auth_user
+@db_session_dec
+def milestones_vote(session, user_inst: User):
+    """
+    Vote for milestone.
+
+    :return: "{'status': 'ok'}", 200
+    """
+    donation_id = request.headers.get('id')
+    vote = request.headers.get('vote')  # 1 = positive, 0 = negative
+
+    if None in [donation_id, vote]:
+        return jsonify({'error': 'Missing parameter'}), 400
+
+    try:
+        donation_id, vote = check_params_int([donation_id, vote])  # noqa
+    except ValueError:
+        return jsonify({"error": "bad argument"}), 400
+
+    donation: Donation = session.query(Donation).filter(Donation.idDonation == donation_id).one_or_none()
+
+    if donation is None:
+        return jsonify({"error": "donation not found"}), 404
+
+    if not donation.voteDonation:
+        return jsonify({"error": "didn't register to vote"}), 400
+
+    if donation.user_id != user_inst.idUser:
+        return jsonify({"error": "unauthorized user"}), 401
+
+    if donation.voted is not None:
+        return jsonify({"error": "already voted"}), 400
+
+    donation.milestone.currentVotesMilestone += 1 if vote else (-1)
+
+    tx_receipt = vote_transaction(user_inst, 0 if vote else 1, donation)
+    if tx_receipt.status != 1:
+        raise RuntimeError("SC Call failed!")
+
+    voted = 1 if vote else (-1)
+
+    donations_milestone = session.query(Donation).filter(Donation.user == user_inst).\
+        filter(Donation.milestone_sc_id == donation.milestone_sc_id)  # noqa
+
+    for don in donations_milestone:
+        don.voted = voted
+        session.add(don)
+
+    session.commit()
+    return jsonify({'status': 'ok'}), 200

@@ -11,7 +11,7 @@ from backend.database.db import DB_SESSION
 from backend.database.model import User
 
 
-def check_params_int(params: List):
+def check_params_int(params: List) -> List[int]:
     """
     Checks a List of params if they are really castable to int.
 
@@ -25,7 +25,7 @@ def check_params_int(params: List):
     return ret
 
 
-def check_params_float(params: List):
+def check_params_float(params: List) -> List[float]:
     """
     Checks a List of params if they are really castable to float.
 

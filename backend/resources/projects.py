@@ -156,8 +156,7 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
     if None in [name, goal, required_votes, until, id_institution, description]:
         return jsonify({'error': 'Missing parameter'}), 403
     try:
-        # pylint:disable=unbalanced-tuple-unpacking
-        id_institution, goal, required_votes, until = check_params_int([id_institution, goal, required_votes, until])
+        id_institution, goal, required_votes, until = check_params_int([id_institution, goal, required_votes, until])  # noqa
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
