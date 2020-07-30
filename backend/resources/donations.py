@@ -182,7 +182,10 @@ def milestones_vote(session, user_inst: User):
     if donation.user_id != user_inst.idUser:
         return jsonify({"error": "unauthorized user"}), 401
 
-    if donation.voted is not None:  # ToDo
+    already_voted = session.query(Donation).filter(Donation.user == user_inst).filter(
+        Donation.milestone_sc_id == donation.milestone_sc_id).filter(Donation.voted != None).one_or_none()
+
+    if already_voted is not None:
         return jsonify({"error": "already voted"}), 400
 
     donation.milestone.currentVotesMilestone += 1 if vote else (-1)
