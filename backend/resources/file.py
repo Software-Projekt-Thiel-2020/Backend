@@ -19,7 +19,7 @@ def allowed_file(filename):
 @BP.route('', methods=['POST'])
 @auth_user
 @db_session_dec
-def file_upload(session, user_inst):  # pylint:disable=unused-argument
+def file_upload(session, user_inst):  # pylint:disable=unused-argument, too-many-branches
     """
     Handles uploading a file for  .
 
@@ -31,6 +31,18 @@ def file_upload(session, user_inst):  # pylint:disable=unused-argument
 
     if id_inst is None and id_proj is None:
         return jsonify({'error': 'No project/institution given'}), 400
+
+    if id_inst is not None:
+        inst: Institution = session.query(Institution).filter(Institution.idInstitution == id_inst). \
+            filter(Institution.user == user_inst).one_or_none()
+        if inst is None:
+            return jsonify({'error': 'No Institution found'}), 404
+
+    if id_proj is not None:
+        proj: Project = session.query(Project).join(Project.institution).filter(Project.idProject == id_proj). \
+            filter(Institution.user == user_inst).one_or_none()
+        if proj is None:
+            return jsonify({'error': 'No Project found'}), 404
 
     if 'file' not in request.files:
         return jsonify({'error': 'No file given'}), 400
@@ -53,13 +65,11 @@ def file_upload(session, user_inst):  # pylint:disable=unused-argument
     file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], n_filename))
 
     try:
-        if id_inst is not None:
-            inst = session.query(Institution).filter(Institution.idInstitution == id_inst).one()
+        if inst is not None:
             inst.picPathInstitution = n_filename
             session.add(inst)
 
-        if id_proj is not None:
-            proj = session.query(Project).filter(Project.idProject == id_proj).one()
+        if proj is not None:
             proj.picPathProject = n_filename
             session.add(proj)
 

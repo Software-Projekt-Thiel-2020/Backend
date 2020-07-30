@@ -7,6 +7,7 @@ import os
 image1 = "4eb9a451-2be6-4f98-bb62-3d5673d0c120.png"
 #image2 = "88c0bc0a-c673-4cdf-8216-cd4e2c916be2.png"
 
+
 def test_file_get(client):
     res = client.get('/api/file/{}'.format(image1))
 
@@ -63,6 +64,20 @@ def test_file_post(client):
                 os.remove(currFile_path)
             else:
                 currFile.close()
+
+    file.close()
+
+
+def test_file_post_wrong_user(client):
+    res = client.get('/api/file/dummy')
+
+    headers = {"authToken": TOKEN_2, "idInstitution": "1", "idProject": "1"}
+    file = open(os.path.join(current_app.config['TEST_UPLOAD_FOLDER'], "cat.png"), "rb")
+    data = {'file': file}
+
+    res = client.post('/api/file', headers=headers, data=data)
+
+    assert res.status_code == 404
 
     file.close()
 
