@@ -186,7 +186,7 @@ def voucher_post(session, user):
         signed_transaction = WEB3.eth.account.sign_transaction(transaction, user.privatekeyUser)
         WEB3.eth.sendRawTransaction(signed_transaction.rawTransaction)
 
-        association.index = add_voucher(
+        association.redeem_id = add_voucher(
             user, inst, voucher.titleVoucher, abs(association.expires_unixtime - datetime.now()).days)
 
         session.add(voucher)
