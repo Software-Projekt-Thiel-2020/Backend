@@ -109,13 +109,13 @@ def projects_id(session, id):  # noqa
         json_ms.append({
             'id': row.idMilestone,
             'idProjekt': row.project_id,
+            'milestoneName': row.nameMilestone,
             'goal': row.goalMilestone,
             'requiredVotes': row.requiredVotesMilestone,
             'currentVotes': row.currentVotesMilestone,
             'until': row.untilBlockMilestone,
             'totalDonated': float(donation_sum),
         })
-
     json_data = {
         'id': results.idProject,
         'name': results.nameProject,
@@ -129,7 +129,6 @@ def projects_id(session, id):  # noqa
         'longitude': results.longitude,
         'address': results.institution.addressInstitution,
     }
-
     return jsonify(json_data), 200
 
 
@@ -211,6 +210,7 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
             if tx_receipt.status != 1:
                 raise RuntimeError("SC Call failed!")
             milestones_inst.append(Milestone(
+                nameMilestone=milestone['name'],
                 goalMilestone=milestone['goal'],
                 requiredVotesMilestone=milestone['requiredVotes'],
                 currentVotesMilestone=0,
@@ -279,6 +279,7 @@ def projects_patch(session, user_inst, id):  # pylint:disable=invalid-name,redef
             if tx_receipt.status != 1:
                 raise RuntimeError("SC Call failed!")
             milestones_inst.append(Milestone(
+                nameMilestone=milestone['name'],
                 goalMilestone=milestone['goal'],
                 requiredVotesMilestone=milestone['requiredVotes'],
                 currentVotesMilestone=0,
