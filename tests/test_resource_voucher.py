@@ -370,6 +370,18 @@ def test_voucher_user_delete(client_w_eth):
     assert res.json[1]["price"] == 2000
 
 
+def test_voucher_user_delete2(client_w_eth):
+    # create new voucher
+    headers = {"authToken": TOKEN_2, "idVoucher": 2}
+    res = client_w_eth.post('/api/vouchers/user', headers=headers)
+    assert res._status_code == 200
+
+    # use this voucher
+    headers = {"authToken": TOKEN_2, "id": 5}
+    res = client_w_eth.delete('/api/vouchers/user', headers=headers)
+    assert res._status_code == 201
+
+
 def test_voucher_user_delete_bad_id(client):
     headers = {"authToken": TOKEN_1, "id": 2}
     res = client.delete('/api/vouchers/user', headers=headers)
