@@ -65,11 +65,11 @@ def file_upload(session, user_inst):  # pylint:disable=unused-argument, too-many
     file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], n_filename))
 
     try:
-        if inst is not None:
+        if id_inst is not None:
             inst.picPathInstitution = n_filename
             session.add(inst)
 
-        if proj is not None:
+        if id_proj is not None:
             proj.picPathProject = n_filename
             session.add(proj)
 
