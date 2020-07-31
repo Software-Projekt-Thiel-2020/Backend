@@ -45,6 +45,7 @@ class SmartContract(BASE):
 class Milestone(BASE):
     __tablename__ = 'Milestone'
     idMilestone = Column(Integer, primary_key=True)
+    nameMilestone = Column(VARCHAR(256))
     goalMilestone = Column(Integer)
     requiredVotesMilestone = Column(Integer)
     currentVotesMilestone = Column(Integer)
@@ -547,19 +548,19 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
     projects[2].institution = institutions[2]
 
     milestones: List[Milestone] = [
-        Milestone(idMilestone=1, goalMilestone=10, requiredVotesMilestone=112, currentVotesMilestone=112,
+        Milestone(idMilestone=1, nameMilestone="Erste Versuche", goalMilestone=10, requiredVotesMilestone=112, currentVotesMilestone=112,
                   untilBlockMilestone=1693094933),
-        Milestone(idMilestone=2, goalMilestone=20, requiredVotesMilestone=112, currentVotesMilestone=12,
+        Milestone(idMilestone=2, nameMilestone="Verbesserungen", goalMilestone=20, requiredVotesMilestone=112, currentVotesMilestone=12,
                   untilBlockMilestone=1693094933),
-        Milestone(idMilestone=3, goalMilestone=30, requiredVotesMilestone=112, currentVotesMilestone=0,
+        Milestone(idMilestone=3, nameMilestone="Fertigstellung", goalMilestone=30, requiredVotesMilestone=112, currentVotesMilestone=0,
                   untilBlockMilestone=1693094933),
-        Milestone(idMilestone=4, goalMilestone=10, requiredVotesMilestone=88, currentVotesMilestone=0,
+        Milestone(idMilestone=4, nameMilestone="Neue Waffen", goalMilestone=10, requiredVotesMilestone=88, currentVotesMilestone=0,
                   untilBlockMilestone=1693094933),
-        Milestone(idMilestone=5, goalMilestone=20, requiredVotesMilestone=88, currentVotesMilestone=12,
+        Milestone(idMilestone=5, nameMilestone="Abwehrmauern", goalMilestone=20, requiredVotesMilestone=88, currentVotesMilestone=12,
                   untilBlockMilestone=1693094933),
-        Milestone(idMilestone=6, goalMilestone=30, requiredVotesMilestone=88, currentVotesMilestone=44,
+        Milestone(idMilestone=6, nameMilestone="ProjektZiel", goalMilestone=30, requiredVotesMilestone=88, currentVotesMilestone=44,
                   untilBlockMilestone=1693094933),
-        Milestone(idMilestone=7, goalMilestone=50, requiredVotesMilestone=666, currentVotesMilestone=400,
+        Milestone(idMilestone=7, nameMilestone="Zukunftstechnik", goalMilestone=50, requiredVotesMilestone=666, currentVotesMilestone=400,
                   untilBlockMilestone=1693094933),
     ]
     # set Project to Milestone
