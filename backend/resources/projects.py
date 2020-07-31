@@ -166,7 +166,11 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
         return jsonify({'error': 'webpage is not a valid url'}), 400
 
     # ToDo: sanity check milestones
-    # ToDo: check user_inst permission
+
+    result = session.query(Institution)\
+        .filter(Institution.idInstitution == id_institution).filter(Institution.user == user_inst).one_or_none()
+    if result is None:
+        return jsonify({'error': 'User has no permission to create projects for this institution'}), 400
 
     project_inst = Project(
         nameProject=name,

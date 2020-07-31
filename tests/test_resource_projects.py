@@ -244,6 +244,14 @@ def test_projects_post_w_auth_bad_params(client):
     assert res.json["error"] == "bad argument"
 
 
+def test_projects_post_w_no_permission(client):
+    headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
+               "idInstitution": 4, "description": "test description"}
+    res = client.post('/api/projects', headers=headers)
+    assert res._status_code == 400
+    assert res.json["error"] == "User has no permission to create projects for this institution"
+
+
 def test_projects_post_required_params(client_w_eth):
     headers = {"authToken": TOKEN_2, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
                "idInstitution": 4, "description": "test description"}
@@ -265,7 +273,7 @@ def test_projects_post_required_params(client_w_eth):
 
 
 def test_projects_post_w_bad_milestones(client):
-    headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
+    headers = {"authToken": TOKEN_2, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
                "milestones": "dennis", "idInstitution": 4, "description": "test description"}
     res = client.post('/api/projects', headers=headers)
     assert res._status_code == 400
@@ -277,7 +285,7 @@ def test_projects_post_w_milestones(client_w_eth):
         {"name": "goal_1", "goal": 100, "requiredVotes": 1337, "until": 1693094933},
         {"name": "goal_2", "goal": 500, "requiredVotes": 42, "until": 1693094933},
     ]
-    headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1792094933,
+    headers = {"authToken": TOKEN_2, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1792094933,
                "milestones": json.dumps(milestones), "idInstitution": 4, "description": "test description"}
     res = client_w_eth.post('/api/projects', headers=headers)
     assert res._status_code == 201
@@ -311,7 +319,7 @@ def test_projects_post_w_milestones(client_w_eth):
 
 
 def test_projects_post_w_webpage(client_w_eth):
-    headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
+    headers = {"authToken": TOKEN_2, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
                "webpage": "http://www.example.com", "idInstitution": 4, "description": "test description"}
     res = client_w_eth.post('/api/projects', headers=headers)
     assert res._status_code == 201
@@ -339,8 +347,8 @@ def test_projects_post_w_bad_webpage(client):
 
 
 def test_projects_post_w_institution(client_w_eth):
-    headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
-               "idInstitution": 3, "description": "test description"}
+    headers = {"authToken": TOKEN_2, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
+               "idInstitution": 4, "description": "test description"}
     res = client_w_eth.post('/api/projects', headers=headers)
     assert res._status_code == 201
     assert res.json["status"] == "ok"
@@ -355,7 +363,7 @@ def test_projects_post_w_institution(client_w_eth):
     assert res.json["name"] == headers["name"]
     assert res.json["webpage"] is None
     assert len(res.json["milestones"]) == 0
-    assert res.json["address"] == "Address3"
+    assert res.json["address"] == "Address4"
 
 
 def test_projects_post_w_bad_institution(client):
