@@ -1,6 +1,11 @@
 """The application factory of the backend."""
+import configparser
 import os
 from pathlib import Path
+
+import sentry_sdk
+from sentry_sdk.integrations.flask import \
+    FlaskIntegration
 from flask import Flask
 from flask_cors import CORS
 
@@ -39,6 +44,14 @@ def create_app(test_config=None):
         pass
 
     db.init_app(app)
+
+    cfg_parser: configparser.ConfigParser = configparser.ConfigParser()
+    cfg_parser.read("backend_config.ini")
+    if "Sentry" in cfg_parser.sections():
+        sentry_sdk.init(
+            cfg_parser["Sentry"]["URI"],
+            integrations=[FlaskIntegration()]
+        )
 
     Path(app.config['UPLOAD_FOLDER']).mkdir(parents=True, exist_ok=True)
 
