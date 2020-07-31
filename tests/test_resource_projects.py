@@ -244,6 +244,14 @@ def test_projects_post_w_auth_bad_params(client):
     assert res.json["error"] == "bad argument"
 
 
+def test_projects_post_w_no_permission(client):
+    headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
+               "idInstitution": 4, "description": "test description"}
+    res = client.post('/api/projects', headers=headers)
+    assert res._status_code == 400
+    assert res.json["error"] == "User has no permission to create projects for this institution"
+
+
 def test_projects_post_required_params(client_w_eth):
     headers = {"authToken": TOKEN_2, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
                "idInstitution": 4, "description": "test description"}
