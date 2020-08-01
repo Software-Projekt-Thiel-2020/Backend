@@ -21,6 +21,7 @@ class Project(BASE):
     descriptionProject = Column(TEXT)
     latitude = Column(Float)
     longitude = Column(Float)
+    until = Column(Integer)
 
     smartcontract_id = Column(Integer, ForeignKey('SmartContract.idSmartContract'))
     smartcontract = relationship("SmartContract", back_populates="projects")
@@ -524,19 +525,22 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
                 webpageProject="www.cmb.de",
                 picPathProject="c3637aac-145a-4942-96f4-34bbefb48689.png",
                 descriptionProject="# Computer malt Bild\nDer Computer malt ein Bild für Sie!",
-                scAddress=TX_RECEIPTS[4].contractAddress),
+                scAddress=TX_RECEIPTS[4].contractAddress,
+                until=1693094933),
         Project(idProject=2,
                 nameProject="Rangaroek verteidigen",
                 webpageProject="www.asgard.as",
                 picPathProject="182713b2-1862-416f-bfc9-b07b952c0bea.png",
                 descriptionProject="# Rangaroek verteidigen\nRangaroek muss verteidigt werden!",
-                scAddress=TX_RECEIPTS[5].contractAddress),
+                scAddress=TX_RECEIPTS[5].contractAddress,
+                until=1693094933),
         Project(idProject=3,
                 nameProject="Softwareprojekt 2020",
                 webpageProject="www.swp.de",
                 picPathProject="4eb9a451-2be6-4f98-bb62-3d5673d0c120.png",
                 descriptionProject="# Softwareprojekt 2020\nDies ist eine sehr ausführliche Beschreibung!",
-                scAddress=TX_RECEIPTS[6].contractAddress),
+                scAddress=TX_RECEIPTS[6].contractAddress,
+                until=1693094933),
     ]
     # set SmartContract to Project
     projects[0].smartcontract = smartcontracts[1]

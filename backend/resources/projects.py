@@ -1,5 +1,6 @@
 """Project Resource."""
 import json
+import time
 from typing import List
 
 import validators
@@ -68,6 +69,7 @@ def projects_get(session):
             'description': result.descriptionProject,
             'latitude': result.latitude,
             'longitude': result.longitude,
+            'until': result.until,
         })
 
     return jsonify(json_data)
@@ -128,6 +130,7 @@ def projects_id(session, id):  # noqa
         'latitude': results.latitude,
         'longitude': results.longitude,
         'address': results.institution.addressInstitution,
+        'until': results.until,
     }
     return jsonify(json_data), 200
 
@@ -146,16 +149,16 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
     id_institution = request.headers.get('idInstitution')
     goal = request.headers.get('goal')
     required_votes = request.headers.get('requiredVotes')
-    until = request.headers.get('until')
+    until_raw = request.headers.get('until')
     milestones = request.headers.get('milestones', default="[]")
     description = request.headers.get('description')
     latitude = request.headers.get('latitude')
     longitude = request.headers.get('longitude')
 
-    if None in [name, goal, required_votes, until, id_institution, description]:
+    if None in [name, goal, required_votes, until_raw, id_institution, description]:
         return jsonify({'error': 'Missing parameter'}), 403
     try:
-        id_institution, goal, required_votes, until = check_params_int([id_institution, goal, required_votes, until])  # noqa
+        id_institution, goal, required_votes, until = check_params_int([id_institution, goal, required_votes, until_raw])  # noqa
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
@@ -164,6 +167,9 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
 
     if webpage and not validators.url(webpage):
         return jsonify({'error': 'webpage is not a valid url'}), 400
+
+    if until < int(time.time()):
+        return jsonify({'error': 'until value is in the past'}), 400
 
     # ToDo: sanity check milestones
 
@@ -179,7 +185,8 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
         institution_id=id_institution,
         descriptionProject=description,
         latitude=latitude,
-        longitude=longitude
+        longitude=longitude,
+        until=until,
     )
 
     projects_sc = WEB3.eth.contract(abi=PROJECT_JSON["abi"],
