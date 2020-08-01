@@ -138,6 +138,16 @@ def test_voucher_institution_post2(client_w_eth):
     assert res.json[2]["price"] == 3000
 
 
+def test_voucher_institution_post_wrong_user(client_w_eth):
+    headers = {"authToken": TOKEN_2, "idInstitution": 1, "price": 3000, "subject": "subject", "title": "title"}
+    res = client_w_eth.post('/api/vouchers/institution', headers=headers)
+    assert res._status_code == 403
+
+    res = client_w_eth.get('/api/vouchers/institution')
+    assert res._status_code == 200
+    assert len(res.json) == 2
+
+
 def test_voucher_institution_post_bad_institution(client_w_eth):
     headers = {"authToken": TOKEN_1, "idInstitution": 1337, "price": 3000, "subject": "subject", "title": "title"}
     res = client_w_eth.post('/api/vouchers/institution', headers=headers)
