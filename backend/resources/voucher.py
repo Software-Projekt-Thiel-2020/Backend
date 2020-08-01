@@ -5,7 +5,7 @@ from flask import Blueprint, jsonify, request
 from sqlalchemy.orm.exc import NoResultFound
 from web3.exceptions import InvalidAddress
 
-from backend.database.model import Voucher, VoucherUser, Institution, Transaction
+from backend.database.model import Voucher, VoucherUser, Institution
 from backend.resources.helpers import auth_user, check_params_int, db_session_dec
 from backend.smart_contracts.web3 import WEB3
 from backend.smart_contracts.web3_voucher import add_voucher, redeem_voucher
