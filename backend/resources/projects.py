@@ -1,5 +1,6 @@
 """Project Resource."""
 import json
+import time
 from typing import List
 
 import validators
@@ -68,6 +69,7 @@ def projects_get(session):
             'description': result.descriptionProject,
             'latitude': result.latitude,
             'longitude': result.longitude,
+            'until': result.until,
         })
 
     return jsonify(json_data)
@@ -128,6 +130,7 @@ def projects_id(session, id):  # noqa
         'latitude': results.latitude,
         'longitude': results.longitude,
         'address': results.institution.addressInstitution,
+        'until': results.until,
     }
     return jsonify(json_data), 200
 
@@ -165,6 +168,9 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
     if webpage and not validators.url(webpage):
         return jsonify({'error': 'webpage is not a valid url'}), 400
 
+    if int(until) < int(time.time()):
+        return jsonify({'error': 'until value is in the past'}), 400
+
     # ToDo: sanity check milestones
 
     result = session.query(Institution)\
@@ -179,7 +185,8 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
         institution_id=id_institution,
         descriptionProject=description,
         latitude=latitude,
-        longitude=longitude
+        longitude=longitude,
+        until=until,
     )
 
     projects_sc = WEB3.eth.contract(abi=PROJECT_JSON["abi"],
