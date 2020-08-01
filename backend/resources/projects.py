@@ -268,7 +268,7 @@ def projects_patch(session, user_inst, id):  # pylint:disable=invalid-name,redef
         project_inst.descriptionProject = description
 
     result = session.query(Institution)\
-        .filter(Institution.idInstitution == id).filter(Institution.user == user_inst).one_or_none()
+        .filter(Institution.idInstitution == project_inst.institution_id).filter(Institution.user == user_inst).one_or_none()
     if result is None:
         return jsonify({'error': 'User has no permission to create projects for this institution'}), 400
 
