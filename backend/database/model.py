@@ -30,6 +30,7 @@ class Project(BASE):
 
     milestones = relationship("Milestone", back_populates="project")
     scAddress = Column(VARCHAR(64))
+    owner = Column(Integer, ForeignKey('User.idUser'))
 
 
 class SmartContract(BASE):

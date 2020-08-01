@@ -179,8 +179,8 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
         institution_id=id_institution,
         descriptionProject=description,
         latitude=latitude,
-        longitude=longitude
-        # ToDo: add user as project owner
+        longitude=longitude,
+        owner=user_inst.idUser
     )
 
     projects_sc = WEB3.eth.contract(abi=PROJECT_JSON["abi"],
