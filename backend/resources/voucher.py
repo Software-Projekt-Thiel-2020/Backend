@@ -5,7 +5,7 @@ from flask import Blueprint, jsonify, request
 from sqlalchemy.orm.exc import NoResultFound
 from web3.exceptions import InvalidAddress
 
-from backend.database.model import Voucher, VoucherUser, Institution
+from backend.database.model import Voucher, VoucherUser, Institution, Transaction
 from backend.resources.helpers import auth_user, check_params_int, db_session_dec
 from backend.smart_contracts.web3 import WEB3
 from backend.smart_contracts.web3_voucher import add_voucher, redeem_voucher
@@ -81,7 +81,13 @@ def voucher_post_institution(session, user_inst):  # pylint:disable=unused-argum
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
-    # ToDo: check institution_owner = user_inst
+    # check if user is owner
+    owner = session.query(Institution)
+    owner = owner.filter(Institution.user_id == user_inst.idUser,
+                         Institution.idInstitution == institution_id).first()
+
+    if owner is None:
+        return jsonify({'error': 'no permission'}), 403
 
     res = session.query(Institution).filter(Institution.idInstitution == institution_id).one_or_none()
     if res is None:
