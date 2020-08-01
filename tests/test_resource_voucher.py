@@ -100,7 +100,7 @@ def test_voucher_institution_get_available_bad(client):
 
 def test_voucher_institution_post(client_w_eth):
     headers = {"authToken": TOKEN_1, "idInstitution": 1, "price": 3000, "subject": "subject", "title": "title",
-               "validTime": 1597847788}
+               "validTime": 2 * 31536000}
     res = client_w_eth.post('/api/vouchers/institution', headers=headers)
     assert res._status_code == 200
 
@@ -114,7 +114,7 @@ def test_voucher_institution_post(client_w_eth):
     assert res.json[2]["institutionName"] == "MSGraphic"
     assert res.json[2]["subject"] == "subject"
     assert res.json[2]["title"] == "title"
-    assert res.json[2]["validTime"] == 1597847788
+    assert res.json[2]["validTime"] == 2 * 31536000
     assert res.json[2]["available"]
     assert res.json[2]["price"] == 3000
 
@@ -134,7 +134,7 @@ def test_voucher_institution_post2(client_w_eth):
     assert res.json[2]["institutionName"] == "MSGraphic"
     assert res.json[2]["subject"] == "subject"
     assert res.json[2]["title"] == "title"
-    assert res.json[2]["validTime"] == 1597847789
+    assert res.json[2]["validTime"] == 2 * 31536000
     assert res.json[2]["available"]
     assert res.json[2]["price"] == 3000
 

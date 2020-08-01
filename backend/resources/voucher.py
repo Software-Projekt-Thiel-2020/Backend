@@ -1,6 +1,5 @@
 """Voucher Resource."""
 from datetime import datetime, timedelta
-import time
 
 from flask import Blueprint, jsonify, request
 from sqlalchemy.orm.exc import NoResultFound
@@ -69,7 +68,7 @@ def voucher_post_institution(session, user_inst):  # pylint:disable=unused-argum
     voucher_price = request.headers.get('price', default=None)
     voucher_description = request.headers.get('subject', default=None)
     voucher_title = request.headers.get('title', default=None)
-    voucher_valid_time = request.headers.get('validTime', default=1597847789)
+    voucher_valid_time = request.headers.get('validTime', default=2 * 31536000)
 
     if None in [voucher_title, voucher_description, voucher_price, institution_id]:
         return jsonify({'error': 'Missing parameter'}), 400
@@ -100,12 +99,9 @@ def voucher_post_institution(session, user_inst):  # pylint:disable=unused-argum
         abi=INSTITUTION_JSON["abi"]
     )
 
-    if int(voucher_valid_time) - time.time() < 0:
-        return jsonify({'error': 'validTime is smaller than current time'}), 400
-
     voucher_description_bytes = str.encode(voucher_description)
     transaction = institution_sc.functions.addVoucher(user_inst.publickeyUser, voucher_description_bytes,
-                                                      int((int(voucher_valid_time) - time.time()) / 86400))
+                                                      int(int(voucher_valid_time) / 86400))
     transaction = transaction.buildTransaction({'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser),
                                                 'from': user_inst.publickeyUser})
     signed_transaction = WEB3.eth.account.sign_transaction(transaction, user_inst.privatekeyUser)
