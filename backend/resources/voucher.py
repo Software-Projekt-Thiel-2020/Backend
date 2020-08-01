@@ -7,8 +7,10 @@ from web3.exceptions import InvalidAddress
 
 from backend.database.model import Voucher, VoucherUser, Institution
 from backend.resources.helpers import auth_user, check_params_int, db_session_dec
-from backend.smart_contracts.web3 import WEB3
+from backend.smart_contracts.web3 import WEB3, INSTITUTION_JSON
 from backend.smart_contracts.web3_voucher import add_voucher, redeem_voucher
+
+import time
 
 BP = Blueprint('voucher', __name__, url_prefix='/api/vouchers')
 
@@ -68,7 +70,7 @@ def voucher_post_institution(session, user_inst):  # pylint:disable=unused-argum
     voucher_price = request.headers.get('price', default=None)
     voucher_description = request.headers.get('subject', default=None)
     voucher_title = request.headers.get('title', default=None)
-    voucher_valid_time = request.headers.get('validTime', default=2 * 31536000)
+    voucher_valid_time = request.headers.get('validTime', default=20)
 
     if None in [voucher_title, voucher_description, voucher_price, institution_id]:
         return jsonify({'error': 'Missing parameter'}), 400
@@ -95,6 +97,22 @@ def voucher_post_institution(session, user_inst):  # pylint:disable=unused-argum
                            )
 
     # ToDo Blockchain
+    institution_sc = WEB3.eth.contract(
+        address=res.scAddress,
+        abi=INSTITUTION_JSON["abi"]
+    )
+
+    voucher_description_bytes = str.encode(voucher_description)
+    transaction = institution_sc.functions.addVoucher(user_inst.publickeyUser, voucher_description_bytes, int(voucher_valid_time))
+    transaction = transaction.buildTransaction({'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser),
+                                                'from': user_inst.publickeyUser})
+    signed_transaction = WEB3.eth.account.sign_transaction(transaction, user_inst.privatekeyUser)
+
+    tx_hash = WEB3.eth.sendRawTransaction(signed_transaction.rawTransaction)
+    tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash)
+
+    if tx_receipt.status != 1:
+        raise RuntimeError("SC Call failed!")
 
     session.add(voucher_inst)
     session.commit()
