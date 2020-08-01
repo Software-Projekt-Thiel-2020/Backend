@@ -248,7 +248,7 @@ def test_projects_post_w_no_permission(client):
     headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
                "idInstitution": 4, "description": "test description"}
     res = client.post('/api/projects', headers=headers)
-    assert res._status_code == 400
+    assert res._status_code == 403
     assert res.json["error"] == "User has no permission to create projects for this institution"
 
 
@@ -387,6 +387,24 @@ def test_projects_patch_w_webpage(client):
     assert res.json["idsmartcontract"] == 2
     assert res.json["name"] == "Computer malt Bild"
     assert res.json["webpage"] == headers["webpage"]
+
+    assert len(res.json["milestones"]) == 4
+
+
+def test_projects_patch_w_webpage_wrong_user(client):
+    headers = {"authToken": TOKEN_2, "webpage": "http://www.example.com"}
+    res = client.patch('/api/projects/1', headers=headers)
+    assert res._status_code == 403
+    assert res.json["error"] == "User has no permission to create projects for this institution"
+
+    res = client.get('/api/projects/1')
+    assert res._status_code == 200
+
+    assert res.json["id"] == 1
+    assert res.json["idinstitution"] == 1
+    assert res.json["idsmartcontract"] == 2
+    assert res.json["name"] == "Computer malt Bild"
+    assert res.json["webpage"] == "www.cmb.de"
 
     assert len(res.json["milestones"]) == 4
 

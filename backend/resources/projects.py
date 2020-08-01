@@ -170,7 +170,7 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
     result = session.query(Institution)\
         .filter(Institution.idInstitution == id_institution).filter(Institution.user == user_inst).one_or_none()
     if result is None:
-        return jsonify({'error': 'User has no permission to create projects for this institution'}), 400
+        return jsonify({'error': 'User has no permission to create projects for this institution'}), 403
 
     project_inst = Project(
         nameProject=name,
@@ -180,7 +180,6 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
         descriptionProject=description,
         latitude=latitude,
         longitude=longitude
-        # ToDo: add user as project owner
     )
 
     projects_sc = WEB3.eth.contract(abi=PROJECT_JSON["abi"],
@@ -235,7 +234,7 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
 @BP.route('/<id>', methods=['PATCH'])
 @auth_user
 @db_session_dec
-def projects_patch(session, user_inst, id):  # pylint:disable=invalid-name,redefined-builtin,unused-argument
+def projects_patch(session, user_inst, id):  # pylint:disable=invalid-name,redefined-builtin,too-many-locals
     """
     Handles PATCH for resource <base>/api/projects/<id> .
 
@@ -246,7 +245,6 @@ def projects_patch(session, user_inst, id):  # pylint:disable=invalid-name,redef
     description = request.headers.get('description')
     latitude = request.headers.get('latitude')
     longitude = request.headers.get('longitude')
-    # ToDo: is this user allowed to patch this project?
 
     project_inst: Project = session.query(Project).get(id)
 
@@ -267,6 +265,12 @@ def projects_patch(session, user_inst, id):  # pylint:disable=invalid-name,redef
         project_inst.webpageProject = webpage
     if description is not None:
         project_inst.descriptionProject = description
+
+    result = session.query(Institution)\
+        .filter(Institution.idInstitution == project_inst.institution_id)\
+        .filter(Institution.user == user_inst).one_or_none()
+    if result is None:
+        return jsonify({'error': 'User has no permission to create projects for this institution'}), 403
 
     projects_sc = WEB3.eth.contract(address=project_inst.scAddress, abi=PROJECT_JSON["abi"])
     try:
