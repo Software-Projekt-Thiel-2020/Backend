@@ -1,5 +1,6 @@
 """Voucher Resource."""
 from datetime import datetime, timedelta
+import time
 
 from flask import Blueprint, jsonify, request
 from sqlalchemy.orm.exc import NoResultFound
@@ -9,8 +10,6 @@ from backend.database.model import Voucher, VoucherUser, Institution
 from backend.resources.helpers import auth_user, check_params_int, db_session_dec
 from backend.smart_contracts.web3 import WEB3, INSTITUTION_JSON
 from backend.smart_contracts.web3_voucher import add_voucher, redeem_voucher
-
-import time
 
 BP = Blueprint('voucher', __name__, url_prefix='/api/vouchers')
 
@@ -70,7 +69,7 @@ def voucher_post_institution(session, user_inst):  # pylint:disable=unused-argum
     voucher_price = request.headers.get('price', default=None)
     voucher_description = request.headers.get('subject', default=None)
     voucher_title = request.headers.get('title', default=None)
-    voucher_valid_time = request.headers.get('validTime', default=20)
+    voucher_valid_time = request.headers.get('validTime', default=1597847789)
 
     if None in [voucher_title, voucher_description, voucher_price, institution_id]:
         return jsonify({'error': 'Missing parameter'}), 400
@@ -96,14 +95,17 @@ def voucher_post_institution(session, user_inst):  # pylint:disable=unused-argum
                            institution_id=institution_id,
                            )
 
-    # ToDo Blockchain
     institution_sc = WEB3.eth.contract(
         address=res.scAddress,
         abi=INSTITUTION_JSON["abi"]
     )
 
+    if int(voucher_valid_time) - time.time() < 0:
+        return jsonify({'error': 'validTime is smaller than current time'}), 400
+
     voucher_description_bytes = str.encode(voucher_description)
-    transaction = institution_sc.functions.addVoucher(user_inst.publickeyUser, voucher_description_bytes, int(voucher_valid_time))
+    transaction = institution_sc.functions.addVoucher(user_inst.publickeyUser, voucher_description_bytes,
+                                                      int((int(voucher_valid_time) - time.time()) / 86400))
     transaction = transaction.buildTransaction({'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser),
                                                 'from': user_inst.publickeyUser})
     signed_transaction = WEB3.eth.account.sign_transaction(transaction, user_inst.privatekeyUser)
