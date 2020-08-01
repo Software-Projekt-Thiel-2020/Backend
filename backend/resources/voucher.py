@@ -81,6 +81,10 @@ def voucher_post_institution(session, user_inst):  # pylint:disable=unused-argum
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
+    res = session.query(Institution).filter(Institution.idInstitution == institution_id).one_or_none()
+    if res is None:
+        return jsonify({'status': 'Institution does not exist'}), 400
+
     # check if user is owner
     owner = session.query(Institution)
     owner = owner.filter(Institution.user_id == user_inst.idUser,
@@ -88,10 +92,6 @@ def voucher_post_institution(session, user_inst):  # pylint:disable=unused-argum
 
     if owner is None:
         return jsonify({'error': 'no permission'}), 403
-
-    res = session.query(Institution).filter(Institution.idInstitution == institution_id).one_or_none()
-    if res is None:
-        return jsonify({'status': 'Institution does not exist'}), 400
 
     voucher_inst = Voucher(titleVoucher=voucher_title,
                            descriptionVoucher=voucher_description,
