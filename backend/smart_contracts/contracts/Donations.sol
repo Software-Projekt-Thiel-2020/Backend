@@ -26,7 +26,7 @@ contract Project {
     struct Milestone {
         bytes name;
         uint256 targetAmount;
-        uint32 voteableUntil;
+        uint64 voteableUntil;
         uint32 positiveVotes;
         uint32 negativeVotes;
         bool payoutPart;
@@ -243,7 +243,7 @@ contract Project {
     /// @param _name Name des Meilensteins in hex
     /// @param _targetAmount Spendenziel des Meilensteins
     /// @param _voteableUntil Unixtime bis zu der abgestimmt werden kann
-    function addMilestone(bytes memory _name, uint256 _targetAmount, uint32 _voteableUntil) onlyOwner public {
+    function addMilestone(bytes memory _name, uint256 _targetAmount, uint64 _voteableUntil) onlyOwner public {
         require(_name.length > 0);
         require(_targetAmount < projectTarget.amount);
         require(_voteableUntil >= block.timestamp + 1 days);
