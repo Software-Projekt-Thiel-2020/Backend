@@ -230,7 +230,8 @@ def voucher_delete_user(session, user_inst):
         institution = session.query(Institution).filter(
             Institution.idInstitution == voucher_user.voucher.institution_id).one()
 
-        if err := redeem_voucher_check(user_inst, voucher_user, institution.scAddress):
+        err = redeem_voucher_check(user_inst, voucher_user, institution.scAddress)
+        if err:
             return jsonify({'error': 'milestone error: ' + err}), 400
 
         redeem_voucher(user_inst, voucher_user, institution.scAddress)

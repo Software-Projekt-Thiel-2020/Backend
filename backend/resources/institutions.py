@@ -1,13 +1,10 @@
 """Institution Resource."""
-from datetime import datetime
-
 import validators
 from flask import Blueprint, request, jsonify
 from geopy import distance
 
-from backend.database.model import Institution, Transaction, User
+from backend.database.model import Institution, User
 from backend.resources.helpers import auth_user, check_params_int, check_params_float, db_session_dec
-from backend.smart_contracts.web3 import WEB3, INSTITUTION_JSON
 from backend.smart_contracts.web3_voucher import voucher_constructor, voucher_constructor_check
 
 BP = Blueprint('institutions', __name__, url_prefix='/api/institutions')  # set blueprint name and resource path

@@ -1,4 +1,3 @@
-import time
 from datetime import datetime
 from typing import Optional
 
@@ -98,11 +97,17 @@ def redeem_voucher_check(user: User, voucher_user: VoucherUser, sc_address) -> O
     # require(voucher[msg.sender].length > _index); - invariant
 
     # require(v.used == false);
-    if not (voucher_user.usedVoucher is False):
+    if voucher_user.usedVoucher is not False:
         return "already used voucher"
 
     # require(v.expires_unixtime >= block.timestamp);
     if not voucher_user.expires_unixtime >= datetime.now():
         return "voucher is expired"
+
+    if not WEB3.isAddress(sc_address):
+        return "invalid sc_address"
+
+    if user:
+        pass
 
     return None
