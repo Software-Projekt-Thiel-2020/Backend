@@ -75,6 +75,8 @@ def project_add_milestone_check(project: Project, owner: User, name: str, goal: 
 
     if not until >= (int(time.time()) + 60 * 60 * 24):  # require(_voteableUntil >= block.timestamp + 1 days);
         return "until needs to be at least 1 day in the future!"
+    if until > 2**64:
+        return "until value is not a valid date... or is it after the 04.12.219250468 15:30:07 already?!"
 
     # require(milestones[milestonesCounter - 1].targetAmount < _targetAmount);
     for milestone in project.milestones:
