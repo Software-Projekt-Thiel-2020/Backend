@@ -308,15 +308,15 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
         project_contract = WEB3.eth.contract(abi=PROJECT_JSON["abi"], bytecode=PROJECT_JSON["bytecode"])
         # constructor(_owner, _admin, _partial_payment, _projectTargetName, _projectTargetAmount, _minDonation)
         tx_hash = project_contract.constructor(users[5].publickeyUser, WEB3.eth.defaultAccount, 80,
-                                               WEB3.toBytes(text="test description"), 5000, 10).transact()
+                                               WEB3.toBytes(text="test description"), 1111111111, 10).transact()
         TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 4
 
         tx_hash = project_contract.constructor(users[2].publickeyUser, WEB3.eth.defaultAccount, 80,
-                                               WEB3.toBytes(text="test description"), 5000, 10).transact()
+                                               WEB3.toBytes(text="test description"), 2222222222, 10).transact()
         TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 5
 
         tx_hash = project_contract.constructor(users[2].publickeyUser, WEB3.eth.defaultAccount, 80,
-                                               WEB3.toBytes(text="test description"), 5000, 10).transact()
+                                               WEB3.toBytes(text="test description"), 3333333333, 10).transact()
         TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 6
 
         # ========== Milestones ==========
@@ -526,21 +526,24 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
                 picPathProject="c3637aac-145a-4942-96f4-34bbefb48689.png",
                 descriptionProject="# Computer malt Bild\nDer Computer malt ein Bild für Sie!",
                 scAddress=TX_RECEIPTS[4].contractAddress,
-                until=1693094933),
+                until=1693094933,
+                goal=1111111111),
         Project(idProject=2,
                 nameProject="Rangaroek verteidigen",
                 webpageProject="www.asgard.as",
                 picPathProject="182713b2-1862-416f-bfc9-b07b952c0bea.png",
                 descriptionProject="# Rangaroek verteidigen\nRangaroek muss verteidigt werden!",
                 scAddress=TX_RECEIPTS[5].contractAddress,
-                until=1693094933),
+                until=1693094933,
+                goal=2222222222),
         Project(idProject=3,
                 nameProject="Softwareprojekt 2020",
                 webpageProject="www.swp.de",
                 picPathProject="4eb9a451-2be6-4f98-bb62-3d5673d0c120.png",
                 descriptionProject="# Softwareprojekt 2020\nDies ist eine sehr ausführliche Beschreibung!",
                 scAddress=TX_RECEIPTS[6].contractAddress,
-                until=1693094933),
+                until=1693094933,
+                goal=3333333333),
     ]
     # set SmartContract to Project
     projects[0].smartcontract = smartcontracts[1]

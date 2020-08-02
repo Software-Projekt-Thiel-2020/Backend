@@ -1,7 +1,6 @@
 """Project Resource."""
 import json
 import time
-from typing import List
 
 import validators
 from flask import Blueprint, request, jsonify
@@ -12,7 +11,8 @@ from sqlalchemy.orm.exc import NoResultFound
 from backend.database.model import Milestone, Institution, Donation, User
 from backend.database.model import Project
 from backend.resources.helpers import auth_user, check_params_int, db_session_dec
-from backend.smart_contracts.web3_project import project_constructor, project_add_milestone, project_constructor_check
+from backend.smart_contracts.web3_project import project_constructor, project_add_milestone, \
+    project_constructor_check, project_add_milestone_check
 
 BP = Blueprint('projects', __name__, url_prefix='/api/projects')
 
@@ -137,7 +137,7 @@ def projects_id(session, id):  # noqa
 @BP.route('', methods=['POST'])
 @auth_user
 @db_session_dec
-def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, too-many-locals
+def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, too-many-locals, too-many-branches
     """
     Handles POST for resource <base>/api/projects .
 
@@ -169,8 +169,6 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
     if until < int(time.time()):
         return jsonify({'error': 'until value is in the past'}), 400
 
-    # ToDo: sanity check milestones
-
     result = session.query(Institution)\
         .filter(Institution.idInstitution == id_institution).filter(Institution.user == user_inst).one_or_none()
     if result is None:
@@ -189,15 +187,21 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
     )
 
     try:
+        milestones_json = json.loads(milestones)
+        for milestone in milestones_json:
+            mile_check = project_add_milestone_check(project_inst, user_inst, milestone['name'],
+                                                     milestone['goal'], milestone['until'])
+            if mile_check:
+                return jsonify({'error': 'milestone error: ' + mile_check}), 400
+
         ctor_check = project_constructor_check(user_inst, str(str(description)[0:32]), goal)
         if ctor_check:
             return jsonify({'error': 'sc error: ' + ctor_check}), 400
 
         project_inst.scAddress = project_constructor(user_inst, str(str(description)[0:32]), goal)
         session.add(project_inst)
-        session.commit()
 
-        for milestone in json.loads(milestones):
+        for milestone in milestones_json:
             project_add_milestone(project_inst, user_inst, milestone['name'], milestone['goal'], milestone['until'])
             milestones_inst = Milestone(
                 nameMilestone=milestone['name'],
@@ -207,8 +211,7 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
             project_inst.milestones.append(milestones_inst)
             session.add(project_inst)
             session.add(milestones_inst)
-            session.commit()
-
+        session.commit()
         return jsonify({'status': 'ok', 'id': project_inst.idProject}), 201
     except (KeyError, json.JSONDecodeError):
         return jsonify({'error': 'invalid json'}), 400
@@ -219,7 +222,8 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
 @BP.route('/<id>', methods=['PATCH'])
 @auth_user
 @db_session_dec
-def projects_patch(session, user_inst, id):  # pylint:disable=invalid-name,redefined-builtin,too-many-locals
+# pylint:disable=invalid-name,redefined-builtin,too-many-locals, too-many-branches
+def projects_patch(session, user_inst, id):
     """
     Handles PATCH for resource <base>/api/projects/<id> .
 
@@ -258,19 +262,27 @@ def projects_patch(session, user_inst, id):  # pylint:disable=invalid-name,redef
         return jsonify({'error': 'User has no permission to create projects for this institution'}), 403
 
     try:
-        milestones_inst: List[Milestone] = []
-        for milestone in json.loads(milestones):
+        milestones_json = json.loads(milestones)
+        for milestone in milestones_json:
+            mile_check = project_add_milestone_check(project_inst, user_inst, milestone['name'],
+                                                     milestone['goal'], milestone['until'])
+            if mile_check:
+                return jsonify({'error': 'milestone error: ' + mile_check}), 400
+
+        for milestone in milestones_json:
             project_add_milestone(project_inst, user_inst,
                                   milestone['name'], milestone['goal'], milestone['until'])
-            milestones_inst.append(Milestone(
+            milestones_inst = Milestone(
                 nameMilestone=milestone['name'],
                 goalMilestone=milestone['goal'],
                 currentVotesMilestone=0,
                 untilBlockMilestone=milestone['until'],
-            ))
+            )
 
-        project_inst.milestones.extend(milestones_inst)
-        session.add_all(milestones_inst)
+            project_inst.milestones.append(milestones_inst)
+            session.add(project_inst)
+            session.add(milestones_inst)
+        session.add(project_inst)
         session.commit()
         return jsonify({'status': 'ok'}), 201
     except (KeyError, json.JSONDecodeError):

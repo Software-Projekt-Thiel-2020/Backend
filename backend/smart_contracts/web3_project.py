@@ -1,7 +1,7 @@
 import time
 from typing import Optional
 
-from backend.database.model import User, Project, Donation, Milestone
+from backend.database.model import User, Project, Donation
 from backend.smart_contracts.web3 import WEB3, PROJECT_JSON
 
 
@@ -70,10 +70,10 @@ def project_add_milestone_check(project: Project, owner: User, name: str, goal: 
     if not len(name) > 0:  # require(_name.length > 0);
         return "description needed"
 
-    if not goal > project.goal:  # require(_targetAmount < projectTarget.amount);
+    if not goal < project.goal:  # require(_targetAmount < projectTarget.amount);
         return "milestone goal greater than project goal"
 
-    if not until > (int(time.time()) + 60 * 60 * 24):  # require(_voteableUntil >= block.timestamp + 1 days);
+    if not until >= (int(time.time()) + 60 * 60 * 24):  # require(_voteableUntil >= block.timestamp + 1 days);
         return "until needs to be at least 1 day in the future!"
 
     # require(milestones[milestonesCounter - 1].targetAmount < _targetAmount);
