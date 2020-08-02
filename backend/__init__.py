@@ -28,10 +28,10 @@ def create_app(test_config=None):
         DATABASE=os.path.join(app.instance_path, 'backend.sqlite'),
         UPLOAD_FOLDER=os.path.join(app.root_path, '../files'),
         MAX_CONTETN_LENGTH=5 * 1024 * 1024,
-        ALLOWED_EXTENSIONS={'png', 'jpeg', 'jpg', 'gif', 'bmp'}
+        ALLOWED_EXTENSIONS={'png', 'jpeg', 'jpg', 'gif', 'bmp'},
+        CORS_ORIGINS=["https://spenderschlender.3ef.de/", "https://localhost"]
     )
-    CORS(app)
-    # ToDo: for production add real cors-options
+    CORS(app, resources={r"/api/*": {"origins": app.config['CORS_ORIGINS']}})
 
     if test_config is None:
         app.config.from_pyfile('config.py', silent=True)  # load the instance config if exists
