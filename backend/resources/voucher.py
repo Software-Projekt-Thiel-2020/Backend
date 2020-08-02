@@ -100,8 +100,6 @@ def voucher_post_institution(session, user_inst):  # pylint:disable=unused-argum
                            institution_id=institution_id,
                            )
 
-    # ToDo Blockchain
-
     session.add(voucher_inst)
     session.commit()
     return jsonify({'status': 'Voucher registered'}), 200
