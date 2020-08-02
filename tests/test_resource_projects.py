@@ -175,7 +175,6 @@ def test_projects_id_get_existant_param(client):
     assert res.json["milestones"][0]["id"] == 1
     assert res.json["milestones"][0]["idProjekt"] == 1
     assert res.json["milestones"][0]["goal"] == 10
-    assert res.json["milestones"][0]["requiredVotes"] == 112
     assert res.json["milestones"][0]["currentVotes"] == 112
     assert res.json["milestones"][0]["until"] == 1693094933
     assert res.json["milestones"][0]["totalDonated"] == 300
@@ -183,7 +182,6 @@ def test_projects_id_get_existant_param(client):
     assert res.json["milestones"][1]["id"] == 2
     assert res.json["milestones"][1]["idProjekt"] == 1
     assert res.json["milestones"][1]["goal"] == 20
-    assert res.json["milestones"][1]["requiredVotes"] == 112
     assert res.json["milestones"][1]["currentVotes"] == 12
     assert res.json["milestones"][1]["until"] == 1693094933
     assert res.json["milestones"][1]["totalDonated"] == 200
@@ -191,7 +189,6 @@ def test_projects_id_get_existant_param(client):
     assert res.json["milestones"][2]["id"] == 3
     assert res.json["milestones"][2]["idProjekt"] == 1
     assert res.json["milestones"][2]["goal"] == 30
-    assert res.json["milestones"][2]["requiredVotes"] == 112
     assert res.json["milestones"][2]["currentVotes"] == 0
     assert res.json["milestones"][2]["until"] == 1693094933
     assert res.json["milestones"][2]["totalDonated"] == 100
@@ -199,7 +196,6 @@ def test_projects_id_get_existant_param(client):
     assert res.json["milestones"][3]["id"] == 7
     assert res.json["milestones"][3]["idProjekt"] == 1
     assert res.json["milestones"][3]["goal"] == 50
-    assert res.json["milestones"][3]["requiredVotes"] == 666
     assert res.json["milestones"][3]["currentVotes"] == 400
     assert res.json["milestones"][3]["until"] == 1693094933
     assert res.json["milestones"][3]["totalDonated"] == 0
@@ -278,7 +274,7 @@ def test_projects_post_w_bad_milestones(client):
                "milestones": "dennis", "idInstitution": 4, "description": "test description"}
     res = client.post('/api/projects', headers=headers)
     assert res._status_code == 400
-    assert res.json["status"] == "invalid json"
+    assert res.json["error"] == "invalid json"
 
 
 def test_projects_post_w_milestones(client_w_eth):
@@ -308,14 +304,12 @@ def test_projects_post_w_milestones(client_w_eth):
     assert res.json["milestones"][0]["id"] == 8
     assert res.json["milestones"][0]["idProjekt"] == res.json["id"]
     assert res.json["milestones"][0]["goal"] == milestones[0]["goal"]
-    assert res.json["milestones"][0]["requiredVotes"] == milestones[0]["requiredVotes"]
     assert res.json["milestones"][0]["currentVotes"] == 0
     assert res.json["milestones"][0]["until"] == milestones[0]["until"]
 
     assert res.json["milestones"][1]["id"] == 9
     assert res.json["milestones"][1]["idProjekt"] == res.json["id"]
     assert res.json["milestones"][1]["goal"] == milestones[1]["goal"]
-    assert res.json["milestones"][1]["requiredVotes"] == milestones[1]["requiredVotes"]
     assert res.json["milestones"][1]["currentVotes"] == 0
     assert res.json["milestones"][1]["until"] == milestones[1]["until"]
 
@@ -464,8 +458,8 @@ def test_projects_patch_wo_auth_wo_params(client):
 
 def test_projects_patch_w_milestones(client_w_eth):
     milestones = [
-        {"name": "goal_1", "goal": 100, "requiredVotes": 1337, "until": 1693094933},
-        {"name": "goal_2", "goal": 500, "requiredVotes": 42, "until": 1693094933},
+        {"name": "goal_1", "goal": 100, "until": 1693094933},
+        {"name": "goal_2", "goal": 500, "until": 1693094933},
     ]
     headers = {"authToken": TOKEN_1, "milestones": json.dumps(milestones), "idInstitution": 4}
     res = client_w_eth.patch('/api/projects/1', headers=headers)
@@ -485,42 +479,36 @@ def test_projects_patch_w_milestones(client_w_eth):
     assert res.json["milestones"][0]["id"] == 1
     assert res.json["milestones"][0]["idProjekt"] == 1
     assert res.json["milestones"][0]["goal"] == 10
-    assert res.json["milestones"][0]["requiredVotes"] == 112
     assert res.json["milestones"][0]["currentVotes"] == 112
     assert res.json["milestones"][0]["until"] == 1693094933
 
     assert res.json["milestones"][1]["id"] == 2
     assert res.json["milestones"][1]["idProjekt"] == 1
     assert res.json["milestones"][1]["goal"] == 20
-    assert res.json["milestones"][1]["requiredVotes"] == 112
     assert res.json["milestones"][1]["currentVotes"] == 12
     assert res.json["milestones"][1]["until"] == 1693094933
 
     assert res.json["milestones"][2]["id"] == 3
     assert res.json["milestones"][2]["idProjekt"] == 1
     assert res.json["milestones"][2]["goal"] == 30
-    assert res.json["milestones"][2]["requiredVotes"] == 112
     assert res.json["milestones"][2]["currentVotes"] == 0
     assert res.json["milestones"][2]["until"] == 1693094933
 
     assert res.json["milestones"][3]["id"] == 7
     assert res.json["milestones"][3]["idProjekt"] == 1
     assert res.json["milestones"][3]["goal"] == 50
-    assert res.json["milestones"][3]["requiredVotes"] == 666
     assert res.json["milestones"][3]["currentVotes"] == 400
     assert res.json["milestones"][3]["until"] == 1693094933
 
     assert res.json["milestones"][4]["id"] == 8
     assert res.json["milestones"][4]["idProjekt"] == res.json["id"]
     assert res.json["milestones"][4]["goal"] == milestones[0]["goal"]
-    assert res.json["milestones"][4]["requiredVotes"] == milestones[0]["requiredVotes"]
     assert res.json["milestones"][4]["currentVotes"] == 0
     assert res.json["milestones"][4]["until"] == milestones[0]["until"]
 
     assert res.json["milestones"][5]["id"] == 9
     assert res.json["milestones"][5]["idProjekt"] == res.json["id"]
     assert res.json["milestones"][5]["goal"] == milestones[1]["goal"]
-    assert res.json["milestones"][5]["requiredVotes"] == milestones[1]["requiredVotes"]
     assert res.json["milestones"][5]["currentVotes"] == 0
     assert res.json["milestones"][5]["until"] == milestones[1]["until"]
 
@@ -544,28 +532,24 @@ def test_projects_patch_wo_params(client):
     assert res.json["milestones"][0]["id"] == 1
     assert res.json["milestones"][0]["idProjekt"] == 1
     assert res.json["milestones"][0]["goal"] == 10
-    assert res.json["milestones"][0]["requiredVotes"] == 112
     assert res.json["milestones"][0]["currentVotes"] == 112
     assert res.json["milestones"][0]["until"] == 1693094933
 
     assert res.json["milestones"][1]["id"] == 2
     assert res.json["milestones"][1]["idProjekt"] == 1
     assert res.json["milestones"][1]["goal"] == 20
-    assert res.json["milestones"][1]["requiredVotes"] == 112
     assert res.json["milestones"][1]["currentVotes"] == 12
     assert res.json["milestones"][1]["until"] == 1693094933
 
     assert res.json["milestones"][2]["id"] == 3
     assert res.json["milestones"][2]["idProjekt"] == 1
     assert res.json["milestones"][2]["goal"] == 30
-    assert res.json["milestones"][2]["requiredVotes"] == 112
     assert res.json["milestones"][2]["currentVotes"] == 0
     assert res.json["milestones"][2]["until"] == 1693094933
 
     assert res.json["milestones"][3]["id"] == 7
     assert res.json["milestones"][3]["idProjekt"] == 1
     assert res.json["milestones"][3]["goal"] == 50
-    assert res.json["milestones"][3]["requiredVotes"] == 666
     assert res.json["milestones"][3]["currentVotes"] == 400
     assert res.json["milestones"][3]["until"] == 1693094933
 
