@@ -103,6 +103,7 @@ def projects_id(session, id):  # noqa
     milestoneresults = session.query(Milestone).filter(Milestone.project_id == id_project)
 
     json_ms = []
+    total = 0
     for row in milestoneresults:
         donation_sum = session.query(func.sum(Donation.amountDonation)). \
             filter(Donation.milestone_id == row.idMilestone).group_by(Donation.milestone_id).scalar()
@@ -116,6 +117,7 @@ def projects_id(session, id):  # noqa
             'until': row.untilBlockMilestone,
             'totalDonated': float(donation_sum),
         })
+        total += float(donation_sum)
     json_data = {
         'id': results.idProject,
         'name': results.nameProject,
@@ -128,6 +130,8 @@ def projects_id(session, id):  # noqa
         'longitude': results.longitude,
         'address': results.institution.addressInstitution,
         'until': results.until,
+        'goal': results.goal,
+        'totalDonated': total,
     }
     return jsonify(json_data), 200
 

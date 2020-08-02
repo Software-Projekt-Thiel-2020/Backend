@@ -153,7 +153,7 @@ def test_projects_id_get_existant_param(client):
     """get for project id with existant id."""
     res = client.get('/api/projects/1')
     assert res._status_code == 200
-    assert len(res.json) == 11
+    assert len(res.json) == 13
 
     assert res.json["id"] == 1
     assert res.json["idinstitution"] == 1
@@ -161,6 +161,7 @@ def test_projects_id_get_existant_param(client):
     assert res.json["webpage"] == "www.cmb.de"
     assert res.json["address"] == "Address1"
     assert res.json["until"] == 1693094933
+    assert res.json["goal"] == WEB3.toWei(1, 'ether')
 
     assert len(res.json["milestones"]) == 4
     assert res.json["milestones"][0]["id"] == 1
@@ -190,6 +191,12 @@ def test_projects_id_get_existant_param(client):
     assert res.json["milestones"][3]["currentVotes"] == 400
     assert res.json["milestones"][3]["until"] == 1693094933
     assert res.json["milestones"][3]["totalDonated"] == 0
+
+    assert res.json['totalDonated'] == \
+        res.json["milestones"][0]["totalDonated"] + \
+        res.json["milestones"][1]["totalDonated"] + \
+        res.json["milestones"][2]["totalDonated"] + \
+        res.json["milestones"][3]["totalDonated"]
 
 
 def test_projects_id_get_nonexistant_param(client):
