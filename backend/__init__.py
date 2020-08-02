@@ -4,8 +4,8 @@ import os
 from pathlib import Path
 
 import sentry_sdk
-from sentry_sdk.integrations.flask import \
-    FlaskIntegration
+from sentry_sdk.integrations.flask import FlaskIntegration
+from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 from flask import Flask
 from flask_cors import CORS
 
@@ -50,7 +50,7 @@ def create_app(test_config=None):
     if "Sentry" in cfg_parser.sections():
         sentry_sdk.init(
             cfg_parser["Sentry"]["URI"],
-            integrations=[FlaskIntegration()]
+            integrations=[FlaskIntegration(), SqlalchemyIntegration()]
         )
 
     Path(app.config['UPLOAD_FOLDER']).mkdir(parents=True, exist_ok=True)
