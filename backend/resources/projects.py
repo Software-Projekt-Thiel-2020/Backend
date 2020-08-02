@@ -1,4 +1,5 @@
 """Project Resource."""
+from base64 import b64decode
 import json
 import time
 
@@ -162,6 +163,11 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
+    try:
+        description = b64decode(description).decode("latin-1")  # noqa
+    except TypeError:
+        return jsonify({"error": "bad base64 encoding"}), 400
+
     if id_institution and session.query(Institution).get(id_institution) is None:
         return jsonify({'error': 'Institution not found'}), 400
 
@@ -258,6 +264,10 @@ def projects_patch(session, user_inst, id):
     if webpage is not None:
         project_inst.webpageProject = webpage
     if description is not None:
+        try:
+            description = b64decode(description).decode("latin-1")
+        except TypeError:
+            return jsonify({"error": "bad base64 encoding"}), 400
         project_inst.descriptionProject = description
 
     result = session.query(Institution)\

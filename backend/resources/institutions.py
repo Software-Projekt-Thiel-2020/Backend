@@ -1,4 +1,5 @@
 """Institution Resource."""
+from base64 import b64decode
 import validators
 from flask import Blueprint, request, jsonify
 from geopy import distance
@@ -100,6 +101,11 @@ def institutions_post(session, user_inst):  # pylint:disable=unused-argument
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
+    try:
+        description = b64decode(description).decode("latin-1")
+    except TypeError:
+        return jsonify({"error": "bad base64 encoding"}), 400
+
     if webpage is not None and not validators.url(webpage):
         return jsonify({'error': 'webpage is not a valid url'}), 400
 
@@ -187,6 +193,10 @@ def institutions_patch(session, user_inst):  # pylint:disable=too-many-branches
         if webpage:
             institution.webpageInstitution = webpage
         if description:
+            try:
+                description = b64decode(description).decode("latin-1")
+            except TypeError:
+                return jsonify({"error": "bad base64 encoding"}), 400
             institution.descriptionInstitution = description
         if latitude and longitude:
             institution.latitude = latitude
