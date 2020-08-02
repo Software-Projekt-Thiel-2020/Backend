@@ -31,9 +31,12 @@ def voucher_patch_institution(session):
         return jsonify({'error': 'Missing parameter'}), 400
 
     try:
-        check_params_int([voucher_id, inst_id, voucher_valid_time])
+        check_params_int([voucher_id, inst_id, voucher_valid_time, voucher_available])
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
+
+    if voucher_available not in ['0', '1']:
+        return jsonify({"error": "bad availability argument"}), 400
 
     voucher = session.query(Voucher).filter(Voucher.idVoucher == voucher_id).one_or_none()
 
@@ -50,7 +53,7 @@ def voucher_patch_institution(session):
     if voucher_price:
         voucher.priceVoucher = voucher_price
     if voucher_available:
-        voucher.available = voucher_available
+        voucher.available = voucher_available == '1'
 
     session.commit()
     return jsonify({'status': 'Voucher wurde bearbeitet'}), 201
