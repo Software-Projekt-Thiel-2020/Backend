@@ -131,7 +131,7 @@ def projects_id(session, id):  # noqa
         'address': results.institution.addressInstitution,
         'until': results.until,
         'goal': results.goal,
-        'totalDonated': total, 
+        'totalDonated': total,
     }
     return jsonify(json_data), 200
 
