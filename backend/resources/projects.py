@@ -266,13 +266,13 @@ def projects_patch(session, user_inst, id):
         milestones_json = json.loads(milestones)
         for milestone in milestones_json:
             mile_check = project_add_milestone_check(project_inst, user_inst, milestone['name'],
-                                                     milestone['goal'], milestone['until'])
+                                                     int(milestone['goal']), int(milestone['until']))
             if mile_check:
                 return jsonify({'error': 'milestone error: ' + mile_check}), 400
 
         for milestone in milestones_json:
             project_add_milestone(project_inst, user_inst,
-                                  milestone['name'], milestone['goal'], milestone['until'])
+                                  milestone['name'], int(milestone['goal']), int(milestone['until']))
             milestones_inst = Milestone(
                 nameMilestone=milestone['name'],
                 goalMilestone=milestone['goal'],
