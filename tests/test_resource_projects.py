@@ -1,6 +1,7 @@
 """Tests for resource projects."""
 import json
 
+from backend.smart_contracts.web3 import WEB3
 from .test_blockstackauth import TOKEN_1, TOKEN_2
 
 
@@ -164,28 +165,28 @@ def test_projects_id_get_existant_param(client):
     assert len(res.json["milestones"]) == 4
     assert res.json["milestones"][0]["id"] == 1
     assert res.json["milestones"][0]["idProjekt"] == 1
-    assert res.json["milestones"][0]["goal"] == 10
+    assert res.json["milestones"][0]["goal"] == WEB3.toWei(0.1, 'ether')
     assert res.json["milestones"][0]["currentVotes"] == 112
     assert res.json["milestones"][0]["until"] == 1693094933
-    assert res.json["milestones"][0]["totalDonated"] == 300
+    assert res.json["milestones"][0]["totalDonated"] == WEB3.toWei(0.03, 'ether')
 
     assert res.json["milestones"][1]["id"] == 2
     assert res.json["milestones"][1]["idProjekt"] == 1
-    assert res.json["milestones"][1]["goal"] == 20
+    assert res.json["milestones"][1]["goal"] == WEB3.toWei(0.2, 'ether')
     assert res.json["milestones"][1]["currentVotes"] == 12
     assert res.json["milestones"][1]["until"] == 1693094933
-    assert res.json["milestones"][1]["totalDonated"] == 200
+    assert res.json["milestones"][1]["totalDonated"] == WEB3.toWei(0.02, 'ether')
 
     assert res.json["milestones"][2]["id"] == 3
     assert res.json["milestones"][2]["idProjekt"] == 1
-    assert res.json["milestones"][2]["goal"] == 30
+    assert res.json["milestones"][2]["goal"] == WEB3.toWei(0.3, 'ether')
     assert res.json["milestones"][2]["currentVotes"] == 0
     assert res.json["milestones"][2]["until"] == 1693094933
-    assert res.json["milestones"][2]["totalDonated"] == 100
+    assert res.json["milestones"][2]["totalDonated"] == WEB3.toWei(0.01, 'ether')
 
     assert res.json["milestones"][3]["id"] == 7
     assert res.json["milestones"][3]["idProjekt"] == 1
-    assert res.json["milestones"][3]["goal"] == 50
+    assert res.json["milestones"][3]["goal"] == WEB3.toWei(0.5, 'ether')
     assert res.json["milestones"][3]["currentVotes"] == 400
     assert res.json["milestones"][3]["until"] == 1693094933
     assert res.json["milestones"][3]["totalDonated"] == 0
@@ -436,8 +437,8 @@ def test_projects_patch_wo_auth_wo_params(client):
 
 def test_projects_patch_w_milestones(client_w_eth):
     milestones = [
-        {"name": "goal_1", "goal": 100, "until": 1693094933},
-        {"name": "goal_2", "goal": 500, "until": 1693094933},
+        {"name": "goal_1", "goal": WEB3.toWei(0.6, 'ether'), "until": 1693094933},
+        {"name": "goal_2", "goal": WEB3.toWei(0.7, 'ether'), "until": 1693094933},
     ]
     headers = {"authToken": TOKEN_1, "milestones": json.dumps(milestones), "idInstitution": 4}
     res = client_w_eth.patch('/api/projects/1', headers=headers)
@@ -455,25 +456,25 @@ def test_projects_patch_w_milestones(client_w_eth):
     assert len(res.json["milestones"]) == 6
     assert res.json["milestones"][0]["id"] == 1
     assert res.json["milestones"][0]["idProjekt"] == 1
-    assert res.json["milestones"][0]["goal"] == 10
+    assert res.json["milestones"][0]["goal"] == WEB3.toWei(0.1, 'ether')
     assert res.json["milestones"][0]["currentVotes"] == 112
     assert res.json["milestones"][0]["until"] == 1693094933
 
     assert res.json["milestones"][1]["id"] == 2
     assert res.json["milestones"][1]["idProjekt"] == 1
-    assert res.json["milestones"][1]["goal"] == 20
+    assert res.json["milestones"][1]["goal"] == WEB3.toWei(0.2, 'ether')
     assert res.json["milestones"][1]["currentVotes"] == 12
     assert res.json["milestones"][1]["until"] == 1693094933
 
     assert res.json["milestones"][2]["id"] == 3
     assert res.json["milestones"][2]["idProjekt"] == 1
-    assert res.json["milestones"][2]["goal"] == 30
+    assert res.json["milestones"][2]["goal"] == WEB3.toWei(0.3, 'ether')
     assert res.json["milestones"][2]["currentVotes"] == 0
     assert res.json["milestones"][2]["until"] == 1693094933
 
     assert res.json["milestones"][3]["id"] == 7
     assert res.json["milestones"][3]["idProjekt"] == 1
-    assert res.json["milestones"][3]["goal"] == 50
+    assert res.json["milestones"][3]["goal"] == WEB3.toWei(0.5, 'ether')
     assert res.json["milestones"][3]["currentVotes"] == 400
     assert res.json["milestones"][3]["until"] == 1693094933
 
@@ -507,25 +508,25 @@ def test_projects_patch_wo_params(client):
     assert len(res.json["milestones"]) == 4
     assert res.json["milestones"][0]["id"] == 1
     assert res.json["milestones"][0]["idProjekt"] == 1
-    assert res.json["milestones"][0]["goal"] == 10
+    assert res.json["milestones"][0]["goal"] == WEB3.toWei(0.1, 'ether')
     assert res.json["milestones"][0]["currentVotes"] == 112
     assert res.json["milestones"][0]["until"] == 1693094933
 
     assert res.json["milestones"][1]["id"] == 2
     assert res.json["milestones"][1]["idProjekt"] == 1
-    assert res.json["milestones"][1]["goal"] == 20
+    assert res.json["milestones"][1]["goal"] == WEB3.toWei(0.2, 'ether')
     assert res.json["milestones"][1]["currentVotes"] == 12
     assert res.json["milestones"][1]["until"] == 1693094933
 
     assert res.json["milestones"][2]["id"] == 3
     assert res.json["milestones"][2]["idProjekt"] == 1
-    assert res.json["milestones"][2]["goal"] == 30
+    assert res.json["milestones"][2]["goal"] == WEB3.toWei(0.3, 'ether')
     assert res.json["milestones"][2]["currentVotes"] == 0
     assert res.json["milestones"][2]["until"] == 1693094933
 
     assert res.json["milestones"][3]["id"] == 7
     assert res.json["milestones"][3]["idProjekt"] == 1
-    assert res.json["milestones"][3]["goal"] == 50
+    assert res.json["milestones"][3]["goal"] == WEB3.toWei(0.5, 'ether')
     assert res.json["milestones"][3]["currentVotes"] == 400
     assert res.json["milestones"][3]["until"] == 1693094933
 
