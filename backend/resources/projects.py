@@ -1,7 +1,6 @@
 """Project Resource."""
 import json
 import time
-from typing import List
 
 import validators
 from flask import Blueprint, request, jsonify
@@ -12,7 +11,8 @@ from sqlalchemy.orm.exc import NoResultFound
 from backend.database.model import Milestone, Institution, Donation, User
 from backend.database.model import Project
 from backend.resources.helpers import auth_user, check_params_int, db_session_dec
-from backend.smart_contracts.web3 import WEB3, PROJECT_JSON
+from backend.smart_contracts.web3_project import project_constructor, project_add_milestone, \
+    project_constructor_check, project_add_milestone_check
 
 BP = Blueprint('projects', __name__, url_prefix='/api/projects')
 
@@ -113,7 +113,6 @@ def projects_id(session, id):  # noqa
             'idProjekt': row.project_id,
             'milestoneName': row.nameMilestone,
             'goal': row.goalMilestone,
-            'requiredVotes': row.requiredVotesMilestone,
             'currentVotes': row.currentVotesMilestone,
             'until': row.untilBlockMilestone,
             'totalDonated': float(donation_sum),
@@ -138,7 +137,7 @@ def projects_id(session, id):  # noqa
 @BP.route('', methods=['POST'])
 @auth_user
 @db_session_dec
-def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, too-many-locals
+def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, too-many-locals, too-many-branches
     """
     Handles POST for resource <base>/api/projects .
 
@@ -147,18 +146,17 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
     name = request.headers.get('name')
     webpage = request.headers.get('webpage')
     id_institution = request.headers.get('idInstitution')
-    goal = request.headers.get('goal')
-    required_votes = request.headers.get('requiredVotes')
+    goal_raw = request.headers.get('goal')
     until_raw = request.headers.get('until')
     milestones = request.headers.get('milestones', default="[]")
     description = request.headers.get('description')
     latitude = request.headers.get('latitude')
     longitude = request.headers.get('longitude')
 
-    if None in [name, goal, required_votes, until_raw, id_institution, description]:
+    if None in [name, goal_raw, until_raw, id_institution, description]:
         return jsonify({'error': 'Missing parameter'}), 403
     try:
-        id_institution, goal, required_votes, until = check_params_int([id_institution, goal, required_votes, until_raw])  # noqa
+        id_institution, goal, until = check_params_int([id_institution, goal_raw, until_raw])  # noqa
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
@@ -170,8 +168,6 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
 
     if until < int(time.time()):
         return jsonify({'error': 'until value is in the past'}), 400
-
-    # ToDo: sanity check milestones
 
     result = session.query(Institution)\
         .filter(Institution.idInstitution == id_institution).filter(Institution.user == user_inst).one_or_none()
@@ -187,53 +183,38 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
         latitude=latitude,
         longitude=longitude,
         until=until,
+        goal=goal,
     )
 
-    projects_sc = WEB3.eth.contract(abi=PROJECT_JSON["abi"],
-                                    bytecode=PROJECT_JSON["bytecode"])
     try:
-        description_bytes = WEB3.toBytes(text=str(str(description)[0:32]))
-        # constructor(_owner, _admin, _partial_payment, _projectTargetName, _projectTargetAmount, _minDonation)
-        ctor = projects_sc.constructor(user_inst.publickeyUser, WEB3.eth.defaultAccount, 80, description_bytes,
-                                       goal, int(WEB3.toWei(0.01, 'ether')))
-        tx_hash = ctor.buildTransaction({'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser),
-                                         'from': user_inst.publickeyUser})
-        signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=user_inst.privatekeyUser)
-        tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
-        tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash)
-        if tx_receipt.status != 1:
-            raise RuntimeError("SC Call failed!")
-        project_inst.scAddress = tx_receipt.contractAddress
+        milestones_json = json.loads(milestones)
+        for milestone in milestones_json:
+            mile_check = project_add_milestone_check(project_inst, user_inst, milestone['name'],
+                                                     milestone['goal'], milestone['until'])
+            if mile_check:
+                return jsonify({'error': 'milestone error: ' + mile_check}), 400
 
-        projects_sc = WEB3.eth.contract(address=tx_receipt.contractAddress, abi=PROJECT_JSON["abi"])
+        ctor_check = project_constructor_check(user_inst, str(str(description)[0:32]), goal)
+        if ctor_check:
+            return jsonify({'error': 'sc error: ' + ctor_check}), 400
 
-        milestones_inst: List[Milestone] = []
-        for milestone in json.loads(milestones):
-            tx_hash = projects_sc.functions.addMilestone(WEB3.toBytes(text=milestone['name']),
-                                                         int(milestone['goal']),
-                                                         int(milestone['until'])). \
-                buildTransaction({'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser),
-                                  'from': user_inst.publickeyUser})
-            signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=user_inst.privatekeyUser)
-            tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
-            tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash)
-            if tx_receipt.status != 1:
-                raise RuntimeError("SC Call failed!")
-            milestones_inst.append(Milestone(
+        project_inst.scAddress = project_constructor(user_inst, str(str(description)[0:32]), goal)
+        session.add(project_inst)
+
+        for milestone in milestones_json:
+            project_add_milestone(project_inst, user_inst, milestone['name'], milestone['goal'], milestone['until'])
+            milestones_inst = Milestone(
                 nameMilestone=milestone['name'],
                 goalMilestone=milestone['goal'],
-                requiredVotesMilestone=milestone['requiredVotes'],
-                currentVotesMilestone=0,
                 untilBlockMilestone=milestone['until'],
-            ))
-
-        project_inst.milestones.extend(milestones_inst)
-        session.add_all(milestones_inst)
-        session.add(project_inst)
+            )
+            project_inst.milestones.append(milestones_inst)
+            session.add(project_inst)
+            session.add(milestones_inst)
         session.commit()
         return jsonify({'status': 'ok', 'id': project_inst.idProject}), 201
     except (KeyError, json.JSONDecodeError):
-        return jsonify({'status': 'invalid json'}), 400
+        return jsonify({'error': 'invalid json'}), 400
     finally:
         session.rollback()
 
@@ -241,7 +222,8 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
 @BP.route('/<id>', methods=['PATCH'])
 @auth_user
 @db_session_dec
-def projects_patch(session, user_inst, id):  # pylint:disable=invalid-name,redefined-builtin,too-many-locals
+# pylint:disable=invalid-name,redefined-builtin,too-many-locals, too-many-branches
+def projects_patch(session, user_inst, id):
     """
     Handles PATCH for resource <base>/api/projects/<id> .
 
@@ -279,30 +261,28 @@ def projects_patch(session, user_inst, id):  # pylint:disable=invalid-name,redef
     if result is None:
         return jsonify({'error': 'User has no permission to create projects for this institution'}), 403
 
-    projects_sc = WEB3.eth.contract(address=project_inst.scAddress, abi=PROJECT_JSON["abi"])
     try:
-        milestones_inst: List[Milestone] = []
-        for milestone in json.loads(milestones):
-            tx_hash = projects_sc.functions.addMilestone(WEB3.toBytes(text=milestone['name']),
-                                                         int(milestone['goal']),
-                                                         int(milestone['until'])). \
-                buildTransaction({'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser),
-                                  'from': user_inst.publickeyUser})
-            signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=user_inst.privatekeyUser)
-            tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
-            tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash)
-            if tx_receipt.status != 1:
-                raise RuntimeError("SC Call failed!")
-            milestones_inst.append(Milestone(
+        milestones_json = json.loads(milestones)
+        for milestone in milestones_json:
+            mile_check = project_add_milestone_check(project_inst, user_inst, milestone['name'],
+                                                     milestone['goal'], milestone['until'])
+            if mile_check:
+                return jsonify({'error': 'milestone error: ' + mile_check}), 400
+
+        for milestone in milestones_json:
+            project_add_milestone(project_inst, user_inst,
+                                  milestone['name'], milestone['goal'], milestone['until'])
+            milestones_inst = Milestone(
                 nameMilestone=milestone['name'],
                 goalMilestone=milestone['goal'],
-                requiredVotesMilestone=milestone['requiredVotes'],
                 currentVotesMilestone=0,
                 untilBlockMilestone=milestone['until'],
-            ))
+            )
 
-        project_inst.milestones.extend(milestones_inst)
-        session.add_all(milestones_inst)
+            project_inst.milestones.append(milestones_inst)
+            session.add(project_inst)
+            session.add(milestones_inst)
+        session.add(project_inst)
         session.commit()
         return jsonify({'status': 'ok'}), 201
     except (KeyError, json.JSONDecodeError):

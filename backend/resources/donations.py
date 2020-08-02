@@ -5,7 +5,9 @@ from backend.database.model import Donation, User
 from backend.database.model import Milestone
 from backend.database.model import Project
 from backend.resources.helpers import check_params_int, auth_user, db_session_dec
-from backend.smart_contracts.web3 import WEB3, PROJECT_JSON
+from backend.smart_contracts.web3 import WEB3
+from backend.smart_contracts.web3_project import project_donate, project_donate_check, \
+    project_donate_vote, project_donate_vote_check
 
 BP = Blueprint('donations', __name__, url_prefix='/api/donations')
 
@@ -94,30 +96,13 @@ def donations_post(session, user_inst):
     if balance < int(amount):  # ToDo: gas-cost?
         return jsonify({'error': 'not enough balance'}), 406
 
-    donations_sc = WEB3.eth.contract(address=results.scAddress, abi=PROJECT_JSON["abi"])
     try:
         # Add Donation
-        tx_hash = donations_sc.functions.register().buildTransaction({
-            'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser),
-            'from': user_inst.publickeyUser
-        })
-        signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=user_inst.privatekeyUser)
-        tx_hash2 = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
-        tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash2)
-        if tx_receipt.status != 1:
-            raise RuntimeError("SC Call failed!")
-        tx_hash = donations_sc.functions.donate(bool(int(vote_enabled))) \
-            .buildTransaction(
-            {'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser),
-             'from': user_inst.publickeyUser, 'value': int(amount)})
-        signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=user_inst.privatekeyUser)
-        tx_hash2 = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
-        tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash2)
-        if tx_receipt.status != 1:
-            raise RuntimeError("SC Call failed!")
+        donate_check = project_donate_check(results, user_inst, int(amount), bool(int(vote_enabled)))
+        if donate_check:
+            return jsonify({'error': 'sc error: ' + donate_check}), 400
 
-        processed_receipt = donations_sc.events.Donate().processReceipt(tx_receipt)
-        milestone_sc_index = processed_receipt[0].args.milestoneId  # pylint:disable=protected-access
+        milestone_sc_index = project_donate(results, user_inst, int(amount), bool(int(vote_enabled)))
 
         donations_inst = Donation(
             amountDonation=amount,
@@ -134,23 +119,6 @@ def donations_post(session, user_inst):
     finally:
         session.rollback()
         session.close()
-
-
-def vote_transaction(user_inst: User, vote, donation: Donation):
-    """Method to make the voting Transaction."""
-    donation_sc = WEB3.eth.contract(
-        address=donation.milestone.project.scAddress,
-        abi=PROJECT_JSON["abi"]
-    )
-
-    transaction = donation_sc.functions.vote(donation.milestone_sc_id, vote)
-    transaction = transaction.buildTransaction({'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser),
-                                                'from': user_inst.publickeyUser})
-    signed_transaction = WEB3.eth.account.sign_transaction(transaction, user_inst.privatekeyUser)
-
-    tx_hash = WEB3.eth.sendRawTransaction(signed_transaction.rawTransaction)
-    tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash)
-    return tx_receipt
 
 
 @BP.route('/vote', methods=['POST'])
@@ -187,9 +155,13 @@ def milestones_vote(session, user_inst: User):
     if donation.voted is not None:
         return jsonify({"error": "already voted"}), 400
 
+    vote_check = project_donate_vote_check(session, user_inst, 0 if vote else 1, donation)
+    if vote_check:
+        return jsonify({'error': 'sc error: ' + vote_check}), 400
+
     donation.milestone.currentVotesMilestone += 1 if vote else (-1)
 
-    tx_receipt = vote_transaction(user_inst, 0 if vote else 1, donation)
+    tx_receipt = project_donate_vote(user_inst, 0 if vote else 1, donation)
     if tx_receipt.status != 1:
         raise RuntimeError("SC Call failed!")
 

@@ -190,7 +190,7 @@ def test_donations_get_w_project_bad_value(client):
 
 
 def test_donations_post(client_w_eth):
-    headers = {"authToken": TOKEN_2, "idproject": 1, "amount": 1337, "voteEnabled": 1}
+    headers = {"authToken": TOKEN_2, "idproject": 1, "amount": int(WEB3.toWei(0.02, 'ether')), "voteEnabled": 1}
     res = client_w_eth.post('/api/donations', headers=headers)
 
     assert res._status_code == 201
@@ -203,7 +203,7 @@ def test_donations_post(client_w_eth):
     assert len(res.json) == 1
 
     assert res.json[0]["id"] == 5
-    assert res.json[0]["amount"] == 1337
+    assert res.json[0]["amount"] == int(WEB3.toWei(0.02, 'ether'))
     assert res.json[0]["userid"] == 7
     assert res.json[0]["milestoneid"] == 1
 
@@ -217,7 +217,7 @@ def test_donations_post2(client_w_eth):
                               'to': res.json[0]["publickey"],
                               'value': 1 * 10 ** 18})
 
-    headers = {"authToken": TOKEN_3, "idproject": 1, "amount": 1337, "voteEnabled": 1}
+    headers = {"authToken": TOKEN_3, "idproject": 1, "amount": int(WEB3.toWei(0.02, 'ether')), "voteEnabled": 1}
     res = client_w_eth.post('/api/donations', headers=headers)
 
     assert res._status_code == 201
@@ -230,7 +230,7 @@ def test_donations_post2(client_w_eth):
     assert len(res.json) == 1
 
     assert res.json[0]["id"] == 5
-    assert res.json[0]["amount"] == 1337
+    assert res.json[0]["amount"] == int(WEB3.toWei(0.02, 'ether'))
     assert res.json[0]["userid"] == 8
     assert res.json[0]["milestoneid"] == 1
 
@@ -244,7 +244,7 @@ def test_donations_post_multiple(client_w_eth):
                               'to': res.json[0]["publickey"],
                               'value': 1 * 10 ** 18})
 
-    headers = {"authToken": TOKEN_3, "idproject": 1, "amount": 1337, "voteEnabled": 1}
+    headers = {"authToken": TOKEN_3, "idproject": 1, "amount": int(WEB3.toWei(0.02, 'ether')), "voteEnabled": 1}
     res = client_w_eth.post('/api/donations', headers=headers)
     assert res._status_code == 201
     assert len(res.json) == 1
@@ -264,17 +264,17 @@ def test_donations_post_multiple(client_w_eth):
     assert len(res.json) == 3
 
     assert res.json[0]["id"] == 5
-    assert res.json[0]["amount"] == 1337
+    assert res.json[0]["amount"] == int(WEB3.toWei(0.02, 'ether'))
     assert res.json[0]["userid"] == 8
     assert res.json[0]["milestoneid"] == 1
 
     assert res.json[1]["id"] == 6
-    assert res.json[1]["amount"] == 1337
+    assert res.json[1]["amount"] == int(WEB3.toWei(0.02, 'ether'))
     assert res.json[1]["userid"] == 8
     assert res.json[1]["milestoneid"] == 1
 
     assert res.json[2]["id"] == 7
-    assert res.json[2]["amount"] == 1337
+    assert res.json[2]["amount"] == int(WEB3.toWei(0.02, 'ether'))
     assert res.json[2]["userid"] == 8
     assert res.json[2]["milestoneid"] == 1
 
@@ -358,10 +358,10 @@ def test_donations_vote(client_w_eth):
 
 
 def test_donations_vote2(client_w_eth):
-    headers = {"authToken": TOKEN_2, "idproject": 1, "amount": 1337000000, "voteEnabled": 1}
+    headers = {"authToken": TOKEN_2, "idproject": 1, "amount": int(WEB3.toWei(0.02, 'ether')), "voteEnabled": 1}
     res = client_w_eth.post('/api/donations', headers=headers)
     assert res._status_code == 201
-    headers = {"authToken": TOKEN_2, "idproject": 1, "amount": 1337000000, "voteEnabled": 1}
+    headers = {"authToken": TOKEN_2, "idproject": 1, "amount": int(WEB3.toWei(0.02, 'ether')), "voteEnabled": 1}
     res = client_w_eth.post('/api/donations', headers=headers)
     assert res._status_code == 201
 
