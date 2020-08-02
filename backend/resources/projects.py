@@ -1,4 +1,5 @@
 """Project Resource."""
+from base64 import b64decode
 import json
 import time
 
@@ -13,8 +14,6 @@ from backend.database.model import Project
 from backend.resources.helpers import auth_user, check_params_int, db_session_dec
 from backend.smart_contracts.web3_project import project_constructor, project_add_milestone, \
     project_constructor_check, project_add_milestone_check
-
-from base64 import b64decode
 
 BP = Blueprint('projects', __name__, url_prefix='/api/projects')
 
@@ -165,7 +164,7 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
         return jsonify({"error": "bad argument"}), 400
 
     try:
-        description = b64decode(description).decode("latin-1")
+        description = b64decode(description).decode("latin-1")  # noqa
     except TypeError:
         return jsonify({"error": "bad base64 encoding"}), 400
 
