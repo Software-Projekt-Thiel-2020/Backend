@@ -123,7 +123,6 @@ def institutions_post(session, user_inst):  # pylint:disable=unused-argument
                 nameInstitution=name,
                 webpageInstitution=webpage,
                 addressInstitution=address,
-                smartcontract_id=2,
                 publickeyInstitution=publickey,
                 descriptionInstitution=description,
                 latitude=latitude,

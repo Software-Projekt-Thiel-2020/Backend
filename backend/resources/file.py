@@ -15,7 +15,6 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
 
 
-# TODO satisfy linter
 @BP.route('', methods=['POST'])
 @auth_user
 @db_session_dec
@@ -25,7 +24,6 @@ def file_upload(session, user_inst):  # pylint:disable=unused-argument, too-many
 
     :return: json data of projects
     """
-    # ToDo: check permissions
     id_inst = request.headers.get('idInstitution')
     id_proj = request.headers.get('idProject')
 
