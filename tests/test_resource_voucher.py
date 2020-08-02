@@ -1,6 +1,5 @@
 """Tests for resource voucher."""
 from datetime import datetime, timedelta
-import time
 
 from tests.test_blockstackauth import TOKEN_1, TOKEN_2
 
