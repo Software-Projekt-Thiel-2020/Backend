@@ -29,7 +29,7 @@ def create_app(test_config=None):
         UPLOAD_FOLDER=os.path.join(app.root_path, '../files'),
         MAX_CONTETN_LENGTH=5 * 1024 * 1024,
         ALLOWED_EXTENSIONS={'png', 'jpeg', 'jpg', 'gif', 'bmp'},
-        CORS_ORIGINS=["https://spenderschlender.3ef.de/", "https://localhost"]
+        CORS_ORIGINS=["https://spenderschlender.3ef.de/", "http://localhost"]
     )
     CORS(app, resources={r"/api/*": {"origins": app.config['CORS_ORIGINS']}})
 
