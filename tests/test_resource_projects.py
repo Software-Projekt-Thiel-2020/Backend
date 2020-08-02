@@ -153,7 +153,7 @@ def test_projects_id_get_existant_param(client):
     """get for project id with existant id."""
     res = client.get('/api/projects/1')
     assert res._status_code == 200
-    assert len(res.json) == 11
+    assert len(res.json) == 13
 
     assert res.json["id"] == 1
     assert res.json["idinstitution"] == 1
