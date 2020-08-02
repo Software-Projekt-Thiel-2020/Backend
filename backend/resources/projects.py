@@ -128,6 +128,7 @@ def projects_id(session, id):  # noqa
         'longitude': results.longitude,
         'address': results.institution.addressInstitution,
         'until': results.until,
+        'goal': results.goal,
     }
     return jsonify(json_data), 200
 
