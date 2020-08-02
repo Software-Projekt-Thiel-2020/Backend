@@ -8,7 +8,7 @@ from web3.exceptions import InvalidAddress
 from backend.database.model import Voucher, VoucherUser, Institution
 from backend.resources.helpers import auth_user, check_params_int, db_session_dec
 from backend.smart_contracts.web3 import WEB3
-from backend.smart_contracts.web3_voucher import add_voucher, redeem_voucher
+from backend.smart_contracts.web3_voucher import add_voucher, redeem_voucher, redeem_voucher_check
 
 BP = Blueprint('voucher', __name__, url_prefix='/api/vouchers')
 
@@ -229,7 +229,11 @@ def voucher_delete_user(session, user_inst):
             VoucherUser.id_user == user_inst.idUser).one()
         institution = session.query(Institution).filter(
             Institution.idInstitution == voucher_user.voucher.institution_id).one()
-        redeem_voucher(user_inst, voucher_user.redeem_id, institution.scAddress)
+
+        if err := redeem_voucher_check(user_inst, voucher_user, institution.scAddress):
+            return jsonify({'error': 'milestone error: ' + err}), 400
+
+        redeem_voucher(user_inst, voucher_user, institution.scAddress)
     except NoResultFound:
         return jsonify({'error': 'No voucher found'}), 404
 

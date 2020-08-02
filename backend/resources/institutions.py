@@ -8,6 +8,7 @@ from geopy import distance
 from backend.database.model import Institution, Transaction, User
 from backend.resources.helpers import auth_user, check_params_int, check_params_float, db_session_dec
 from backend.smart_contracts.web3 import WEB3, INSTITUTION_JSON
+from backend.smart_contracts.web3_voucher import voucher_constructor, voucher_constructor_check
 
 BP = Blueprint('institutions', __name__, url_prefix='/api/institutions')  # set blueprint name and resource path
 
@@ -114,15 +115,13 @@ def institutions_post(session, user_inst):  # pylint:disable=unused-argument
         return jsonify({'error': 'name already exists'}), 400
 
     try:
-        # web3 default account is used for this:
-        donations_contract = WEB3.eth.contract(abi=INSTITUTION_JSON["abi"], bytecode=INSTITUTION_JSON["bytecode"])
-        ctor = donations_contract.constructor(user_inst.publickeyUser, WEB3.eth.defaultAccount)
-        tx_hash = ctor.transact()
-        tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash)
-        if tx_receipt.status != 1:
-            raise RuntimeError("SC Call failed!")
+        vouch_check = voucher_constructor_check(publickey)
+        if vouch_check:
+            return jsonify({'error': 'milestone error: ' + vouch_check}), 400
 
-        session.add_all([
+        sc_address = voucher_constructor(publickey)
+
+        session.add(
             Institution(
                 nameInstitution=name,
                 webpageInstitution=webpage,
@@ -132,11 +131,9 @@ def institutions_post(session, user_inst):  # pylint:disable=unused-argument
                 descriptionInstitution=description,
                 latitude=latitude,
                 longitude=longitude,
-                scAddress=tx_receipt.contractAddress,
+                scAddress=sc_address,
                 user=owner_inst,
-            ),
-            Transaction(dateTransaction=datetime.now(), smartcontract_id=2, user=owner_inst)
-        ])
+            ))
         session.commit()
         return jsonify({'status': 'Institution wurde erstellt'}), 201
     finally:
@@ -182,9 +179,7 @@ def institutions_patch(session, user_inst):  # pylint:disable=too-many-branches
 
         # check user permission
         owner = session.query(Institution)
-        owner = owner.join(Transaction, Institution.smartcontract_id == Transaction.smartcontract_id)
-        owner = owner.filter(Transaction.user_id == user_inst.idUser,
-                             Institution.idInstitution == institution_id).first()
+        owner = owner.filter(Institution.user == user_inst, Institution.idInstitution == institution_id).one_or_none()
 
         if owner is None:
             return jsonify({'error': 'no permission'}), 403
