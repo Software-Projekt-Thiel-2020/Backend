@@ -271,39 +271,42 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
         project_contract = WEB3.eth.contract(abi=PROJECT_JSON["abi"], bytecode=PROJECT_JSON["bytecode"])
         # constructor(_owner, _admin, _partial_payment, _projectTargetName, _projectTargetAmount, _minDonation)
         tx_hash = project_contract.constructor(users[5].publickeyUser, WEB3.eth.defaultAccount, 80,
-                                               WEB3.toBytes(text="test description"), 1111111111, 10).transact()
+                                               WEB3.toBytes(text="test description"), WEB3.toWei(1, 'ether'),
+                                               WEB3.toWei(0.01, 'ether')).transact()
         TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 4
 
         tx_hash = project_contract.constructor(users[2].publickeyUser, WEB3.eth.defaultAccount, 80,
-                                               WEB3.toBytes(text="test description"), 2222222222, 10).transact()
+                                               WEB3.toBytes(text="test description"), WEB3.toWei(2, 'ether'),
+                                               WEB3.toWei(0.01, 'ether')).transact()
         TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 5
 
         tx_hash = project_contract.constructor(users[2].publickeyUser, WEB3.eth.defaultAccount, 80,
-                                               WEB3.toBytes(text="test description"), 3333333333, 10).transact()
+                                               WEB3.toBytes(text="test description"), WEB3.toWei(3, 'ether'),
+                                               WEB3.toWei(0.01, 'ether')).transact()
         TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 6
 
         # ========== Milestones ==========
         projects_sc = WEB3.eth.contract(address=TX_RECEIPTS[4].contractAddress, abi=PROJECT_JSON["abi"])
         # project 0
-        tx_hash = projects_sc.functions.addMilestone(WEB3.toBytes(text="1"), 10, 1693094933). \
+        tx_hash = projects_sc.functions.addMilestone(WEB3.toBytes(text="1"), WEB3.toWei(0.1, 'ether'), 1693094933). \
             buildTransaction({'nonce': WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount),
                               'from': WEB3.eth.defaultAccount})
         tx_hash = WEB3.eth.sendTransaction(tx_hash)
         TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 7
 
-        tx_hash = projects_sc.functions.addMilestone(WEB3.toBytes(text="2"), 20, 1693094933). \
+        tx_hash = projects_sc.functions.addMilestone(WEB3.toBytes(text="2"), WEB3.toWei(0.2, 'ether'), 1693094933). \
             buildTransaction({'nonce': WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount),
                               'from': WEB3.eth.defaultAccount})
         tx_hash = WEB3.eth.sendTransaction(tx_hash)
         TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 8
 
-        tx_hash = projects_sc.functions.addMilestone(WEB3.toBytes(text="3"), 30, 1693094933). \
+        tx_hash = projects_sc.functions.addMilestone(WEB3.toBytes(text="3"), WEB3.toWei(0.3, 'ether'), 1693094933). \
             buildTransaction({'nonce': WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount),
                               'from': WEB3.eth.defaultAccount})
         tx_hash = WEB3.eth.sendTransaction(tx_hash)
         TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 9
 
-        tx_hash = projects_sc.functions.addMilestone(WEB3.toBytes(text="7"), 50, 1693094933). \
+        tx_hash = projects_sc.functions.addMilestone(WEB3.toBytes(text="7"), WEB3.toWei(0.5, 'ether'), 1693094933). \
             buildTransaction({'nonce': WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount),
                               'from': WEB3.eth.defaultAccount})
         tx_hash = WEB3.eth.sendTransaction(tx_hash)
@@ -312,20 +315,20 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
         # project 1
         projects_sc = WEB3.eth.contract(address=TX_RECEIPTS[5].contractAddress, abi=PROJECT_JSON["abi"])
 
-        tx_hash = projects_sc.functions.addMilestone(WEB3.toBytes(text="4"), 10, 1693094933). \
+        tx_hash = projects_sc.functions.addMilestone(WEB3.toBytes(text="4"), WEB3.toWei(0.1, 'ether'), 1693094933). \
             buildTransaction({'nonce': WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount),
                               'from': WEB3.eth.defaultAccount})
         tx_hash = WEB3.eth.sendTransaction(tx_hash)
         TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 11
 
-        tx_hash = projects_sc.functions.addMilestone(WEB3.toBytes(text="5"), 20, 1693094933). \
+        tx_hash = projects_sc.functions.addMilestone(WEB3.toBytes(text="5"), WEB3.toWei(0.2, 'ether'), 1693094933). \
             buildTransaction({'nonce': WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount),
                               'from': WEB3.eth.defaultAccount})
         tx_hash = WEB3.eth.sendTransaction(tx_hash)
         TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 12
         # project 2
         projects_sc = WEB3.eth.contract(address=TX_RECEIPTS[6].contractAddress, abi=PROJECT_JSON["abi"])
-        tx_hash = projects_sc.functions.addMilestone(WEB3.toBytes(text="6"), 30, 1693094933). \
+        tx_hash = projects_sc.functions.addMilestone(WEB3.toBytes(text="6"), WEB3.toWei(0.3, 'ether'), 1693094933). \
             buildTransaction({'nonce': WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount),
                               'from': WEB3.eth.defaultAccount})
         tx_hash = WEB3.eth.sendTransaction(tx_hash)
@@ -344,7 +347,7 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
         tx_hash = projects_sc.functions.donate(True). \
             buildTransaction({'nonce': WEB3.eth.getTransactionCount(users[0].publickeyUser),
                               'from': users[0].publickeyUser,
-                              'value': 300})
+                              'value': WEB3.toWei(0.03, 'ether')})
         signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=users[0].privatekeyUser)
         tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
         TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 15
@@ -358,7 +361,7 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
         tx_hash = projects_sc.functions.donate(True). \
             buildTransaction({'nonce': WEB3.eth.getTransactionCount(users[1].publickeyUser),
                               'from': users[1].publickeyUser,
-                              'value': 200})
+                              'value': WEB3.toWei(0.02, 'ether')})
         signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=users[1].privatekeyUser)
         tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
         TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 17
@@ -372,7 +375,7 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
         tx_hash = projects_sc.functions.donate(True). \
             buildTransaction({'nonce': WEB3.eth.getTransactionCount(users[2].publickeyUser),
                               'from': users[2].publickeyUser,
-                              'value': 100})
+                              'value': WEB3.toWei(0.01, 'ether')})
         signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=users[2].privatekeyUser)
         tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
         TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 19
@@ -386,7 +389,7 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
         tx_hash = projects_sc.functions.donate(True). \
             buildTransaction({'nonce': WEB3.eth.getTransactionCount(users[3].publickeyUser),
                               'from': users[3].publickeyUser,
-                              'value': 400})
+                              'value': WEB3.toWei(0.04, 'ether')})
         signed_tx = WEB3.eth.account.sign_transaction(tx_hash, private_key=users[3].privatekeyUser)
         tx_hash = WEB3.eth.sendRawTransaction(signed_tx.rawTransaction)
         TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 21
@@ -485,7 +488,7 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
                 descriptionProject="# Computer malt Bild\nDer Computer malt ein Bild für Sie!",
                 scAddress=TX_RECEIPTS[4].contractAddress,
                 until=1693094933,
-                goal=1111111111),
+                goal=WEB3.toWei(1, 'ether')),
         Project(idProject=2,
                 nameProject="Rangaroek verteidigen",
                 webpageProject="www.asgard.as",
@@ -493,7 +496,7 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
                 descriptionProject="# Rangaroek verteidigen\nRangaroek muss verteidigt werden!",
                 scAddress=TX_RECEIPTS[5].contractAddress,
                 until=1693094933,
-                goal=2222222222),
+                goal=WEB3.toWei(2, 'ether')),
         Project(idProject=3,
                 nameProject="Softwareprojekt 2020",
                 webpageProject="www.swp.de",
@@ -501,7 +504,7 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
                 descriptionProject="# Softwareprojekt 2020\nDies ist eine sehr ausführliche Beschreibung!",
                 scAddress=TX_RECEIPTS[6].contractAddress,
                 until=1693094933,
-                goal=3333333333),
+                goal=WEB3.toWei(3, 'ether')),
     ]
     # set Institution to Project
     projects[0].institution = institutions[0]
@@ -509,25 +512,25 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
     projects[2].institution = institutions[2]
 
     milestones: List[Milestone] = [
-        Milestone(idMilestone=1, nameMilestone="Erste Versuche", goalMilestone=10,
+        Milestone(idMilestone=1, nameMilestone="Erste Versuche", goalMilestone=WEB3.toWei(0.1, 'ether'),
                   currentVotesMilestone=112,
                   untilBlockMilestone=1693094933),
-        Milestone(idMilestone=2, nameMilestone="Verbesserungen", goalMilestone=20,
+        Milestone(idMilestone=2, nameMilestone="Verbesserungen", goalMilestone=WEB3.toWei(0.2, 'ether'),
                   currentVotesMilestone=12,
                   untilBlockMilestone=1693094933),
-        Milestone(idMilestone=3, nameMilestone="Fertigstellung", goalMilestone=30,
+        Milestone(idMilestone=3, nameMilestone="Fertigstellung", goalMilestone=WEB3.toWei(0.3, 'ether'),
                   currentVotesMilestone=0,
                   untilBlockMilestone=1693094933),
-        Milestone(idMilestone=4, nameMilestone="Neue Waffen", goalMilestone=10,
+        Milestone(idMilestone=4, nameMilestone="Neue Waffen", goalMilestone=WEB3.toWei(0.1, 'ether'),
                   currentVotesMilestone=0,
                   untilBlockMilestone=1693094933),
-        Milestone(idMilestone=5, nameMilestone="Abwehrmauern", goalMilestone=20,
+        Milestone(idMilestone=5, nameMilestone="Abwehrmauern", goalMilestone=WEB3.toWei(0.2, 'ether'),
                   currentVotesMilestone=12,
                   untilBlockMilestone=1693094933),
-        Milestone(idMilestone=6, nameMilestone="ProjektZiel", goalMilestone=30,
+        Milestone(idMilestone=6, nameMilestone="ProjektZiel", goalMilestone=WEB3.toWei(0.3, 'ether'),
                   currentVotesMilestone=44,
                   untilBlockMilestone=1693094933),
-        Milestone(idMilestone=7, nameMilestone="Zukunftstechnik", goalMilestone=50,
+        Milestone(idMilestone=7, nameMilestone="Zukunftstechnik", goalMilestone=WEB3.toWei(0.5, 'ether'),
                   currentVotesMilestone=400,
                   untilBlockMilestone=1693094933),
     ]
@@ -541,10 +544,14 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
     milestones[6].project = projects[0]
 
     donations: List[Donation] = [
-        Donation(idDonation=1, amountDonation=300, voteDonation=True, timeOfDonation=datetime(2020, 2, 1)),
-        Donation(idDonation=2, amountDonation=200, voteDonation=False, timeOfDonation=datetime(2015, 5, 5)),
-        Donation(idDonation=3, amountDonation=100, voteDonation=True, timeOfDonation=datetime(1988, 8, 8)),
-        Donation(idDonation=4, amountDonation=400, voteDonation=False, timeOfDonation=datetime(1970, 1, 1)),
+        Donation(idDonation=1, amountDonation=WEB3.toWei(0.03, 'ether'), voteDonation=True,
+                 timeOfDonation=datetime(2020, 2, 1)),
+        Donation(idDonation=2, amountDonation=WEB3.toWei(0.02, 'ether'), voteDonation=False,
+                 timeOfDonation=datetime(2015, 5, 5)),
+        Donation(idDonation=3, amountDonation=WEB3.toWei(0.01, 'ether'), voteDonation=True,
+                 timeOfDonation=datetime(1988, 8, 8)),
+        Donation(idDonation=4, amountDonation=WEB3.toWei(0.04, 'ether'), voteDonation=False,
+                 timeOfDonation=datetime(1970, 1, 1)),
     ]
     # set Milestone to Donation
     donations[0].milestone = milestones[0]
@@ -561,13 +568,13 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
         Voucher(idVoucher=1,
                 titleVoucher="Von Computer gemaltes Bild",
                 descriptionVoucher="Der Computer malt ein täuschend echtes Bild für sie",
-                priceVoucher=1000,
+                priceVoucher=WEB3.toWei(0.01, 'ether'),
                 available=False,
                 ),
         Voucher(idVoucher=2,
                 titleVoucher="Software",
                 descriptionVoucher="Software für ein Hochschulprojet",
-                priceVoucher=2000,
+                priceVoucher=WEB3.toWei(0.02, 'ether'),
                 available=True,
                 ),
     ]
