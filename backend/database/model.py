@@ -24,24 +24,11 @@ class Project(BASE):
     until = Column(Integer)
     goal = Column(BigInteger)
 
-    smartcontract_id = Column(Integer, ForeignKey('SmartContract.idSmartContract'))
-    smartcontract = relationship("SmartContract", back_populates="projects")
-
     institution_id = Column(Integer, ForeignKey('Institution.idInstitution'))
     institution = relationship("Institution", back_populates="projects")
 
     milestones = relationship("Milestone", back_populates="project")
     scAddress = Column(VARCHAR(64))
-
-
-class SmartContract(BASE):
-    __tablename__ = 'SmartContract'
-    idSmartContract = Column(Integer, primary_key=True)
-    blockchainAddrSmartContract = Column(BINARY(20))
-
-    projects = relationship("Project", back_populates="smartcontract")
-    institutions = relationship("Institution", back_populates="smartcontract")
-    transactions = relationship("Transaction", back_populates="smartcontract")
 
 
 class Milestone(BASE):
@@ -71,9 +58,6 @@ class Institution(BASE):
     scAddress = Column(VARCHAR(64))
 
     projects = relationship("Project", back_populates="institution")
-
-    smartcontract_id = Column(Integer, ForeignKey('SmartContract.idSmartContract'))
-    smartcontract = relationship("SmartContract", back_populates="institutions")
 
     user_id = Column(Integer, ForeignKey('User.idUser'))
     user = relationship("User", back_populates="institution")
@@ -111,8 +95,6 @@ class User(BASE):
 
     donations = relationship("Donation", back_populates="user")
 
-    transactions = relationship("Transaction", back_populates="user")
-
     vouchers = relationship("VoucherUser")
 
     institution = relationship("Institution", back_populates="user")
@@ -149,18 +131,6 @@ class Donation(BASE):
     voted = Column(Integer)
 
 
-class Transaction(BASE):
-    __tablename__ = 'Transaction'
-    idTransaction = Column(Integer, primary_key=True)
-    dateTransaction = Column(DateTime)
-
-    smartcontract_id = Column(Integer, ForeignKey('SmartContract.idSmartContract'))
-    smartcontract = relationship("SmartContract", back_populates="transactions")
-
-    user_id = Column(Integer, ForeignKey('User.idUser'))
-    user = relationship("User", back_populates="transactions")
-
-
 # sw2020testuser1.id.blockstack - shortened
 TOKEN_1 = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIyNGE1OTFkNS1lOGJiLTQwMzYtYWE0Ni1hNzg5MjU2ZDVjZDYiLCJpYXQiO" \
           "jE1OTEyMjUyMzIsImV4cCI6MTYyNTM1MzIzMiwiaXNzIjoiZGlkOmJ0Yy1hZGRyOjE0Z1N4eFhZdzlXbTNoYWoxaGVKYXQ1ZGdpeHF0YVJ" \
@@ -193,13 +163,6 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
     global SAMPLE_SC_DEPLOYED, TX_RECEIPTS  # pylint:disable=global-statement
 
     session = db_session()
-
-    smartcontracts: List[SmartContract] = [
-        SmartContract(idSmartContract=1,
-                      blockchainAddrSmartContract=bytes("666", encoding="utf-8")),
-        SmartContract(idSmartContract=2,
-                      blockchainAddrSmartContract=bytes("1337", encoding="utf-8")),
-    ]
 
     users: List[User] = [
         User(idUser=1,
@@ -508,11 +471,6 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
                     descriptionInstitution="# Blackhole\nBlackhole international is the company you can trust with all "
                                            "your security needs!"),
     ]
-    # set SmartContract to Institution
-    institutions[0].smartcontract = smartcontracts[0]
-    institutions[1].smartcontract = smartcontracts[0]
-    institutions[2].smartcontract = smartcontracts[0]
-    institutions[3].smartcontract = smartcontracts[0]
 
     institutions[0].user = users[5]
     institutions[1].user = users[3]
@@ -545,10 +503,6 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
                 until=1693094933,
                 goal=3333333333),
     ]
-    # set SmartContract to Project
-    projects[0].smartcontract = smartcontracts[1]
-    projects[1].smartcontract = smartcontracts[1]
-    projects[2].smartcontract = smartcontracts[1]
     # set Institution to Project
     projects[0].institution = institutions[0]
     projects[1].institution = institutions[2]
@@ -602,22 +556,6 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
     donations[1].user = users[1]
     donations[2].user = users[2]
     donations[3].user = users[3]
-
-    transactions: List[Transaction] = [
-        Transaction(idTransaction=1, dateTransaction=datetime.now()),
-        Transaction(idTransaction=2, dateTransaction=datetime.now()),
-        Transaction(idTransaction=3, dateTransaction=datetime.now()),
-        Transaction(idTransaction=4, dateTransaction=datetime.now()),
-    ]
-    # set smartcontract to transactions
-    transactions[0].smartcontract = smartcontracts[0]
-    transactions[1].smartcontract = smartcontracts[0]
-    transactions[2].smartcontract = smartcontracts[0]
-    transactions[3].smartcontract = smartcontracts[0]
-    transactions[0].user = users[0]
-    transactions[1].user = users[1]
-    transactions[2].user = users[2]
-    transactions[3].user = users[3]
 
     vouchers: List[Voucher] = [
         Voucher(idVoucher=1,
@@ -673,7 +611,7 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
     associations[3].user = users[6]
 
     # All objects created, Add and commit to DB:
-    objects = [*smartcontracts, *users, *institutions, *projects, *milestones, *vouchers, *transactions,
+    objects = [*users, *institutions, *projects, *milestones, *vouchers,
                *donations]
 
     for obj in objects:
