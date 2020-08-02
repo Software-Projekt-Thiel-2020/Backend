@@ -169,6 +169,9 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
     if until < int(time.time()):
         return jsonify({'error': 'until value is in the past'}), 400
 
+    if until > 2**64:
+        return "until value is not a valid date... or is it after the 04.12.219250468 15:30:07 already?!"
+
     result = session.query(Institution)\
         .filter(Institution.idInstitution == id_institution).filter(Institution.user == user_inst).one_or_none()
     if result is None:
