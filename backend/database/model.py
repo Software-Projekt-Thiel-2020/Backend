@@ -41,6 +41,7 @@ class Milestone(BASE):
 
     project_id = Column(Integer, ForeignKey('Project.idProject'))
     project = relationship("Project", back_populates="milestones")
+    milestone_sc_id = Column(Integer)
 
     donations = relationship("Donation", back_populates="")
 
@@ -127,7 +128,6 @@ class Donation(BASE):
     milestone_id = Column(Integer, ForeignKey('Milestone.idMilestone'))
     milestone = relationship("Milestone", back_populates="donations")
 
-    milestone_sc_id = Column(Integer)
     voted = Column(Integer)
 
 
@@ -514,25 +514,25 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
     milestones: List[Milestone] = [
         Milestone(idMilestone=1, nameMilestone="Erste Versuche", goalMilestone=WEB3.toWei(0.1, 'ether'),
                   currentVotesMilestone=112,
-                  untilBlockMilestone=1693094933),
+                  untilBlockMilestone=1693094933, milestone_sc_id=0),
         Milestone(idMilestone=2, nameMilestone="Verbesserungen", goalMilestone=WEB3.toWei(0.2, 'ether'),
                   currentVotesMilestone=12,
-                  untilBlockMilestone=1693094933),
+                  untilBlockMilestone=1693094933, milestone_sc_id=1),
         Milestone(idMilestone=3, nameMilestone="Fertigstellung", goalMilestone=WEB3.toWei(0.3, 'ether'),
                   currentVotesMilestone=0,
-                  untilBlockMilestone=1693094933),
+                  untilBlockMilestone=1693094933, milestone_sc_id=2),
         Milestone(idMilestone=4, nameMilestone="Neue Waffen", goalMilestone=WEB3.toWei(0.1, 'ether'),
                   currentVotesMilestone=0,
-                  untilBlockMilestone=1693094933),
+                  untilBlockMilestone=1693094933, milestone_sc_id=0),
         Milestone(idMilestone=5, nameMilestone="Abwehrmauern", goalMilestone=WEB3.toWei(0.2, 'ether'),
                   currentVotesMilestone=12,
-                  untilBlockMilestone=1693094933),
+                  untilBlockMilestone=1693094933, milestone_sc_id=1),
         Milestone(idMilestone=6, nameMilestone="ProjektZiel", goalMilestone=WEB3.toWei(0.3, 'ether'),
                   currentVotesMilestone=44,
-                  untilBlockMilestone=1693094933),
+                  untilBlockMilestone=1693094933, milestone_sc_id=0),
         Milestone(idMilestone=7, nameMilestone="Zukunftstechnik", goalMilestone=WEB3.toWei(0.5, 'ether'),
                   currentVotesMilestone=400,
-                  untilBlockMilestone=1693094933),
+                  untilBlockMilestone=1693094933, milestone_sc_id=3),
     ]
     # set Project to Milestone
     milestones[0].project = projects[0]
