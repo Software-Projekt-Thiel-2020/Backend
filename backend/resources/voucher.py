@@ -31,7 +31,7 @@ def voucher_patch_institution(session):
         return jsonify({'error': 'Missing parameter'}), 400
 
     try:
-        check_params_int([voucher_id, inst_id, voucher_valid_time, voucher_available])
+        check_params_int([voucher_id, inst_id, voucher_valid_time, voucher_available, voucher_price])
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
@@ -51,7 +51,7 @@ def voucher_patch_institution(session):
             return jsonify({'error': 'new validTime has to be bigger than the old one'}), 400
         voucher.validTime = voucher_valid_time
     if voucher_price:
-        voucher.priceVoucher = voucher_price
+        voucher.priceVoucher = int(voucher_price)
     if voucher_available:
         voucher.available = voucher_available == '1'
 
@@ -62,15 +62,15 @@ def voucher_patch_institution(session):
 @BP.route('/institution', methods=['POST'])
 @auth_user
 @db_session_dec
-def voucher_post_institution(session, user_inst):  # pylint:disable=unused-argument
+def voucher_post_institution(session, user_inst):
     """
     Handles POST for resource <base>/api/voucher/institution .
     :return: json data result (success or failure)
     """
-    institution_id = request.headers.get('idInstitution', default=None)
-    voucher_price = request.headers.get('price', default=None)
-    voucher_description = request.headers.get('subject', default=None)
-    voucher_title = request.headers.get('title', default=None)
+    institution_id = request.headers.get('idInstitution')
+    voucher_price = request.headers.get('price')
+    voucher_description = request.headers.get('subject')
+    voucher_title = request.headers.get('title')
     voucher_valid_time = request.headers.get('validTime', default=2 * 31536000)
 
     if None in [voucher_title, voucher_description, voucher_price, institution_id]:
@@ -98,7 +98,7 @@ def voucher_post_institution(session, user_inst):  # pylint:disable=unused-argum
 
     voucher_inst = Voucher(titleVoucher=voucher_title,
                            descriptionVoucher=voucher_description,
-                           priceVoucher=voucher_price,
+                           priceVoucher=int(voucher_price),
                            validTime=voucher_valid_time,
                            institution_id=institution_id,
                            )
@@ -171,7 +171,7 @@ def voucher_post(session, user):
         voucher = session.query(Voucher).filter(Voucher.idVoucher == id_voucher).one()
         balance = WEB3.eth.getBalance(user.publickeyUser)
 
-        if balance < voucher.priceVoucher:  # ToDo: gas-cost?
+        if balance < int(voucher.priceVoucher):  # ToDo: gas-cost?
             return jsonify({'error': 'not enough balance'}), 406
         if not voucher.available:
             return jsonify({'error': 'voucher not available'}), 406
@@ -186,7 +186,7 @@ def voucher_post(session, user):
         transaction = {
             'nonce': WEB3.eth.getTransactionCount(user.publickeyUser),
             'to': inst.publickeyInstitution,
-            'value': voucher.priceVoucher,
+            'value': int(voucher.priceVoucher),
             'gas': 200000,
             'gasPrice': WEB3.toWei('50', 'gwei')
         }

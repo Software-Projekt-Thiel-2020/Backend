@@ -216,7 +216,7 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
                                           int(milestone['goal']), int(milestone['until']))
             milestones_inst = Milestone(
                 nameMilestone=milestone['name'],
-                goalMilestone=milestone['goal'],
+                goalMilestone=int(milestone['goal']),
                 untilBlockMilestone=milestone['until'],
                 milestone_sc_id=sc_id,
             )
@@ -290,7 +290,7 @@ def projects_patch(session, user_inst, id):
                                           milestone['name'], int(milestone['goal']), int(milestone['until']))
             milestones_inst = Milestone(
                 nameMilestone=milestone['name'],
-                goalMilestone=milestone['goal'],
+                goalMilestone=int(milestone['goal']),
                 currentVotesMilestone=0,
                 untilBlockMilestone=milestone['until'],
                 milestone_sc_id=sc_id,

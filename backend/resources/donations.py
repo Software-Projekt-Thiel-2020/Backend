@@ -109,7 +109,7 @@ def donations_post(session, user_inst):
             filter(Milestone.milestone_sc_id == milestone_sc_index).one()
 
         donations_inst = Donation(
-            amountDonation=amount,
+            amountDonation=int(amount),
             user=user_inst,
             milestone=milestone,
             voteDonation=bool(int(vote_enabled)),
