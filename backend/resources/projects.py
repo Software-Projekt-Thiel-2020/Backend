@@ -225,7 +225,7 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
             session.add(milestones_inst)
         session.commit()
         return jsonify({'status': 'ok', 'id': project_inst.idProject}), 201
-    except (KeyError, json.JSONDecodeError):
+    except (ValueError, KeyError, json.JSONDecodeError):
         return jsonify({'error': 'invalid json'}), 400
     finally:
         session.rollback()
