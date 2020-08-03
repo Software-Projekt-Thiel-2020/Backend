@@ -65,6 +65,8 @@ def project_add_milestone(project: Project, owner: User, name: str, goal: int, u
     if processed_receipt[0].args._amount != goal:  # pylint:disable=protected-access
         raise RuntimeError("SC addMilestone Event goal wrong!")
 
+    return processed_receipt[0].args.milestone_id
+
 
 def project_add_milestone_check(project: Project, owner: User, name: str, goal: int, until: int) -> Optional[str]:
     if not len(name) > 0:  # require(_name.length > 0);
@@ -152,7 +154,7 @@ def project_donate_vote(user_inst: User, vote: int, donation: Donation):
         abi=PROJECT_JSON["abi"]
     )
 
-    transaction = donation_sc.functions.vote(donation.milestone_sc_id, vote)
+    transaction = donation_sc.functions.vote(donation.milestone.milestone_sc_id, vote)
     transaction = transaction.buildTransaction({'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser),
                                                 'from': user_inst.publickeyUser})
     signed_transaction = WEB3.eth.account.sign_transaction(transaction, user_inst.privatekeyUser)

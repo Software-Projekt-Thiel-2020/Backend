@@ -2,7 +2,7 @@
 from datetime import datetime
 from typing import List
 
-from sqlalchemy import Column, ForeignKey, Integer, VARCHAR, BINARY, BOOLEAN, DateTime, Float, TEXT, BigInteger
+from sqlalchemy import Column, ForeignKey, Integer, VARCHAR, BINARY, BOOLEAN, DateTime, Float, TEXT, DECIMAL
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 from sqlalchemy.orm import relationship
 from web3.types import TxReceipt
@@ -22,7 +22,7 @@ class Project(BASE):
     latitude = Column(Float)
     longitude = Column(Float)
     until = Column(Integer)
-    goal = Column(BigInteger)
+    goal = Column(DECIMAL(32, 0, asdecimal=False))
 
     institution_id = Column(Integer, ForeignKey('Institution.idInstitution'))
     institution = relationship("Institution", back_populates="projects")
@@ -35,12 +35,13 @@ class Milestone(BASE):
     __tablename__ = 'Milestone'
     idMilestone = Column(Integer, primary_key=True)
     nameMilestone = Column(VARCHAR(256))
-    goalMilestone = Column(Integer)
+    goalMilestone = Column(DECIMAL(32, 0, asdecimal=False))
     currentVotesMilestone = Column(Integer, default=0)
     untilBlockMilestone = Column(Integer)
 
     project_id = Column(Integer, ForeignKey('Project.idProject'))
     project = relationship("Project", back_populates="milestones")
+    milestone_sc_id = Column(Integer)
 
     donations = relationship("Donation", back_populates="")
 
@@ -71,7 +72,7 @@ class Voucher(BASE):
     idVoucher = Column(Integer, primary_key=True)
     titleVoucher = Column(VARCHAR(32))
     descriptionVoucher = Column(VARCHAR(1024))
-    priceVoucher = Column(Integer, nullable=False)
+    priceVoucher = Column(DECIMAL(32, 0, asdecimal=False), nullable=False)
     available = Column(BOOLEAN, default=True)
     validTime = Column(Integer, default=2 * 31536000)
 
@@ -117,7 +118,7 @@ class VoucherUser(BASE):
 class Donation(BASE):
     __tablename__ = 'Donation'
     idDonation = Column(Integer, primary_key=True)
-    amountDonation = Column(BigInteger)
+    amountDonation = Column(DECIMAL(32, 0, asdecimal=False))
     voteDonation = Column(BOOLEAN)
     timeOfDonation = Column(DateTime, default=datetime.utcnow)
 
@@ -127,7 +128,6 @@ class Donation(BASE):
     milestone_id = Column(Integer, ForeignKey('Milestone.idMilestone'))
     milestone = relationship("Milestone", back_populates="donations")
 
-    milestone_sc_id = Column(Integer)
     voted = Column(Integer)
 
 
@@ -514,25 +514,25 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
     milestones: List[Milestone] = [
         Milestone(idMilestone=1, nameMilestone="Erste Versuche", goalMilestone=WEB3.toWei(0.1, 'ether'),
                   currentVotesMilestone=112,
-                  untilBlockMilestone=1693094933),
+                  untilBlockMilestone=1693094933, milestone_sc_id=0),
         Milestone(idMilestone=2, nameMilestone="Verbesserungen", goalMilestone=WEB3.toWei(0.2, 'ether'),
                   currentVotesMilestone=12,
-                  untilBlockMilestone=1693094933),
+                  untilBlockMilestone=1693094933, milestone_sc_id=1),
         Milestone(idMilestone=3, nameMilestone="Fertigstellung", goalMilestone=WEB3.toWei(0.3, 'ether'),
                   currentVotesMilestone=0,
-                  untilBlockMilestone=1693094933),
+                  untilBlockMilestone=1693094933, milestone_sc_id=2),
         Milestone(idMilestone=4, nameMilestone="Neue Waffen", goalMilestone=WEB3.toWei(0.1, 'ether'),
                   currentVotesMilestone=0,
-                  untilBlockMilestone=1693094933),
+                  untilBlockMilestone=1693094933, milestone_sc_id=0),
         Milestone(idMilestone=5, nameMilestone="Abwehrmauern", goalMilestone=WEB3.toWei(0.2, 'ether'),
                   currentVotesMilestone=12,
-                  untilBlockMilestone=1693094933),
+                  untilBlockMilestone=1693094933, milestone_sc_id=1),
         Milestone(idMilestone=6, nameMilestone="ProjektZiel", goalMilestone=WEB3.toWei(0.3, 'ether'),
                   currentVotesMilestone=44,
-                  untilBlockMilestone=1693094933),
+                  untilBlockMilestone=1693094933, milestone_sc_id=0),
         Milestone(idMilestone=7, nameMilestone="Zukunftstechnik", goalMilestone=WEB3.toWei(0.5, 'ether'),
                   currentVotesMilestone=400,
-                  untilBlockMilestone=1693094933),
+                  untilBlockMilestone=1693094933, milestone_sc_id=3),
     ]
     # set Project to Milestone
     milestones[0].project = projects[0]

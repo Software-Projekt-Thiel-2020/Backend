@@ -51,7 +51,7 @@ contract Project {
     event Donate(uint256 amount, uint8 milestoneId, address donor_add, bool wantsToVote);
     event Donate_Light(uint256 amount);
     event Vote(uint8 milestoneId, address donor_add, votePosition vp);
-    event AddMilestone(bytes _name, uint256 _amount);
+    event AddMilestone(bytes _name, uint256 _amount, uint8 milestone_id);
     event PayingOutProject(uint256 _amount);
     event Retract(uint256 amount, uint8 milestoneId, address donor);
 
@@ -255,6 +255,6 @@ contract Project {
         milestones[milestonesCounter] = Milestone(_name, _targetAmount, _voteableUntil, 0, 0, false, false);
         milestonesCounter++;
 
-        emit AddMilestone(_name, _targetAmount);
+        emit AddMilestone(_name, _targetAmount, milestonesCounter - 1);
     }
 }

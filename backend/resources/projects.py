@@ -212,12 +212,13 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
         session.add(project_inst)
 
         for milestone in milestones_json:
-            project_add_milestone(project_inst, user_inst, milestone['name'],
-                                  int(milestone['goal']), int(milestone['until']))
+            sc_id = project_add_milestone(project_inst, user_inst, milestone['name'],
+                                          int(milestone['goal']), int(milestone['until']))
             milestones_inst = Milestone(
                 nameMilestone=milestone['name'],
                 goalMilestone=milestone['goal'],
                 untilBlockMilestone=milestone['until'],
+                milestone_sc_id=sc_id,
             )
             project_inst.milestones.append(milestones_inst)
             session.add(project_inst)
@@ -285,13 +286,14 @@ def projects_patch(session, user_inst, id):
                 return jsonify({'error': 'milestone error: ' + mile_check}), 400
 
         for milestone in milestones_json:
-            project_add_milestone(project_inst, user_inst,
-                                  milestone['name'], int(milestone['goal']), int(milestone['until']))
+            sc_id = project_add_milestone(project_inst, user_inst,
+                                          milestone['name'], int(milestone['goal']), int(milestone['until']))
             milestones_inst = Milestone(
                 nameMilestone=milestone['name'],
                 goalMilestone=milestone['goal'],
                 currentVotesMilestone=0,
                 untilBlockMilestone=milestone['until'],
+                milestone_sc_id=sc_id,
             )
 
             project_inst.milestones.append(milestones_inst)
