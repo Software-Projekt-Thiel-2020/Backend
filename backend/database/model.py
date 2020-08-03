@@ -2,7 +2,7 @@
 from datetime import datetime
 from typing import List
 
-from sqlalchemy import Column, ForeignKey, Integer, VARCHAR, BINARY, BOOLEAN, DateTime, Float, TEXT, BigInteger
+from sqlalchemy import Column, ForeignKey, Integer, VARCHAR, BINARY, BOOLEAN, DateTime, Float, TEXT, DECIMAL
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 from sqlalchemy.orm import relationship
 from web3.types import TxReceipt
@@ -22,7 +22,7 @@ class Project(BASE):
     latitude = Column(Float)
     longitude = Column(Float)
     until = Column(Integer)
-    goal = Column(BigInteger)
+    goal = Column(DECIMAL(32, 0, asdecimal=False))
 
     institution_id = Column(Integer, ForeignKey('Institution.idInstitution'))
     institution = relationship("Institution", back_populates="projects")
@@ -35,7 +35,7 @@ class Milestone(BASE):
     __tablename__ = 'Milestone'
     idMilestone = Column(Integer, primary_key=True)
     nameMilestone = Column(VARCHAR(256))
-    goalMilestone = Column(Integer)
+    goalMilestone = Column(DECIMAL(32, 0, asdecimal=False))
     currentVotesMilestone = Column(Integer, default=0)
     untilBlockMilestone = Column(Integer)
 
@@ -72,7 +72,7 @@ class Voucher(BASE):
     idVoucher = Column(Integer, primary_key=True)
     titleVoucher = Column(VARCHAR(32))
     descriptionVoucher = Column(VARCHAR(1024))
-    priceVoucher = Column(Integer, nullable=False)
+    priceVoucher = Column(DECIMAL(32, 0, asdecimal=False), nullable=False)
     available = Column(BOOLEAN, default=True)
     validTime = Column(Integer, default=2 * 31536000)
 
@@ -118,7 +118,7 @@ class VoucherUser(BASE):
 class Donation(BASE):
     __tablename__ = 'Donation'
     idDonation = Column(Integer, primary_key=True)
-    amountDonation = Column(BigInteger)
+    amountDonation = Column(DECIMAL(32, 0, asdecimal=False))
     voteDonation = Column(BOOLEAN)
     timeOfDonation = Column(DateTime, default=datetime.utcnow)
 
