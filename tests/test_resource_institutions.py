@@ -144,7 +144,7 @@ def test_institutions_get_bad_id2(client):
 def test_institutions_post(client_w_eth):
     headers = {"authToken": TOKEN_1, "username": "sw2020testuser2.id.blockstack", "name": "ExampleInstitution",
                "address": "Address", "description": b64encode(b"description"), "latitude": 13.37, "longitude": 42.69,
-               "publickey": ACCOUNTS[2]}
+               "publickey": ACCOUNTS[2], "short": "sdesc"}
     res = client_w_eth.post('/api/institutions', headers=headers)
     assert res._status_code == 201
     assert len(res.json) == 1
@@ -160,6 +160,7 @@ def test_institutions_post(client_w_eth):
     assert res.json[0]["address"] == "Address"
     assert res.json[0]["description"] == "description"
     assert res.json[0]["latitude"] == 13.37
+    assert res.json[0]["short"] == "sdesc"
     assert res.json[0]["longitude"] == 42.69
 
 
