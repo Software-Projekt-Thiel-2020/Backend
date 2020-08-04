@@ -9,6 +9,7 @@ from backend.database.model import Voucher, VoucherUser, Institution
 from backend.resources.helpers import auth_user, check_params_int, db_session_dec
 from backend.smart_contracts.web3 import WEB3
 from backend.smart_contracts.web3_voucher import add_voucher, redeem_voucher, redeem_voucher_check
+from backend.database.constants import DEC_LEN
 
 BP = Blueprint('voucher', __name__, url_prefix='/api/vouchers')
 
@@ -31,7 +32,7 @@ def voucher_patch_institution(session, user_inst):
     if None in [inst_id, voucher_id]:
         return jsonify({'error': 'Missing parameter'}), 400
 
-    if voucher_price is not None and len(voucher_price) > 32:
+    if voucher_price is not None and len(voucher_price) > DEC_LEN:
         return jsonify({'error': 'Price to big'}), 400
 
     try:
@@ -91,10 +92,10 @@ def voucher_post_institution(session, user_inst):
     if "" in [voucher_title, voucher_description]:
         return jsonify({'error': "Empty parameter"}), 400
 
-    if len(voucher_price) > 32:
+    if len(voucher_price) > DEC_LEN:
         return jsonify({'error': "Price to big"}), 400
 
-    if len(voucher_title) > 32:
+    if len(voucher_title) > DEC_LEN:
         return jsonify({'error': "title too long"}), 400
 
     try:
