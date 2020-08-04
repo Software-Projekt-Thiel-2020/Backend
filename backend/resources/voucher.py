@@ -59,7 +59,7 @@ def voucher_patch_institution(session, user_inst):
     # check if user is owner
     owner = session.query(Institution)
     owner = owner.filter(Institution.user_id == user_inst.idUser,
-                         Institution.idInstitution == institution_id).first()
+                         Institution.idInstitution == inst_id).first()
 
     if owner is None:
         return jsonify({'error': 'no permission'}), 403
