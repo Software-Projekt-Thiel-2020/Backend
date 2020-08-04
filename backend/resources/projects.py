@@ -67,6 +67,7 @@ def projects_get(session):
             'idinstitution': result.institution_id,
             'picturePath': result.picPathProject,
             'description': result.descriptionProject,
+            'short': result.shortDescription,
             'latitude': result.latitude,
             'longitude': result.longitude,
             'until': result.until,
@@ -127,6 +128,7 @@ def projects_id(session, id):  # noqa
         'milestones': json_ms,
         'picturePath': results.picPathProject,
         'description': results.descriptionProject,
+        'short': results.shortDescription,
         'latitude': results.latitude,
         'longitude': results.longitude,
         'address': results.institution.addressInstitution,
@@ -155,8 +157,9 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
     description = request.headers.get('description')
     latitude = request.headers.get('latitude')
     longitude = request.headers.get('longitude')
+    short = request.headers.get('short')
 
-    if None in [name, goal_raw, until_raw, id_institution, description]:
+    if None in [name, goal_raw, until_raw, id_institution, description, short]:
         return jsonify({'error': 'Missing parameter'}), 403
     try:
         id_institution, goal, until = check_params_int([id_institution, goal_raw, until_raw])  # noqa
@@ -194,6 +197,7 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
         longitude=longitude,
         until=until,
         goal=goal,
+        shortDescription=short
     )
 
     try:
@@ -244,6 +248,7 @@ def projects_patch(session, user_inst, id):
     webpage = request.headers.get('webpage', default=None)
     milestones = request.headers.get('milestones', default="[]")
     description = request.headers.get('description')
+    short = request.headers.get('short')
     latitude = request.headers.get('latitude')
     longitude = request.headers.get('longitude')
 
@@ -270,6 +275,9 @@ def projects_patch(session, user_inst, id):
         except TypeError:
             return jsonify({"error": "bad base64 encoding"}), 400
         project_inst.descriptionProject = description
+
+    if short is not None:
+        project_inst.shortDescription = short
 
     result = session.query(Institution)\
         .filter(Institution.idInstitution == project_inst.institution_id)\
