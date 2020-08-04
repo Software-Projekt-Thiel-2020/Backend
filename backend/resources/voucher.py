@@ -14,8 +14,9 @@ BP = Blueprint('voucher', __name__, url_prefix='/api/vouchers')
 
 
 @BP.route('/institution', methods=['PATCH'])
+@auth_user
 @db_session_dec
-def voucher_patch_institution(session):
+def voucher_patch_institution(session, user_inst):
     """
     Handles PATCH for resource <base>/api/vouchers/institutions.
 
@@ -54,6 +55,14 @@ def voucher_patch_institution(session):
         voucher.priceVoucher = int(voucher_price)
     if voucher_available:
         voucher.available = voucher_available == '1'
+
+    # check if user is owner
+    owner = session.query(Institution)
+    owner = owner.filter(Institution.user_id == user_inst.idUser,
+                         Institution.idInstitution == inst_id).first()
+
+    if owner is None:
+        return jsonify({'error': 'no permission'}), 403
 
     session.commit()
     return jsonify({'status': 'Voucher wurde bearbeitet'}), 201
