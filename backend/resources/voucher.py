@@ -56,6 +56,14 @@ def voucher_patch_institution(session, user_inst):
     if voucher_available:
         voucher.available = voucher_available == '1'
 
+    # check if user is owner
+    owner = session.query(Institution)
+    owner = owner.filter(Institution.user_id == user_inst.idUser,
+                         Institution.idInstitution == institution_id).first()
+
+    if owner is None:
+        return jsonify({'error': 'no permission'}), 403
+
     session.commit()
     return jsonify({'status': 'Voucher wurde bearbeitet'}), 201
 
