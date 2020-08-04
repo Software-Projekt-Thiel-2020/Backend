@@ -58,6 +58,7 @@ class Institution(BASE):
     latitude = Column(Float)
     longitude = Column(Float)
     descriptionInstitution = Column(TEXT)
+    shortDescription = Column(TEXT)
     scAddress = Column(VARCHAR(64))
 
     projects = relationship("Project", back_populates="institution")
@@ -440,7 +441,8 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
                     latitude=52.030228,
                     longitude=8.532471,
                     picPathInstitution="a49d11ef-eb29-4867-9254-7c1ef1a7870c.png",
-                    descriptionInstitution="# MSGraphic\n'MSGraphic is the best company ever' - Donald Trump"),
+                    descriptionInstitution="# MSGraphic\n'MSGraphic is the best company ever' - Donald Trump",
+                    shortDescription="MSG"),
         Institution(idInstitution=2,
                     nameInstitution="SWP",
                     webpageInstitution="http://www.swp.com",
@@ -451,7 +453,8 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
                     latitude=40.712776,
                     longitude=-74.005974,
                     picPathInstitution="0984d9d5-7ebc-45a5-9258-46fe2c2b4151.png",
-                    descriptionInstitution="# SWP\nSoftwareprojekt202"),
+                    descriptionInstitution="# SWP\nSoftwareprojekt202",
+                    shortDescription="SWP"),
         Institution(idInstitution=3,
                     nameInstitution="Asgard Inc.",
                     webpageInstitution="http://www.asgard.as",
@@ -462,7 +465,8 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
                     latitude=-13.531950,
                     longitude=-71.967461,
                     picPathInstitution="88c0bc0a-c673-4cdf-8216-cd4e2c916be2.png",
-                    descriptionInstitution="# Asgard Inc.\nWir sind die, die Asgard kennen wie kein anderer!"),
+                    descriptionInstitution="# Asgard Inc.\nWir sind die, die Asgard kennen wie kein anderer!",
+                    shortDescription="Asgard"),
         Institution(idInstitution=4,
                     nameInstitution="Blackhole",
                     webpageInstitution="http://127.0.0.1",
@@ -474,7 +478,8 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
                     longitude=2.960840,
                     picPathInstitution="cdbad6a3-4322-43b3-9c07-be3606508386.png",
                     descriptionInstitution="# Blackhole\nBlackhole international is the company you can trust with all "
-                                           "your security needs!"),
+                                           "your security needs!",
+                    shortDescription="BH"),
     ]
 
     institutions[0].user = users[5]
