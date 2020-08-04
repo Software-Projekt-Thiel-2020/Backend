@@ -31,6 +31,9 @@ def voucher_patch_institution(session, user_inst):
     if None in [inst_id, voucher_id]:
         return jsonify({'error': 'Missing parameter'}), 400
 
+    if voucher_price is not None and len(voucher_price) > 32:
+        return jsonify({'error': 'Price to big'}), 400
+
     try:
         check_params_int([voucher_id, inst_id, voucher_valid_time, voucher_available, voucher_price])
     except ValueError:
@@ -87,6 +90,12 @@ def voucher_post_institution(session, user_inst):
 
     if "" in [voucher_title, voucher_description]:
         return jsonify({'error': "Empty parameter"}), 400
+
+    if len(voucher_price) > 32:
+        return jsonify({'error': "Price to big"}), 400
+
+    if len(voucher_title) > 32:
+        return jsonify({'error': "title too long"}), 400
 
     try:
         check_params_int([voucher_price, voucher_valid_time, institution_id])
