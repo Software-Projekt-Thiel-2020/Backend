@@ -16,17 +16,17 @@ def test_projects_get(client):
     assert res.json[0]["id"] == 1
     assert res.json[0]["idinstitution"] == 1
     assert res.json[0]["name"] == "Computer malt Bild"
-    assert res.json[0]["webpage"] == "www.cmb.de"
+    assert res.json[0]["webpage"] == "http://www.cmb.de"
 
     assert res.json[1]["id"] == 2
     assert res.json[1]["idinstitution"] == 3
     assert res.json[1]["name"] == "Rangaroek verteidigen"
-    assert res.json[1]["webpage"] == "www.asgard.as"
+    assert res.json[1]["webpage"] == "http://www.asgard.as"
 
     assert res.json[2]["id"] == 3
     assert res.json[2]["idinstitution"] == 3
     assert res.json[2]["name"] == "Softwareprojekt 2020"
-    assert res.json[2]["webpage"] == "www.swp.de"
+    assert res.json[2]["webpage"] == "http://www.swp.de"
 
 
 def test_projects_get_name(client):
@@ -38,7 +38,7 @@ def test_projects_get_name(client):
     assert res.json[0]["id"] == 1
     assert res.json[0]["idinstitution"] == 1
     assert res.json[0]["name"] == "Computer malt Bild"
-    assert res.json[0]["webpage"] == "www.cmb.de"
+    assert res.json[0]["webpage"] == "http://www.cmb.de"
 
 
 def test_projects_get_userid(client):
@@ -50,7 +50,7 @@ def test_projects_get_userid(client):
     assert res.json[0]["id"] == 1
     assert res.json[0]["idinstitution"] == 1
     assert res.json[0]["name"] == "Computer malt Bild"
-    assert res.json[0]["webpage"] == "www.cmb.de"
+    assert res.json[0]["webpage"] == "http://www.cmb.de"
 
 
 def test_projects_get_geo(client):
@@ -62,7 +62,7 @@ def test_projects_get_geo(client):
     assert res.json[0]["id"] == 1
     assert res.json[0]["idinstitution"] == 1
     assert res.json[0]["name"] == "Computer malt Bild"
-    assert res.json[0]["webpage"] == "www.cmb.de"
+    assert res.json[0]["webpage"] == "http://www.cmb.de"
 
 
 def test_projects_get_bad_geo(client):
@@ -81,12 +81,12 @@ def test_projects_get_w_institution(client):
     assert res.json[0]["id"] == 2
     assert res.json[0]["idinstitution"] == 3
     assert res.json[0]["name"] == "Rangaroek verteidigen"
-    assert res.json[0]["webpage"] == "www.asgard.as"
+    assert res.json[0]["webpage"] == "http://www.asgard.as"
 
     assert res.json[1]["id"] == 3
     assert res.json[1]["idinstitution"] == 3
     assert res.json[1]["name"] == "Softwareprojekt 2020"
-    assert res.json[1]["webpage"] == "www.swp.de"
+    assert res.json[1]["webpage"] == "http://www.swp.de"
 
 
 def test_projects_get_w_id(client):
@@ -98,7 +98,7 @@ def test_projects_get_w_id(client):
     assert res.json[0]["id"] == 2
     assert res.json[0]["idinstitution"] == 3
     assert res.json[0]["name"] == "Rangaroek verteidigen"
-    assert res.json[0]["webpage"] == "www.asgard.as"
+    assert res.json[0]["webpage"] == "http://www.asgard.as"
 
 
 def test_projects_get_w_bad_id(client):
@@ -160,7 +160,7 @@ def test_projects_id_get_existant_param(client):
     assert res.json["id"] == 1
     assert res.json["idinstitution"] == 1
     assert res.json["name"] == "Computer malt Bild"
-    assert res.json["webpage"] == "www.cmb.de"
+    assert res.json["webpage"] == "http://www.cmb.de"
     assert res.json["address"] == "Address1"
     assert res.json["until"] == 1693094933
     assert res.json["goal"] == WEB3.toWei(1, 'ether')
@@ -424,7 +424,7 @@ def test_projects_patch_w_webpage_wrong_user(client):
     assert res.json["id"] == 1
     assert res.json["idinstitution"] == 1
     assert res.json["name"] == "Computer malt Bild"
-    assert res.json["webpage"] == "www.cmb.de"
+    assert res.json["webpage"] == "http://www.cmb.de"
 
     assert len(res.json["milestones"]) == 4
 
@@ -458,7 +458,7 @@ def test_projects_patch_w_bad_webpage(client):
     assert res.json["id"] == 1
     assert res.json["idinstitution"] == 1
     assert res.json["name"] == "Computer malt Bild"
-    assert res.json["webpage"] == "www.cmb.de"
+    assert res.json["webpage"] == "http://www.cmb.de"
 
     assert len(res.json["milestones"]) == 4
 
@@ -484,7 +484,7 @@ def test_projects_patch_w_milestones(client_w_eth):
     assert res.json["id"] == 1
     assert res.json["idinstitution"] == 1
     assert res.json["name"] == "Computer malt Bild"
-    assert res.json["webpage"] == "www.cmb.de"
+    assert res.json["webpage"] == "http://www.cmb.de"
 
     assert len(res.json["milestones"]) == 6
     assert res.json["milestones"][0]["id"] == 1
@@ -536,7 +536,7 @@ def test_projects_patch_wo_params(client):
     assert res.json["id"] == 1
     assert res.json["idinstitution"] == 1
     assert res.json["name"] == "Computer malt Bild"
-    assert res.json["webpage"] == "www.cmb.de"
+    assert res.json["webpage"] == "http://www.cmb.de"
 
     assert len(res.json["milestones"]) == 4
     assert res.json["milestones"][0]["id"] == 1
