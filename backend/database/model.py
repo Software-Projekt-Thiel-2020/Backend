@@ -8,6 +8,7 @@ from sqlalchemy.orm import relationship
 from web3.types import TxReceipt
 
 from backend.smart_contracts.web3 import WEB3, PROJECT_JSON, INSTITUTION_JSON
+from backend.database.constants import DEC_LEN
 
 BASE: DeclarativeMeta = declarative_base()
 
@@ -22,7 +23,7 @@ class Project(BASE):
     latitude = Column(Float)
     longitude = Column(Float)
     until = Column(Integer)
-    goal = Column(DECIMAL(32, 0, asdecimal=False))
+    goal = Column(DECIMAL(DEC_LEN, 0, asdecimal=False))
 
     institution_id = Column(Integer, ForeignKey('Institution.idInstitution'))
     institution = relationship("Institution", back_populates="projects")
@@ -35,7 +36,7 @@ class Milestone(BASE):
     __tablename__ = 'Milestone'
     idMilestone = Column(Integer, primary_key=True)
     nameMilestone = Column(VARCHAR(256))
-    goalMilestone = Column(DECIMAL(32, 0, asdecimal=False))
+    goalMilestone = Column(DECIMAL(DEC_LEN, 0, asdecimal=False))
     currentVotesMilestone = Column(Integer, default=0)
     untilBlockMilestone = Column(Integer)
 
@@ -72,7 +73,7 @@ class Voucher(BASE):
     idVoucher = Column(Integer, primary_key=True)
     titleVoucher = Column(VARCHAR(32))
     descriptionVoucher = Column(VARCHAR(1024))
-    priceVoucher = Column(DECIMAL(32, 0, asdecimal=False), nullable=False)
+    priceVoucher = Column(DECIMAL(DEC_LEN, 0, asdecimal=False), nullable=False)
     available = Column(BOOLEAN, default=True)
     validTime = Column(Integer, default=2 * 31536000)
 
@@ -118,7 +119,7 @@ class VoucherUser(BASE):
 class Donation(BASE):
     __tablename__ = 'Donation'
     idDonation = Column(Integer, primary_key=True)
-    amountDonation = Column(DECIMAL(32, 0, asdecimal=False))
+    amountDonation = Column(DECIMAL(DEC_LEN, 0, asdecimal=False))
     voteDonation = Column(BOOLEAN)
     timeOfDonation = Column(DateTime, default=datetime.utcnow)
 
