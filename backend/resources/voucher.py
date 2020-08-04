@@ -14,8 +14,9 @@ BP = Blueprint('voucher', __name__, url_prefix='/api/vouchers')
 
 
 @BP.route('/institution', methods=['PATCH'])
+@auth_user
 @db_session_dec
-def voucher_patch_institution(session):
+def voucher_patch_institution(session, user_inst):
     """
     Handles PATCH for resource <base>/api/vouchers/institutions.
 
