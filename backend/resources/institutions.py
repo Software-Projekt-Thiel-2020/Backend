@@ -67,6 +67,7 @@ def institutions_get(session):
             "latitude": result.latitude,
             "publickey": result.publickeyInstitution,
             "description": result.descriptionInstitution,
+            "short": result.shortDescription,
             "username": result.user.usernameUser,
         })
 
@@ -87,6 +88,7 @@ def institutions_post(session, user_inst):  # pylint:disable=unused-argument
     username = request.headers.get('username')
     publickey = request.headers.get('publickey')
     description = request.headers.get('description')
+    short = request.headers.get('short')
     latitude = request.headers.get('latitude')
     longitude = request.headers.get('longitude')
 
@@ -135,6 +137,7 @@ def institutions_post(session, user_inst):  # pylint:disable=unused-argument
                 longitude=longitude,
                 scAddress=sc_address,
                 user=owner_inst,
+                shortDescription=short
             ))
         session.commit()
         return jsonify({'status': 'Institution wurde erstellt'}), 201
@@ -156,6 +159,7 @@ def institutions_patch(session, user_inst):  # pylint:disable=too-many-branches
     webpage = request.headers.get('webpage')
     address = request.headers.get('address')
     description = request.headers.get('description')
+    short = request.headers.get('short')
     latitude = request.headers.get('latitude')
     longitude = request.headers.get('longitude')
 
@@ -198,6 +202,8 @@ def institutions_patch(session, user_inst):  # pylint:disable=too-many-branches
             except TypeError:
                 return jsonify({"error": "bad base64 encoding"}), 400
             institution.descriptionInstitution = description
+        if short:
+            institution.shortDescription = short
         if latitude and longitude:
             institution.latitude = latitude
             institution.longitude = longitude
