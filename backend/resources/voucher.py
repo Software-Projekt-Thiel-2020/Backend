@@ -51,6 +51,9 @@ def voucher_patch_institution(session, user_inst):
     if int(voucher.institution_id) != int(inst_id):
         return jsonify({"error": "voucher does not belong to institution"}), 400
 
+    if int(voucher_valid_time) > 788923150:
+        return jsonify({'error': "valid time can not be bigger than 25 Years"}), 400
+
     if voucher_valid_time:
         if int(voucher_valid_time) < int(voucher.validTime):
             return jsonify({'error': 'new validTime has to be bigger than the old one'}), 400
@@ -102,6 +105,9 @@ def voucher_post_institution(session, user_inst):
         check_params_int([voucher_price, voucher_valid_time, institution_id])
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
+
+    if int(voucher_valid_time) > 788923150:
+        return jsonify({'error': "valid time can not be bigger than 25 Years"}), 400
 
     res = session.query(Institution).filter(Institution.idInstitution == institution_id).one_or_none()
     if res is None:
