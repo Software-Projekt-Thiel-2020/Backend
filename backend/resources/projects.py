@@ -115,7 +115,6 @@ def projects_id(session, id):  # noqa
             'idProjekt': row.project_id,
             'milestoneName': row.nameMilestone,
             'goal': row.goalMilestone,
-            'currentVotes': row.currentVotesMilestone,
             'until': row.untilBlockMilestone,
             'totalDonated': float(donation_sum),
         })
@@ -299,7 +298,6 @@ def projects_patch(session, user_inst, id):
             milestones_inst = Milestone(
                 nameMilestone=milestone['name'],
                 goalMilestone=int(milestone['goal']),
-                currentVotesMilestone=0,
                 untilBlockMilestone=milestone['until'],
                 milestone_sc_id=sc_id,
             )
