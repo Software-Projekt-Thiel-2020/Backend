@@ -547,11 +547,11 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
 
     donations: List[Donation] = [
         Donation(idDonation=1, amountDonation=WEB3.toWei(0.03, 'ether'), voteDonation=True,
-                 timeOfDonation=datetime(2020, 2, 1)),
+                 timeOfDonation=datetime(2020, 2, 1), voted=1),
         Donation(idDonation=2, amountDonation=WEB3.toWei(0.02, 'ether'), voteDonation=False,
                  timeOfDonation=datetime(2015, 5, 5)),
         Donation(idDonation=3, amountDonation=WEB3.toWei(0.01, 'ether'), voteDonation=True,
-                 timeOfDonation=datetime(1988, 8, 8)),
+                 timeOfDonation=datetime(1988, 8, 8), voted=-1),
         Donation(idDonation=4, amountDonation=WEB3.toWei(0.04, 'ether'), voteDonation=False,
                  timeOfDonation=datetime(1970, 1, 1)),
     ]

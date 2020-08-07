@@ -171,24 +171,32 @@ def test_projects_id_get_existant_param(client):
     assert res.json["milestones"][0]["goal"] == WEB3.toWei(0.1, 'ether')
     assert res.json["milestones"][0]["until"] == 1693094933
     assert res.json["milestones"][0]["totalDonated"] == WEB3.toWei(0.03, 'ether')
+    assert res.json["milestones"][0]["positiveVotes"] == 1
+    assert res.json["milestones"][0]["negativeVotes"] == 0
 
     assert res.json["milestones"][1]["id"] == 2
     assert res.json["milestones"][1]["idProjekt"] == 1
     assert res.json["milestones"][1]["goal"] == WEB3.toWei(0.2, 'ether')
     assert res.json["milestones"][1]["until"] == 1693094933
     assert res.json["milestones"][1]["totalDonated"] == WEB3.toWei(0.02, 'ether')
+    assert res.json["milestones"][1]["positiveVotes"] == 0
+    assert res.json["milestones"][1]["negativeVotes"] == 0
 
     assert res.json["milestones"][2]["id"] == 3
     assert res.json["milestones"][2]["idProjekt"] == 1
     assert res.json["milestones"][2]["goal"] == WEB3.toWei(0.3, 'ether')
     assert res.json["milestones"][2]["until"] == 1693094933
     assert res.json["milestones"][2]["totalDonated"] == WEB3.toWei(0.01, 'ether')
+    assert res.json["milestones"][2]["positiveVotes"] == 0
+    assert res.json["milestones"][2]["negativeVotes"] == 1
 
     assert res.json["milestones"][3]["id"] == 7
     assert res.json["milestones"][3]["idProjekt"] == 1
     assert res.json["milestones"][3]["goal"] == WEB3.toWei(0.5, 'ether')
     assert res.json["milestones"][3]["until"] == 1693094933
     assert res.json["milestones"][3]["totalDonated"] == 0
+    assert res.json["milestones"][3]["positiveVotes"] == 0
+    assert res.json["milestones"][3]["negativeVotes"] == 0
 
     assert res.json['totalDonated'] == \
         res.json["milestones"][0]["totalDonated"] + \

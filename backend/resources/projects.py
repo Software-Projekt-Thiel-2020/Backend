@@ -1,7 +1,7 @@
 """Project Resource."""
-from base64 import b64decode
 import json
 import time
+from base64 import b64decode
 
 import validators
 from flask import Blueprint, request, jsonify
@@ -110,6 +110,19 @@ def projects_id(session, id):  # noqa
         donation_sum = session.query(func.sum(Donation.amountDonation)). \
             filter(Donation.milestone_id == row.idMilestone).group_by(Donation.milestone_id).scalar()
         donation_sum = donation_sum if donation_sum is not None else 0
+
+        pos_votes = session.query(func.count(Donation.voted)). \
+            filter(Donation.milestone_id == row.idMilestone). \
+            filter(Donation.voted == 1). \
+            group_by(Donation.milestone_id).scalar()
+        pos_votes = pos_votes if pos_votes is not None else 0
+
+        neg_votes = session.query(func.count(Donation.voted)). \
+            filter(Donation.milestone_id == row.idMilestone). \
+            filter(Donation.voted == -1). \
+            group_by(Donation.milestone_id).scalar()
+        neg_votes = neg_votes if neg_votes is not None else 0
+
         json_ms.append({
             'id': row.idMilestone,
             'idProjekt': row.project_id,
@@ -117,6 +130,8 @@ def projects_id(session, id):  # noqa
             'goal': row.goalMilestone,
             'until': row.untilBlockMilestone,
             'totalDonated': float(donation_sum),
+            'positiveVotes': pos_votes,
+            'negativeVotes': neg_votes,
         })
         total += float(donation_sum)
     json_data = {
@@ -179,10 +194,10 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
     if until < int(time.time()):
         return jsonify({'error': 'until value is in the past'}), 400
 
-    if until > 2**64:
+    if until > 2 ** 64:
         return "until value is not a valid date... or is it after the 04.12.219250468 15:30:07 already?!"
 
-    result = session.query(Institution)\
+    result = session.query(Institution) \
         .filter(Institution.idInstitution == id_institution).filter(Institution.user == user_inst).one_or_none()
     if result is None:
         return jsonify({'error': 'User has no permission to create projects for this institution'}), 403
@@ -278,8 +293,8 @@ def projects_patch(session, user_inst, id):
     if short is not None:
         project_inst.shortDescription = short
 
-    result = session.query(Institution)\
-        .filter(Institution.idInstitution == project_inst.institution_id)\
+    result = session.query(Institution) \
+        .filter(Institution.idInstitution == project_inst.institution_id) \
         .filter(Institution.user == user_inst).one_or_none()
     if result is None:
         return jsonify({'error': 'User has no permission to create projects for this institution'}), 403
