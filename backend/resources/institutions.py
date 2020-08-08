@@ -197,11 +197,14 @@ def institutions_patch(session, user_inst):  # pylint:disable=too-many-branches
         if webpage:
             institution.webpageInstitution = webpage
         if description:
+          if(len(description)%4) == 0:
             try:
                 description = b64decode(description).decode("latin-1")
             except TypeError:
                 return jsonify({"error": "bad base64 encoding"}), 400
             institution.descriptionInstitution = description
+          else:
+            return jsonify({"error": "Invalid base64-encoded string"}), 400
         if short:
             institution.shortDescription = short
         if latitude and longitude:
