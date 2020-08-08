@@ -182,7 +182,7 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
         return jsonify({'error': 'until value is in the past'}), 400
 
     try:
-        short = b64decode(short).decode("latin-1")
+        short = b64decode(str(short)).decode("latin-1")
     except TypeError:
         return jsonify({"error": "bad base64 encoding"}), 400
 
