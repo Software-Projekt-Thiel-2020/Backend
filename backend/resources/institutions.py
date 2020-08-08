@@ -102,11 +102,13 @@ def institutions_post(session, user_inst):  # pylint:disable=unused-argument
         latitude, longitude = check_params_float([latitude, longitude])
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
-
-    try:
-        description = b64decode(description).decode("latin-1")
-    except TypeError:
-        return jsonify({"error": "bad base64 encoding"}), 400
+    if(len(description)%4) == 0:
+        try:
+            description = b64decode(description).decode("latin-1")
+        except TypeError:
+            return jsonify({"error": "bad base64 encoding"}), 400
+    else:
+        return jsonify({"error": "Invalid base64-encoded string"}), 400
 
     if webpage is not None and not validators.url(webpage):
         return jsonify({'error': 'webpage is not a valid url'}), 400

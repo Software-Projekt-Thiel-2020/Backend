@@ -165,12 +165,13 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
         id_institution, goal, until = check_params_int([id_institution, goal_raw, until_raw])  # noqa
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
-
-    try:
-        description = b64decode(description).decode("latin-1")  # noqa
-    except TypeError:
-        return jsonify({"error": "bad base64 encoding"}), 400
-
+    if(len(description)%4) == 0:
+        try:
+            description = b64decode(description).decode("latin-1")  # noqa
+        except TypeError:
+            return jsonify({"error": "bad base64 encoding"}), 400
+    else:
+            return jsonify({"error": "Invalid base64-encoded string"}), 400
     if id_institution and session.query(Institution).get(id_institution) is None:
         return jsonify({'error': 'Institution not found'}), 400
 
@@ -270,10 +271,13 @@ def projects_patch(session, user_inst, id):
     if webpage is not None:
         project_inst.webpageProject = webpage
     if description is not None:
-        try:
-            description = b64decode(description).decode("latin-1")
-        except TypeError:
-            return jsonify({"error": "bad base64 encoding"}), 400
+        if(len(description)%4) == 0:
+            try:
+                description = b64decode(description).decode("latin-1")
+            except TypeError:
+                return jsonify({"error": "bad base64 encoding"}), 400
+        else:
+            return jsonify({"error": "Invalid base64-encoded string"}), 400
         project_inst.descriptionProject = description
 
     if short is not None:
