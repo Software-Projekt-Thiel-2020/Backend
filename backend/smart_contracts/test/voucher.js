@@ -12,7 +12,7 @@ contract('Institution', (accounts) => {
 
     // build up and tear down a new uut contract before each test
     beforeEach(async () => {
-        uut = await Institution.new({from: owner});
+        uut = await Institution.new(accounts[1], accounts[0], {from: owner});
     });
     afterEach(async () => {
         // nothing to do
@@ -40,7 +40,7 @@ contract('Institution', (accounts) => {
     });
     it('someone else shouldnt be able to add a voucher', async () => {
         await truffleAssert.reverts(
-            uut.addVoucher(accounts[2], web3.utils.fromAscii(test_description), 0, {from: accounts[1]})
+            uut.addVoucher(accounts[2], web3.utils.fromAscii(test_description), 0, {from: accounts[9]})
         );
     });
 

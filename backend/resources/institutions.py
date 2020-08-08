@@ -1,20 +1,19 @@
 """Institution Resource."""
-from datetime import datetime
-
+from base64 import b64decode
 import validators
 from flask import Blueprint, request, jsonify
 from geopy import distance
 
-from backend.database.db import DB_SESSION
-from backend.database.model import Institution, Transaction, User
-from backend.resources.helpers import auth_user, check_params_int, check_params_float
-from backend.smart_contracts.web3 import WEB3, PROJECT_JSON
+from backend.database.model import Institution, User
+from backend.resources.helpers import auth_user, check_params_int, check_params_float, db_session_dec
+from backend.smart_contracts.web3_voucher import voucher_constructor, voucher_constructor_check
 
 BP = Blueprint('institutions', __name__, url_prefix='/api/institutions')  # set blueprint name and resource path
 
 
 @BP.route('', methods=['GET'])
-def institutions_get():
+@db_session_dec
+def institutions_get(session):
     """
     Handles GET for resource <base>/api/institutions .
 
@@ -37,8 +36,7 @@ def institutions_get():
     if None in [radius, latitude, longitude] and any([radius, latitude, longitude]):
         return jsonify({"error": "bad geo argument"}), 400
 
-    session = DB_SESSION()
-    results = session.query(Institution).join(User)
+    results = session.query(Institution).join(Institution.user)
 
     json_data = []
 
@@ -69,6 +67,7 @@ def institutions_get():
             "latitude": result.latitude,
             "publickey": result.publickeyInstitution,
             "description": result.descriptionInstitution,
+            "short": result.shortDescription,
             "username": result.user.usernameUser,
         })
 
@@ -77,7 +76,8 @@ def institutions_get():
 
 @BP.route('', methods=['POST'])
 @auth_user
-def institutions_post(user_inst):  # pylint:disable=unused-argument
+@db_session_dec
+def institutions_post(session, user_inst):  # pylint:disable=unused-argument
     """
     Handles POST for resource <base>/api/institutions .
     :return: json response
@@ -88,6 +88,7 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
     username = request.headers.get('username')
     publickey = request.headers.get('publickey')
     description = request.headers.get('description')
+    short = request.headers.get('short')
     latitude = request.headers.get('latitude')
     longitude = request.headers.get('longitude')
 
@@ -102,10 +103,14 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
+    try:
+        description = b64decode(description).decode("latin-1")
+    except TypeError:
+        return jsonify({"error": "bad base64 encoding"}), 400
+
     if webpage is not None and not validators.url(webpage):
         return jsonify({'error': 'webpage is not a valid url'}), 400
 
-    session = DB_SESSION()
     owner_inst: User = session.query(User).filter(User.usernameUser == username).one_or_none()
     if owner_inst is None:
         return jsonify({'error': 'username not found'}), 400
@@ -115,30 +120,25 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
         return jsonify({'error': 'name already exists'}), 400
 
     try:
-        # web3 default account is used for this:
-        donations_contract = WEB3.eth.contract(abi=PROJECT_JSON["abi"], bytecode=PROJECT_JSON["bytecode"])
-        ctor = donations_contract.constructor(publickey, WEB3.eth.defaultAccount, 80,
-                                              WEB3.toBytes(text="donations sc"), 100000, 20)
-        tx_hash = ctor.transact()
-        tx_receipt = WEB3.eth.waitForTransactionReceipt(tx_hash)
-        if tx_receipt.status != 1:
-            raise RuntimeError("SC Call failed!")
+        vouch_check = voucher_constructor_check(publickey)
+        if vouch_check:
+            return jsonify({'error': 'milestone error: ' + vouch_check}), 400
 
-        session.add_all([
+        sc_address = voucher_constructor(publickey)
+
+        session.add(
             Institution(
                 nameInstitution=name,
                 webpageInstitution=webpage,
                 addressInstitution=address,
-                smartcontract_id=2,
                 publickeyInstitution=publickey,
                 descriptionInstitution=description,
                 latitude=latitude,
                 longitude=longitude,
-                scAddress=tx_receipt.contractAddress,
+                scAddress=sc_address,
                 user=owner_inst,
-            ),
-            Transaction(dateTransaction=datetime.now(), smartcontract_id=2, user=owner_inst)
-        ])
+                shortDescription=short
+            ))
         session.commit()
         return jsonify({'status': 'Institution wurde erstellt'}), 201
     finally:
@@ -148,7 +148,8 @@ def institutions_post(user_inst):  # pylint:disable=unused-argument
 
 @BP.route('', methods=['PATCH'])
 @auth_user
-def institutions_patch(user_inst):  # pylint:disable=too-many-branches
+@db_session_dec
+def institutions_patch(session, user_inst):  # pylint:disable=too-many-branches
     """
     Handles PATCH for resource <base>/api/institutions .
     :return: json response
@@ -158,6 +159,7 @@ def institutions_patch(user_inst):  # pylint:disable=too-many-branches
     webpage = request.headers.get('webpage')
     address = request.headers.get('address')
     description = request.headers.get('description')
+    short = request.headers.get('short')
     latitude = request.headers.get('latitude')
     longitude = request.headers.get('longitude')
 
@@ -172,7 +174,6 @@ def institutions_patch(user_inst):  # pylint:disable=too-many-branches
     if None in [latitude, longitude] and any([latitude, longitude]):
         return jsonify({"error": "bad geo argument"}), 400
 
-    session = DB_SESSION()
     try:
         if name:  # check if name is already taken
             if session.query(Institution).filter(Institution.nameInstitution == name).one_or_none():
@@ -184,9 +185,7 @@ def institutions_patch(user_inst):  # pylint:disable=too-many-branches
 
         # check user permission
         owner = session.query(Institution)
-        owner = owner.join(Transaction, Institution.smartcontract_id == Transaction.smartcontract_id)
-        owner = owner.filter(Transaction.user_id == user_inst.idUser,
-                             Institution.idInstitution == institution_id).first()
+        owner = owner.filter(Institution.user == user_inst, Institution.idInstitution == institution_id).one_or_none()
 
         if owner is None:
             return jsonify({'error': 'no permission'}), 403
@@ -198,7 +197,13 @@ def institutions_patch(user_inst):  # pylint:disable=too-many-branches
         if webpage:
             institution.webpageInstitution = webpage
         if description:
+            try:
+                description = b64decode(description).decode("latin-1")
+            except TypeError:
+                return jsonify({"error": "bad base64 encoding"}), 400
             institution.descriptionInstitution = description
+        if short:
+            institution.shortDescription = short
         if latitude and longitude:
             institution.latitude = latitude
             institution.longitude = longitude

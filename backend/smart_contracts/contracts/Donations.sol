@@ -26,7 +26,7 @@ contract Project {
     struct Milestone {
         bytes name;
         uint256 targetAmount;
-        uint32 voteableUntil;
+        uint64 voteableUntil;
         uint32 positiveVotes;
         uint32 negativeVotes;
         bool payoutPart;
@@ -51,7 +51,7 @@ contract Project {
     event Donate(uint256 amount, uint8 milestoneId, address donor_add, bool wantsToVote);
     event Donate_Light(uint256 amount);
     event Vote(uint8 milestoneId, address donor_add, votePosition vp);
-    event AddMilestone(bytes _name, uint256 _amount);
+    event AddMilestone(bytes _name, uint256 _amount, uint8 milestone_id);
     event PayingOutProject(uint256 _amount);
     event Retract(uint256 amount, uint8 milestoneId, address donor);
 
@@ -168,12 +168,13 @@ contract Project {
 
 
     function register() public {
-        require(!donors[msg.sender].exists);
-	require(msg.sender != owner);
-	require(msg.sender != admin);
-        Donor memory d;
-        d.exists = true;
-        donors[msg.sender] = d;
+        if (!donors[msg.sender].exists) {
+            require(msg.sender != owner);
+            require(msg.sender != admin);
+            Donor memory d;
+            d.exists = true;
+            donors[msg.sender] = d;
+        }
     }
 
     /// @notice Funktion zum Spenden
@@ -231,9 +232,10 @@ contract Project {
         emit Retract(amount, activeMilestone, msg.sender);
 
         donated_amount -= amount;
-        d.donated_for_milestone = 0;
-        d.donated_amount = 0;
-        donors[msg.sender] = d;
+//        d.donated_for_milestone = 0;
+//        d.donated_amount = 0;
+//        donors[msg.sender] = d;
+        delete donors[msg.sender];
     }
 
     /// @notice fuegt neue Meilensteine hinzu
@@ -241,7 +243,7 @@ contract Project {
     /// @param _name Name des Meilensteins in hex
     /// @param _targetAmount Spendenziel des Meilensteins
     /// @param _voteableUntil Unixtime bis zu der abgestimmt werden kann
-    function addMilestone(bytes memory _name, uint256 _targetAmount, uint32 _voteableUntil) onlyOwner public {
+    function addMilestone(bytes memory _name, uint256 _targetAmount, uint64 _voteableUntil) onlyOwner public {
         require(_name.length > 0);
         require(_targetAmount < projectTarget.amount);
         require(_voteableUntil >= block.timestamp + 1 days);
@@ -253,6 +255,6 @@ contract Project {
         milestones[milestonesCounter] = Milestone(_name, _targetAmount, _voteableUntil, 0, 0, false, false);
         milestonesCounter++;
 
-        emit AddMilestone(_name, _targetAmount);
+        emit AddMilestone(_name, _targetAmount, milestonesCounter - 1);
     }
 }

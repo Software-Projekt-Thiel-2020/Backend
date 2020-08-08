@@ -1,7 +1,10 @@
 """Tests for resource projects."""
 import json
 
+from backend.smart_contracts.web3 import WEB3
 from .test_blockstackauth import TOKEN_1, TOKEN_2
+
+from base64 import b64encode
 
 
 def test_projects_get(client):
@@ -12,21 +15,18 @@ def test_projects_get(client):
 
     assert res.json[0]["id"] == 1
     assert res.json[0]["idinstitution"] == 1
-    assert res.json[0]["idsmartcontract"] == 2
     assert res.json[0]["name"] == "Computer malt Bild"
-    assert res.json[0]["webpage"] == "www.cmb.de"
+    assert res.json[0]["webpage"] == "http://www.cmb.de"
 
     assert res.json[1]["id"] == 2
     assert res.json[1]["idinstitution"] == 3
-    assert res.json[1]["idsmartcontract"] == 2
     assert res.json[1]["name"] == "Rangaroek verteidigen"
-    assert res.json[1]["webpage"] == "www.asgard.as"
+    assert res.json[1]["webpage"] == "http://www.asgard.as"
 
     assert res.json[2]["id"] == 3
     assert res.json[2]["idinstitution"] == 3
-    assert res.json[2]["idsmartcontract"] == 2
     assert res.json[2]["name"] == "Softwareprojekt 2020"
-    assert res.json[2]["webpage"] == "www.swp.de"
+    assert res.json[2]["webpage"] == "http://www.swp.de"
 
 
 def test_projects_get_name(client):
@@ -37,9 +37,20 @@ def test_projects_get_name(client):
 
     assert res.json[0]["id"] == 1
     assert res.json[0]["idinstitution"] == 1
-    assert res.json[0]["idsmartcontract"] == 2
     assert res.json[0]["name"] == "Computer malt Bild"
-    assert res.json[0]["webpage"] == "www.cmb.de"
+    assert res.json[0]["webpage"] == "http://www.cmb.de"
+
+
+def test_projects_get_userid(client):
+    """get without parameters."""
+    res = client.get('/api/projects?username=sw2020testuser1.id.blockstack')
+    assert res._status_code == 200
+    assert len(res.json) == 1
+
+    assert res.json[0]["id"] == 1
+    assert res.json[0]["idinstitution"] == 1
+    assert res.json[0]["name"] == "Computer malt Bild"
+    assert res.json[0]["webpage"] == "http://www.cmb.de"
 
 
 def test_projects_get_geo(client):
@@ -50,9 +61,8 @@ def test_projects_get_geo(client):
 
     assert res.json[0]["id"] == 1
     assert res.json[0]["idinstitution"] == 1
-    assert res.json[0]["idsmartcontract"] == 2
     assert res.json[0]["name"] == "Computer malt Bild"
-    assert res.json[0]["webpage"] == "www.cmb.de"
+    assert res.json[0]["webpage"] == "http://www.cmb.de"
 
 
 def test_projects_get_bad_geo(client):
@@ -70,15 +80,13 @@ def test_projects_get_w_institution(client):
 
     assert res.json[0]["id"] == 2
     assert res.json[0]["idinstitution"] == 3
-    assert res.json[0]["idsmartcontract"] == 2
     assert res.json[0]["name"] == "Rangaroek verteidigen"
-    assert res.json[0]["webpage"] == "www.asgard.as"
+    assert res.json[0]["webpage"] == "http://www.asgard.as"
 
     assert res.json[1]["id"] == 3
     assert res.json[1]["idinstitution"] == 3
-    assert res.json[1]["idsmartcontract"] == 2
     assert res.json[1]["name"] == "Softwareprojekt 2020"
-    assert res.json[1]["webpage"] == "www.swp.de"
+    assert res.json[1]["webpage"] == "http://www.swp.de"
 
 
 def test_projects_get_w_id(client):
@@ -89,9 +97,8 @@ def test_projects_get_w_id(client):
 
     assert res.json[0]["id"] == 2
     assert res.json[0]["idinstitution"] == 3
-    assert res.json[0]["idsmartcontract"] == 2
     assert res.json[0]["name"] == "Rangaroek verteidigen"
-    assert res.json[0]["webpage"] == "www.asgard.as"
+    assert res.json[0]["webpage"] == "http://www.asgard.as"
 
 
 def test_projects_get_w_bad_id(client):
@@ -148,42 +155,50 @@ def test_projects_id_get_existant_param(client):
     """get for project id with existant id."""
     res = client.get('/api/projects/1')
     assert res._status_code == 200
-    assert len(res.json) == 10
+    assert len(res.json) == 14
 
     assert res.json["id"] == 1
     assert res.json["idinstitution"] == 1
-    assert res.json["idsmartcontract"] == 2
     assert res.json["name"] == "Computer malt Bild"
-    assert res.json["webpage"] == "www.cmb.de"
+    assert res.json["webpage"] == "http://www.cmb.de"
+    assert res.json["address"] == "Address1"
+    assert res.json["until"] == 1693094933
+    assert res.json["goal"] == WEB3.toWei(1, 'ether')
 
     assert len(res.json["milestones"]) == 4
     assert res.json["milestones"][0]["id"] == 1
     assert res.json["milestones"][0]["idProjekt"] == 1
-    assert res.json["milestones"][0]["goal"] == 1000
-    assert res.json["milestones"][0]["requiredVotes"] == 112
+    assert res.json["milestones"][0]["goal"] == WEB3.toWei(0.1, 'ether')
     assert res.json["milestones"][0]["currentVotes"] == 112
-    assert res.json["milestones"][0]["until"] == 600000
+    assert res.json["milestones"][0]["until"] == 1693094933
+    assert res.json["milestones"][0]["totalDonated"] == WEB3.toWei(0.03, 'ether')
 
     assert res.json["milestones"][1]["id"] == 2
     assert res.json["milestones"][1]["idProjekt"] == 1
-    assert res.json["milestones"][1]["goal"] == 2000
-    assert res.json["milestones"][1]["requiredVotes"] == 112
+    assert res.json["milestones"][1]["goal"] == WEB3.toWei(0.2, 'ether')
     assert res.json["milestones"][1]["currentVotes"] == 12
-    assert res.json["milestones"][1]["until"] == 1200000
+    assert res.json["milestones"][1]["until"] == 1693094933
+    assert res.json["milestones"][1]["totalDonated"] == WEB3.toWei(0.02, 'ether')
 
     assert res.json["milestones"][2]["id"] == 3
     assert res.json["milestones"][2]["idProjekt"] == 1
-    assert res.json["milestones"][2]["goal"] == 3000
-    assert res.json["milestones"][2]["requiredVotes"] == 112
+    assert res.json["milestones"][2]["goal"] == WEB3.toWei(0.3, 'ether')
     assert res.json["milestones"][2]["currentVotes"] == 0
-    assert res.json["milestones"][2]["until"] == 2400000
+    assert res.json["milestones"][2]["until"] == 1693094933
+    assert res.json["milestones"][2]["totalDonated"] == WEB3.toWei(0.01, 'ether')
 
     assert res.json["milestones"][3]["id"] == 7
     assert res.json["milestones"][3]["idProjekt"] == 1
-    assert res.json["milestones"][3]["goal"] == 5000
-    assert res.json["milestones"][3]["requiredVotes"] == 666
+    assert res.json["milestones"][3]["goal"] == WEB3.toWei(0.5, 'ether')
     assert res.json["milestones"][3]["currentVotes"] == 400
-    assert res.json["milestones"][3]["until"] == 100000000
+    assert res.json["milestones"][3]["until"] == 1693094933
+    assert res.json["milestones"][3]["totalDonated"] == 0
+
+    assert res.json['totalDonated'] == \
+        res.json["milestones"][0]["totalDonated"] + \
+        res.json["milestones"][1]["totalDonated"] + \
+        res.json["milestones"][2]["totalDonated"] + \
+        res.json["milestones"][3]["totalDonated"]
 
 
 def test_projects_id_get_nonexistant_param(client):
@@ -219,126 +234,163 @@ def test_projects_post_w_auth_wo_params(client):
 
 
 def test_projects_post_w_auth_bad_params(client):
-    headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
-               "idInstitution": "abc"}
+    headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1792094933,
+               "idInstitution": "abc", "description": b64encode(b"test description"), "short":"sdesc"}
     res = client.post('/api/projects', headers=headers)
     assert res._status_code == 400
     assert res.json["error"] == "bad argument"
 
 
-def test_projects_post_required_params(client):
-    headers = {"authToken": TOKEN_2, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
-               "idInstitution": 4}
+def test_projects_post_w_no_permission(client):
+    headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1792094933,
+               "idInstitution": 4, "description": b64encode(b"test description"), "short":"sdesc"}
     res = client.post('/api/projects', headers=headers)
+    assert res._status_code == 403
+    assert res.json["error"] == "User has no permission to create projects for this institution"
+
+
+def test_projects_post_required_params(client_w_eth):
+    headers = {"authToken": TOKEN_2, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1892094933,
+               "idInstitution": 4, "description": b64encode(b"test description"), "short":"sdesc"}
+    res = client_w_eth.post('/api/projects', headers=headers)
     assert res._status_code == 201
     assert res.json["status"] == "ok"
 
-    res = client.get('/api/projects/4')
+    res = client_w_eth.get('/api/projects/4')
     assert res._status_code == 200
-    assert len(res.json) == 10
 
     assert res.json["id"] == 4
     assert res.json["idinstitution"] == 4
-    assert res.json["idsmartcontract"] == 1
     assert res.json["name"] == headers["name"]
     assert res.json["webpage"] is None
     assert len(res.json["milestones"]) == 0
+    assert res.json["address"] == "Address4"
 
 
 def test_projects_post_w_bad_milestones(client):
-    headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
-               "milestones": "dennis", "idInstitution": 4}
+    headers = {"authToken": TOKEN_2, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1792094933,
+               "milestones": "dennis", "idInstitution": 4, "description": b64encode(b"test description"), "short":"sdesc"}
     res = client.post('/api/projects', headers=headers)
     assert res._status_code == 400
-    assert res.json["status"] == "invalid json"
+    assert res.json["error"] == "invalid json"
 
 
-def test_projects_post_w_milestones(client):
+def test_projects_post_w_milestones(client_w_eth):
     milestones = [
         {"name": "goal_1", "goal": 100, "requiredVotes": 1337, "until": 1693094933},
         {"name": "goal_2", "goal": 500, "requiredVotes": 42, "until": 1693094933},
     ]
-    headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
-               "milestones": json.dumps(milestones), "idInstitution": 4}
-    res = client.post('/api/projects', headers=headers)
+    headers = {"authToken": TOKEN_2, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1792094933,
+               "milestones": json.dumps(milestones), "idInstitution": 4, "description": b64encode(b"test description"),
+               "short":"sdesc"}
+    res = client_w_eth.post('/api/projects', headers=headers)
     assert res._status_code == 201
     assert res.json["status"] == "ok"
 
-    res = client.get('/api/projects/4')
+    res = client_w_eth.get('/api/projects/4')
     assert res._status_code == 200
-    assert len(res.json) == 10
 
     assert res.json["id"] == 4
     assert res.json["idinstitution"] == 4
-    assert res.json["idsmartcontract"] == 1
     assert res.json["name"] == headers["name"]
     assert res.json["webpage"] is None
+    assert res.json["address"] == "Address4"
+    assert res.json["until"] == 1792094933
 
     assert len(res.json["milestones"]) == 2
     assert res.json["milestones"][0]["id"] == 8
     assert res.json["milestones"][0]["idProjekt"] == res.json["id"]
     assert res.json["milestones"][0]["goal"] == milestones[0]["goal"]
-    assert res.json["milestones"][0]["requiredVotes"] == milestones[0]["requiredVotes"]
     assert res.json["milestones"][0]["currentVotes"] == 0
     assert res.json["milestones"][0]["until"] == milestones[0]["until"]
 
     assert res.json["milestones"][1]["id"] == 9
     assert res.json["milestones"][1]["idProjekt"] == res.json["id"]
     assert res.json["milestones"][1]["goal"] == milestones[1]["goal"]
-    assert res.json["milestones"][1]["requiredVotes"] == milestones[1]["requiredVotes"]
     assert res.json["milestones"][1]["currentVotes"] == 0
     assert res.json["milestones"][1]["until"] == milestones[1]["until"]
 
 
-def test_projects_post_w_webpage(client):
-    headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
-               "webpage": "http://www.example.com", "idInstitution": 4}
-    res = client.post('/api/projects', headers=headers)
+def test_projects_post_w_webpage(client_w_eth):
+    headers = {"authToken": TOKEN_2, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1792094933,
+               "webpage": "http://www.example.com", "idInstitution": 4, "description": b64encode(b"test description"),
+               "short":"sdesc"}
+    res = client_w_eth.post('/api/projects', headers=headers)
     assert res._status_code == 201
     assert res.json["status"] == "ok"
 
-    res = client.get('/api/projects/4')
+    res = client_w_eth.get('/api/projects/4')
     assert res._status_code == 200
-    assert len(res.json) == 10
 
     assert res.json["id"] == 4
     assert res.json["idinstitution"] == 4
-    assert res.json["idsmartcontract"] == 1
     assert res.json["name"] == headers["name"]
     assert res.json["webpage"] == headers["webpage"]
     assert len(res.json["milestones"]) == 0
+    assert res.json["address"] == "Address4"
+    assert res.json["until"] == 1792094933
 
 
 def test_projects_post_w_bad_webpage(client):
     headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
-               "webpage": "notaurl#22*3\\asdf", "idInstitution": 4}
+               "webpage": "notaurl#22*3\\asdf", "idInstitution": 4, "description": b64encode(b"test description"),
+               "short":"sdesc"}
     res = client.post('/api/projects', headers=headers)
     assert res._status_code == 400
     assert res.json["error"] == "webpage is not a valid url"
 
 
-def test_projects_post_w_institution(client):
-    headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
-               "idInstitution": 3}
-    res = client.post('/api/projects', headers=headers)
+def test_projects_post_w_institution(client_w_eth):
+    headers = {"authToken": TOKEN_2, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1792094933,
+               "idInstitution": 4, "description": b64encode(b"test description"), "short":"sdesc"}
+    res = client_w_eth.post('/api/projects', headers=headers)
     assert res._status_code == 201
     assert res.json["status"] == "ok"
 
-    res = client.get('/api/projects/4')
+    res = client_w_eth.get('/api/projects/4')
     assert res._status_code == 200
-    assert len(res.json) == 10
 
     assert res.json["id"] == 4
     assert res.json["idinstitution"] == headers["idInstitution"]
-    assert res.json["idsmartcontract"] == 1
     assert res.json["name"] == headers["name"]
     assert res.json["webpage"] is None
     assert len(res.json["milestones"]) == 0
+    assert res.json["address"] == "Address4"
+    assert res.json["until"] == 1792094933
+
+
+def test_projects_post_w_description(client_w_eth):
+    headers = {"authToken": TOKEN_2, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1792094933,
+               "idInstitution": 4, "description": b64encode(b"test description"), "short":"sdesc"}
+    res = client_w_eth.post('/api/projects', headers=headers)
+    assert res._status_code == 201
+    assert res.json["status"] == "ok"
+
+    res = client_w_eth.get('/api/projects/4')
+    assert res._status_code == 200
+
+    assert res.json["id"] == 4
+    assert res.json["idinstitution"] == headers["idInstitution"]
+    assert res.json["name"] == headers["name"]
+    assert res.json["webpage"] is None
+    assert len(res.json["milestones"]) == 0
+    assert res.json["address"] == "Address4"
+    assert res.json["until"] == 1792094933
+    assert res.json["description"] == "test description"
+    assert res.json["short"] == "sdesc"
+
+
+def test_projects_post_w_bad_until(client):
+    headers = {"authToken": TOKEN_2, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1092094933,
+               "idInstitution": 4, "description": b64encode(b"test description"), "short":"sdesc"}
+    res = client.post('/api/projects', headers=headers)
+    assert res._status_code == 400
+    assert res.json["error"] == 'until value is in the past'
 
 
 def test_projects_post_w_bad_institution(client):
     headers = {"authToken": TOKEN_1, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1592094933,
-               "idInstitution": 30000}
+               "idInstitution": 30000, "description": b64encode(b"test description"), "short":"sdesc"}
     res = client.post('/api/projects', headers=headers)
     assert res._status_code == 400
 
@@ -354,15 +406,31 @@ def test_projects_patch_w_webpage(client):
 
     assert res.json["id"] == 1
     assert res.json["idinstitution"] == 1
-    assert res.json["idsmartcontract"] == 2
     assert res.json["name"] == "Computer malt Bild"
     assert res.json["webpage"] == headers["webpage"]
 
     assert len(res.json["milestones"]) == 4
 
 
+def test_projects_patch_w_webpage_wrong_user(client):
+    headers = {"authToken": TOKEN_2, "webpage": "http://www.example.com"}
+    res = client.patch('/api/projects/1', headers=headers)
+    assert res._status_code == 403
+    assert res.json["error"] == "User has no permission to create projects for this institution"
+
+    res = client.get('/api/projects/1')
+    assert res._status_code == 200
+
+    assert res.json["id"] == 1
+    assert res.json["idinstitution"] == 1
+    assert res.json["name"] == "Computer malt Bild"
+    assert res.json["webpage"] == "http://www.cmb.de"
+
+    assert len(res.json["milestones"]) == 4
+
+
 def test_projects_patch_w_description(client):
-    headers = {"authToken": TOKEN_1, "description": "description1234"}
+    headers = {"authToken": TOKEN_1, "description": b64encode(b"description1234")}
     res = client.patch('/api/projects/1', headers=headers)
     assert res._status_code == 201
     assert res.json["status"] == "ok"
@@ -372,7 +440,6 @@ def test_projects_patch_w_description(client):
 
     assert res.json["id"] == 1
     assert res.json["idinstitution"] == 1
-    assert res.json["idsmartcontract"] == 2
     assert res.json["name"] == "Computer malt Bild"
     assert res.json["description"] == "description1234"
 
@@ -390,9 +457,8 @@ def test_projects_patch_w_bad_webpage(client):
 
     assert res.json["id"] == 1
     assert res.json["idinstitution"] == 1
-    assert res.json["idsmartcontract"] == 2
     assert res.json["name"] == "Computer malt Bild"
-    assert res.json["webpage"] == "www.cmb.de"
+    assert res.json["webpage"] == "http://www.cmb.de"
 
     assert len(res.json["milestones"]) == 4
 
@@ -402,65 +468,58 @@ def test_projects_patch_wo_auth_wo_params(client):
     assert res._status_code == 401
 
 
-def test_projects_patch_w_milestones(client):
+def test_projects_patch_w_milestones(client_w_eth):
     milestones = [
-        {"name": "goal_1", "goal": 100, "requiredVotes": 1337, "until": 1693094933},
-        {"name": "goal_2", "goal": 500, "requiredVotes": 42, "until": 1693094933},
+        {"name": "goal_1", "goal": WEB3.toWei(0.6, 'ether'), "until": 1693094933},
+        {"name": "goal_2", "goal": WEB3.toWei(0.7, 'ether'), "until": 1693094933},
     ]
     headers = {"authToken": TOKEN_1, "milestones": json.dumps(milestones), "idInstitution": 4}
-    res = client.patch('/api/projects/1', headers=headers)
+    res = client_w_eth.patch('/api/projects/1', headers=headers)
     assert res._status_code == 201
 
     assert res.json["status"] == "ok"
-    res = client.get('/api/projects/1')
+    res = client_w_eth.get('/api/projects/1')
     assert res._status_code == 200
 
     assert res.json["id"] == 1
     assert res.json["idinstitution"] == 1
-    assert res.json["idsmartcontract"] == 2
     assert res.json["name"] == "Computer malt Bild"
-    assert res.json["webpage"] == "www.cmb.de"
+    assert res.json["webpage"] == "http://www.cmb.de"
 
     assert len(res.json["milestones"]) == 6
     assert res.json["milestones"][0]["id"] == 1
     assert res.json["milestones"][0]["idProjekt"] == 1
-    assert res.json["milestones"][0]["goal"] == 1000
-    assert res.json["milestones"][0]["requiredVotes"] == 112
+    assert res.json["milestones"][0]["goal"] == WEB3.toWei(0.1, 'ether')
     assert res.json["milestones"][0]["currentVotes"] == 112
-    assert res.json["milestones"][0]["until"] == 600000
+    assert res.json["milestones"][0]["until"] == 1693094933
 
     assert res.json["milestones"][1]["id"] == 2
     assert res.json["milestones"][1]["idProjekt"] == 1
-    assert res.json["milestones"][1]["goal"] == 2000
-    assert res.json["milestones"][1]["requiredVotes"] == 112
+    assert res.json["milestones"][1]["goal"] == WEB3.toWei(0.2, 'ether')
     assert res.json["milestones"][1]["currentVotes"] == 12
-    assert res.json["milestones"][1]["until"] == 1200000
+    assert res.json["milestones"][1]["until"] == 1693094933
 
     assert res.json["milestones"][2]["id"] == 3
     assert res.json["milestones"][2]["idProjekt"] == 1
-    assert res.json["milestones"][2]["goal"] == 3000
-    assert res.json["milestones"][2]["requiredVotes"] == 112
+    assert res.json["milestones"][2]["goal"] == WEB3.toWei(0.3, 'ether')
     assert res.json["milestones"][2]["currentVotes"] == 0
-    assert res.json["milestones"][2]["until"] == 2400000
+    assert res.json["milestones"][2]["until"] == 1693094933
 
     assert res.json["milestones"][3]["id"] == 7
     assert res.json["milestones"][3]["idProjekt"] == 1
-    assert res.json["milestones"][3]["goal"] == 5000
-    assert res.json["milestones"][3]["requiredVotes"] == 666
+    assert res.json["milestones"][3]["goal"] == WEB3.toWei(0.5, 'ether')
     assert res.json["milestones"][3]["currentVotes"] == 400
-    assert res.json["milestones"][3]["until"] == 100000000
+    assert res.json["milestones"][3]["until"] == 1693094933
 
     assert res.json["milestones"][4]["id"] == 8
     assert res.json["milestones"][4]["idProjekt"] == res.json["id"]
     assert res.json["milestones"][4]["goal"] == milestones[0]["goal"]
-    assert res.json["milestones"][4]["requiredVotes"] == milestones[0]["requiredVotes"]
     assert res.json["milestones"][4]["currentVotes"] == 0
     assert res.json["milestones"][4]["until"] == milestones[0]["until"]
 
     assert res.json["milestones"][5]["id"] == 9
     assert res.json["milestones"][5]["idProjekt"] == res.json["id"]
     assert res.json["milestones"][5]["goal"] == milestones[1]["goal"]
-    assert res.json["milestones"][5]["requiredVotes"] == milestones[1]["requiredVotes"]
     assert res.json["milestones"][5]["currentVotes"] == 0
     assert res.json["milestones"][5]["until"] == milestones[1]["until"]
 
@@ -476,38 +535,33 @@ def test_projects_patch_wo_params(client):
 
     assert res.json["id"] == 1
     assert res.json["idinstitution"] == 1
-    assert res.json["idsmartcontract"] == 2
     assert res.json["name"] == "Computer malt Bild"
-    assert res.json["webpage"] == "www.cmb.de"
+    assert res.json["webpage"] == "http://www.cmb.de"
 
     assert len(res.json["milestones"]) == 4
     assert res.json["milestones"][0]["id"] == 1
     assert res.json["milestones"][0]["idProjekt"] == 1
-    assert res.json["milestones"][0]["goal"] == 1000
-    assert res.json["milestones"][0]["requiredVotes"] == 112
+    assert res.json["milestones"][0]["goal"] == WEB3.toWei(0.1, 'ether')
     assert res.json["milestones"][0]["currentVotes"] == 112
-    assert res.json["milestones"][0]["until"] == 600000
+    assert res.json["milestones"][0]["until"] == 1693094933
 
     assert res.json["milestones"][1]["id"] == 2
     assert res.json["milestones"][1]["idProjekt"] == 1
-    assert res.json["milestones"][1]["goal"] == 2000
-    assert res.json["milestones"][1]["requiredVotes"] == 112
+    assert res.json["milestones"][1]["goal"] == WEB3.toWei(0.2, 'ether')
     assert res.json["milestones"][1]["currentVotes"] == 12
-    assert res.json["milestones"][1]["until"] == 1200000
+    assert res.json["milestones"][1]["until"] == 1693094933
 
     assert res.json["milestones"][2]["id"] == 3
     assert res.json["milestones"][2]["idProjekt"] == 1
-    assert res.json["milestones"][2]["goal"] == 3000
-    assert res.json["milestones"][2]["requiredVotes"] == 112
+    assert res.json["milestones"][2]["goal"] == WEB3.toWei(0.3, 'ether')
     assert res.json["milestones"][2]["currentVotes"] == 0
-    assert res.json["milestones"][2]["until"] == 2400000
+    assert res.json["milestones"][2]["until"] == 1693094933
 
     assert res.json["milestones"][3]["id"] == 7
     assert res.json["milestones"][3]["idProjekt"] == 1
-    assert res.json["milestones"][3]["goal"] == 5000
-    assert res.json["milestones"][3]["requiredVotes"] == 666
+    assert res.json["milestones"][3]["goal"] == WEB3.toWei(0.5, 'ether')
     assert res.json["milestones"][3]["currentVotes"] == 400
-    assert res.json["milestones"][3]["until"] == 100000000
+    assert res.json["milestones"][3]["until"] == 1693094933
 
 
 def test_projects_patch_w_bad_milestone(client):

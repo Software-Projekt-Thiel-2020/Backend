@@ -89,6 +89,8 @@ def test_auth_user_valid3(testclient):
 
     res = session.query(User).filter(User.idUser == 6).one()
     assert res.authToken == BlockstackAuth.short_jwt(TOKEN_1)
+    session.rollback()
+    session.close()
 
 
 def test_auth_user_not_registered1(testclient):

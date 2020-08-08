@@ -11,7 +11,7 @@ from backend.database.db import DB_SESSION
 from backend.database.model import User
 
 
-def check_params_int(params: List):
+def check_params_int(params: List) -> List[int]:
     """
     Checks a List of params if they are really castable to int.
 
@@ -25,7 +25,7 @@ def check_params_int(params: List):
     return ret
 
 
-def check_params_float(params: List):
+def check_params_float(params: List) -> List[float]:
     """
     Checks a List of params if they are really castable to float.
 
@@ -72,7 +72,8 @@ def auth_user(func):
     """
 
     @wraps(func)
-    def decorated_function(*args, **kws):
+    @db_session_dec
+    def decorated_function(session, *args, **kws):
         if 'authToken' not in request.headers:
             abort(401)
 
@@ -80,7 +81,6 @@ def auth_user(func):
             shortened_token = BlockstackAuth.short_jwt(request.headers['authToken'])  # implicitly checks if its a token
             username = BlockstackAuth.get_username_from_token(shortened_token)
 
-            session = DB_SESSION()
             user_inst: User = session.query(User).filter(User.usernameUser == username).one()
 
             # check if token matches "cached" token, if thats the case, we are done here... else:
@@ -104,7 +104,6 @@ def auth_user(func):
         else:
             tmp = func(user_inst, *args, **kws)
             session.commit()  # if user_inst get's changed
-            session.close()
             return tmp
 
     return decorated_function

@@ -1,22 +1,23 @@
 """Voucher Resource."""
-import configparser
-import json
 from datetime import datetime, timedelta
 
 from flask import Blueprint, jsonify, request
 from sqlalchemy.orm.exc import NoResultFound
 from web3.exceptions import InvalidAddress
 
-from backend.database.db import DB_SESSION
 from backend.database.model import Voucher, VoucherUser, Institution
-from backend.resources.helpers import auth_user, check_params_int
+from backend.resources.helpers import auth_user, check_params_int, db_session_dec
 from backend.smart_contracts.web3 import WEB3
+from backend.smart_contracts.web3_voucher import add_voucher, redeem_voucher, redeem_voucher_check
+from backend.database.constants import DEC_LEN
 
 BP = Blueprint('voucher', __name__, url_prefix='/api/vouchers')
 
 
 @BP.route('/institution', methods=['PATCH'])
-def voucher_patch_institution():
+@auth_user
+@db_session_dec
+def voucher_patch_institution(session, user_inst):
     """
     Handles PATCH for resource <base>/api/vouchers/institutions.
 
@@ -31,12 +32,17 @@ def voucher_patch_institution():
     if None in [inst_id, voucher_id]:
         return jsonify({'error': 'Missing parameter'}), 400
 
+    if voucher_price is not None and len(voucher_price) > DEC_LEN:
+        return jsonify({'error': 'Price to big'}), 400
+
     try:
-        check_params_int([voucher_id, inst_id, voucher_valid_time])
+        check_params_int([voucher_id, inst_id, voucher_valid_time, voucher_available, voucher_price])
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
-    session = DB_SESSION()
+    if voucher_available not in ['0', '1']:
+        return jsonify({"error": "bad availability argument"}), 400
+
     voucher = session.query(Voucher).filter(Voucher.idVoucher == voucher_id).one_or_none()
 
     if voucher is None:
@@ -45,14 +51,25 @@ def voucher_patch_institution():
     if int(voucher.institution_id) != int(inst_id):
         return jsonify({"error": "voucher does not belong to institution"}), 400
 
+    if int(voucher_valid_time) > 788923150:
+        return jsonify({'error': "valid time can not be bigger than 25 Years"}), 400
+
     if voucher_valid_time:
         if int(voucher_valid_time) < int(voucher.validTime):
             return jsonify({'error': 'new validTime has to be bigger than the old one'}), 400
         voucher.validTime = voucher_valid_time
     if voucher_price:
-        voucher.priceVoucher = voucher_price
+        voucher.priceVoucher = int(voucher_price)
     if voucher_available:
-        voucher.available = voucher_available
+        voucher.available = voucher_available == '1'
+
+    # check if user is owner
+    owner = session.query(Institution)
+    owner = owner.filter(Institution.user_id == user_inst.idUser,
+                         Institution.idInstitution == inst_id).first()
+
+    if owner is None:
+        return jsonify({'error': 'no permission'}), 403
 
     session.commit()
     return jsonify({'status': 'Voucher wurde bearbeitet'}), 201
@@ -60,15 +77,16 @@ def voucher_patch_institution():
 
 @BP.route('/institution', methods=['POST'])
 @auth_user
-def voucher_post_institution(user_inst):  # pylint:disable=unused-argument
+@db_session_dec
+def voucher_post_institution(session, user_inst):
     """
     Handles POST for resource <base>/api/voucher/institution .
     :return: json data result (success or failure)
     """
-    institution_id = request.headers.get('idInstitution', default=None)
-    voucher_price = request.headers.get('price', default=None)
-    voucher_description = request.headers.get('subject', default=None)
-    voucher_title = request.headers.get('title', default=None)
+    institution_id = request.headers.get('idInstitution')
+    voucher_price = request.headers.get('price')
+    voucher_description = request.headers.get('subject')
+    voucher_title = request.headers.get('title')
     voucher_valid_time = request.headers.get('validTime', default=2 * 31536000)
 
     if None in [voucher_title, voucher_description, voucher_price, institution_id]:
@@ -77,27 +95,38 @@ def voucher_post_institution(user_inst):  # pylint:disable=unused-argument
     if "" in [voucher_title, voucher_description]:
         return jsonify({'error': "Empty parameter"}), 400
 
+    if len(voucher_price) > DEC_LEN:
+        return jsonify({'error': "Price to big"}), 400
+
+    if len(voucher_title) > DEC_LEN:
+        return jsonify({'error': "title too long"}), 400
+
     try:
         check_params_int([voucher_price, voucher_valid_time, institution_id])
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
-    session = DB_SESSION()
-
-    # ToDo: check institution_owner = user_inst
+    if int(voucher_valid_time) > 788923150:
+        return jsonify({'error': "valid time can not be bigger than 25 Years"}), 400
 
     res = session.query(Institution).filter(Institution.idInstitution == institution_id).one_or_none()
     if res is None:
         return jsonify({'status': 'Institution does not exist'}), 400
 
+    # check if user is owner
+    owner = session.query(Institution)
+    owner = owner.filter(Institution.user_id == user_inst.idUser,
+                         Institution.idInstitution == institution_id).first()
+
+    if owner is None:
+        return jsonify({'error': 'no permission'}), 403
+
     voucher_inst = Voucher(titleVoucher=voucher_title,
                            descriptionVoucher=voucher_description,
-                           priceVoucher=voucher_price,
+                           priceVoucher=int(voucher_price),
                            validTime=voucher_valid_time,
                            institution_id=institution_id,
                            )
-
-    # ToDo Blockchain
 
     session.add(voucher_inst)
     session.commit()
@@ -105,7 +134,8 @@ def voucher_post_institution(user_inst):  # pylint:disable=unused-argument
 
 
 @BP.route('/institution', methods=['GET'])
-def voucher_get():
+@db_session_dec
+def voucher_get(session):
     """
     Handles GET for resource <base>/api/voucher/institution .
     :return: json data of projects
@@ -119,7 +149,6 @@ def voucher_get():
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
-    session = DB_SESSION()
     results = session.query(Voucher)
 
     if id_voucher is not None:
@@ -149,7 +178,8 @@ def voucher_get():
 
 @BP.route('/user', methods=['POST'])
 @auth_user
-def voucher_post(user):
+@db_session_dec
+def voucher_post(session, user):
     """
     Handles POST for resource <base>/api/voucher/user .
     :return: json data of projects
@@ -162,13 +192,11 @@ def voucher_post(user):
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
-    session = DB_SESSION()
-
     try:
         voucher = session.query(Voucher).filter(Voucher.idVoucher == id_voucher).one()
         balance = WEB3.eth.getBalance(user.publickeyUser)
 
-        if balance < voucher.priceVoucher:  # ToDo: gas-cost?
+        if balance < int(voucher.priceVoucher):  # ToDo: gas-cost?
             return jsonify({'error': 'not enough balance'}), 406
         if not voucher.available:
             return jsonify({'error': 'voucher not available'}), 406
@@ -183,28 +211,15 @@ def voucher_post(user):
         transaction = {
             'nonce': WEB3.eth.getTransactionCount(user.publickeyUser),
             'to': inst.publickeyInstitution,
-            'value': voucher.priceVoucher,
+            'value': int(voucher.priceVoucher),
             'gas': 200000,
             'gasPrice': WEB3.toWei('50', 'gwei')
         }
         signed_transaction = WEB3.eth.account.sign_transaction(transaction, user.privatekeyUser)
         WEB3.eth.sendRawTransaction(signed_transaction.rawTransaction)
 
-        cfg_parser: configparser.ConfigParser = configparser.ConfigParser()
-        cfg_parser.read("backend_config.ini")
-
-        voucher_sc = WEB3.eth.contract(
-            address=WEB3.toChecksumAddress(cfg_parser["Voucher"]["ADDRESS"]),
-            abi=json.loads(cfg_parser["Voucher"]["ABI"])
-        )
-
-        transaction = voucher_sc.functions.addVoucher(user.publickeyUser,
-                                                      WEB3.toBytes(text=voucher.titleVoucher),
-                                                      666) \
-            .buildTransaction({'nonce': WEB3.eth.getTransactionCount(user.publickeyUser)})
-        signed_transaction = WEB3.eth.account.sign_transaction(transaction, user.privatekeyUser)
-
-        WEB3.eth.sendRawTransaction(signed_transaction.rawTransaction)
+        association.redeem_id = add_voucher(
+            user, inst, voucher.titleVoucher, abs(association.expires_unixtime - datetime.now()).days)
 
         session.add(voucher)
         session.add(association)
@@ -219,7 +234,8 @@ def voucher_post(user):
 
 @BP.route('/user', methods=['DELETE'])
 @auth_user
-def voucher_delete_user(user_inst):
+@db_session_dec
+def voucher_delete_user(session, user_inst):
     """
     Handles DELETE for resource <base>/api/voucher/user .
     :return: json data of projects
@@ -233,22 +249,30 @@ def voucher_delete_user(user_inst):
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
-    session = DB_SESSION()
-    voucher = session.query(VoucherUser)
+    voucher_user = session.query(VoucherUser)
     try:
-        voucher = voucher.filter(VoucherUser.idVoucherUser == id_voucheruser).filter(
+        voucher_user = voucher_user.filter(VoucherUser.idVoucherUser == id_voucheruser).filter(
             VoucherUser.id_user == user_inst.idUser).one()
+        institution = session.query(Institution).filter(
+            Institution.idInstitution == voucher_user.voucher.institution_id).one()
+
+        err = redeem_voucher_check(user_inst, voucher_user, institution.scAddress)
+        if err:
+            return jsonify({'error': 'milestone error: ' + err}), 400
+
+        redeem_voucher(user_inst, voucher_user, institution.scAddress)
     except NoResultFound:
         return jsonify({'error': 'No voucher found'}), 404
 
-    voucher.usedVoucher = True
+    voucher_user.usedVoucher = True
     session.commit()
 
     return jsonify({'status': 'Gutschein wurde eingelöst'}), 201
 
 
 @BP.route('/user', methods=['GET'])
-def voucher_get_user():
+@db_session_dec
+def voucher_get_user(session):
     """
     Handles GET for resource <base>/api/voucher/user .
     :return: json data of projects
@@ -264,8 +288,6 @@ def voucher_get_user():
         check_params_int([id_voucher, id_user, id_institution, used, expired])
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
-
-    session = DB_SESSION()
 
     results = session.query(Voucher, VoucherUser).join(Voucher, VoucherUser.id_voucher == Voucher.idVoucher)
 
@@ -297,6 +319,7 @@ def voucher_get_user():
             "used": vuser.usedVoucher,
             "untilTime": vuser.expires_unixtime.timestamp(),
             "price": vouch.priceVoucher,
+            "bought": vuser.boughtVoucherUser,
         })
 
     return jsonify(json_data), 200
