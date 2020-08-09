@@ -4,7 +4,7 @@ import requests
 from .test_blockstackauth import TOKEN_1, TOKEN_2, TOKEN_3
 import os
 
-image1 = "4eb9a451-2be6-4f98-bb62-3d5673d0c120.png"
+image1 = "4eb9a451-2be6-4f98-bb62-3d5673d0c120.gif"
 #image2 = "88c0bc0a-c673-4cdf-8216-cd4e2c916be2.png"
 
 
