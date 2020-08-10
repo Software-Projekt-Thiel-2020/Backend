@@ -15,6 +15,7 @@ from backend.resources.helpers import auth_user, check_params_int, db_session_de
 from backend.smart_contracts.web3_project import project_constructor, project_add_milestone, \
     project_constructor_check, project_add_milestone_check
 
+
 BP = Blueprint('projects', __name__, url_prefix='/api/projects')
 
 
@@ -197,6 +198,11 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
     if until > 2 ** 64:
         return "until value is not a valid date... or is it after the 04.12.219250468 15:30:07 already?!"
 
+    try:
+        short = b64decode(str(short)).decode("latin-1")
+    except TypeError:
+        return jsonify({"error": "bad base64 encoding"}), 400
+
     result = session.query(Institution) \
         .filter(Institution.idInstitution == id_institution).filter(Institution.user == user_inst).one_or_none()
     if result is None:
@@ -291,6 +297,10 @@ def projects_patch(session, user_inst, id):
         project_inst.descriptionProject = description
 
     if short is not None:
+        try:
+            short = b64decode(short).decode("latin-1")
+        except TypeError:
+            return jsonify({"error": "bad base64 encoding"}), 400
         project_inst.shortDescription = short
 
     result = session.query(Institution) \
