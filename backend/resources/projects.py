@@ -161,6 +161,8 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
 
     if None in [name, goal_raw, until_raw, id_institution, description, short]:
         return jsonify({'error': 'Missing parameter'}), 403
+    if milestones == "[]":
+        return jsonify({'error': 'Missing milestone'}), 403
     try:
         id_institution, goal, until = check_params_int([id_institution, goal_raw, until_raw])  # noqa
     except ValueError:

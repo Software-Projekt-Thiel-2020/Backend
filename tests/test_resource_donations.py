@@ -349,22 +349,6 @@ def test_donations_post_wo_auth(client):
     assert res._status_code == 401
 
 
-def test_donations_post_no_milestone(client_w_eth):
-    headers = {"authToken": TOKEN_1, "username": "sw2020testuser2.id.blockstack", "name": "ExampleInstitution",
-               "address": "Address", "description": b64encode(b"description"), "latitude": 13.37, "longitude": 42.69,
-               "publickey": ACCOUNTS[2], "short": "sdesc"}
-    res = client_w_eth.post('/api/institutions', headers=headers)
-
-    headers2 = {"authToken": TOKEN_2, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1892094933,
-               "idInstitution": 5, "description": b64encode(b"test description"), "short": "sdesc"}
-    res = client_w_eth.post('/api/projects', headers=headers2)
-
-    headers3 = {"authToken": TOKEN_2, "idproject": 4, "amount": int(WEB3.toWei(0.02, 'ether')), "voteEnabled": 1}
-    res = client_w_eth.post('/api/donations', headers=headers3)
-
-    assert res._status_code == 404
-
-
 def test_donations_vote(client_w_eth):
     test_donations_post(client_w_eth)
 
