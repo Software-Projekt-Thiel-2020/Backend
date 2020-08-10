@@ -168,8 +168,6 @@ def milestones_vote(session, user_inst: User):
     if vote_check:
         return jsonify({'error': 'sc error: ' + vote_check}), 400
 
-    donation.milestone.currentVotesMilestone += 1 if vote else (-1)
-
     tx_receipt = project_donate_vote(user_inst, 0 if vote else 1, donation)
     if tx_receipt.status != 1:
         raise RuntimeError("SC Call failed!")

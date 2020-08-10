@@ -38,7 +38,6 @@ class Milestone(BASE):
     idMilestone = Column(Integer, primary_key=True)
     nameMilestone = Column(VARCHAR(256))
     goalMilestone = Column(DECIMAL(DEC_LEN, 0, asdecimal=False))
-    currentVotesMilestone = Column(Integer, default=0)
     untilBlockMilestone = Column(Integer)
 
     project_id = Column(Integer, ForeignKey('Project.idProject'))
@@ -509,7 +508,7 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
         Project(idProject=3,
                 nameProject="Softwareprojekt 2020",
                 webpageProject="http://www.swp.de",
-                picPathProject="4eb9a451-2be6-4f98-bb62-3d5673d0c120.png",
+                picPathProject="4eb9a451-2be6-4f98-bb62-3d5673d0c120.gif",
                 descriptionProject="# Softwareprojekt 2020\nDies ist eine sehr ausführliche Beschreibung!",
                 shortDescription="SWP",
                 scAddress=TX_RECEIPTS[6].contractAddress,
@@ -523,25 +522,18 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
 
     milestones: List[Milestone] = [
         Milestone(idMilestone=1, nameMilestone="Erste Versuche", goalMilestone=WEB3.toWei(0.1, 'ether'),
-                  currentVotesMilestone=112,
                   untilBlockMilestone=1693094933, milestone_sc_id=0),
         Milestone(idMilestone=2, nameMilestone="Verbesserungen", goalMilestone=WEB3.toWei(0.2, 'ether'),
-                  currentVotesMilestone=12,
                   untilBlockMilestone=1693094933, milestone_sc_id=1),
         Milestone(idMilestone=3, nameMilestone="Fertigstellung", goalMilestone=WEB3.toWei(0.3, 'ether'),
-                  currentVotesMilestone=0,
                   untilBlockMilestone=1693094933, milestone_sc_id=2),
         Milestone(idMilestone=4, nameMilestone="Neue Waffen", goalMilestone=WEB3.toWei(0.1, 'ether'),
-                  currentVotesMilestone=0,
                   untilBlockMilestone=1693094933, milestone_sc_id=0),
         Milestone(idMilestone=5, nameMilestone="Abwehrmauern", goalMilestone=WEB3.toWei(0.2, 'ether'),
-                  currentVotesMilestone=12,
                   untilBlockMilestone=1693094933, milestone_sc_id=1),
         Milestone(idMilestone=6, nameMilestone="ProjektZiel", goalMilestone=WEB3.toWei(0.3, 'ether'),
-                  currentVotesMilestone=44,
                   untilBlockMilestone=1693094933, milestone_sc_id=0),
         Milestone(idMilestone=7, nameMilestone="Zukunftstechnik", goalMilestone=WEB3.toWei(0.5, 'ether'),
-                  currentVotesMilestone=400,
                   untilBlockMilestone=1693094933, milestone_sc_id=3),
     ]
     # set Project to Milestone
@@ -555,11 +547,11 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
 
     donations: List[Donation] = [
         Donation(idDonation=1, amountDonation=WEB3.toWei(0.03, 'ether'), voteDonation=True,
-                 timeOfDonation=datetime(2020, 2, 1)),
+                 timeOfDonation=datetime(2020, 2, 1), voted=1),
         Donation(idDonation=2, amountDonation=WEB3.toWei(0.02, 'ether'), voteDonation=False,
                  timeOfDonation=datetime(2015, 5, 5)),
         Donation(idDonation=3, amountDonation=WEB3.toWei(0.01, 'ether'), voteDonation=True,
-                 timeOfDonation=datetime(1988, 8, 8)),
+                 timeOfDonation=datetime(1988, 8, 8), voted=-1),
         Donation(idDonation=4, amountDonation=WEB3.toWei(0.04, 'ether'), voteDonation=False,
                  timeOfDonation=datetime(1970, 1, 1)),
     ]

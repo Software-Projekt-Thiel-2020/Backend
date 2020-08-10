@@ -1,7 +1,7 @@
 """Project Resource."""
-from base64 import b64decode
 import json
 import time
+from base64 import b64decode
 
 import validators
 from flask import Blueprint, request, jsonify
@@ -14,6 +14,7 @@ from backend.database.model import Project
 from backend.resources.helpers import auth_user, check_params_int, db_session_dec
 from backend.smart_contracts.web3_project import project_constructor, project_add_milestone, \
     project_constructor_check, project_add_milestone_check
+
 
 BP = Blueprint('projects', __name__, url_prefix='/api/projects')
 
@@ -110,14 +111,28 @@ def projects_id(session, id):  # noqa
         donation_sum = session.query(func.sum(Donation.amountDonation)). \
             filter(Donation.milestone_id == row.idMilestone).group_by(Donation.milestone_id).scalar()
         donation_sum = donation_sum if donation_sum is not None else 0
+
+        pos_votes = session.query(func.count(Donation.voted)). \
+            filter(Donation.milestone_id == row.idMilestone). \
+            filter(Donation.voted == 1). \
+            group_by(Donation.milestone_id).scalar()
+        pos_votes = pos_votes if pos_votes is not None else 0
+
+        neg_votes = session.query(func.count(Donation.voted)). \
+            filter(Donation.milestone_id == row.idMilestone). \
+            filter(Donation.voted == -1). \
+            group_by(Donation.milestone_id).scalar()
+        neg_votes = neg_votes if neg_votes is not None else 0
+
         json_ms.append({
             'id': row.idMilestone,
             'idProjekt': row.project_id,
             'milestoneName': row.nameMilestone,
             'goal': row.goalMilestone,
-            'currentVotes': row.currentVotesMilestone,
             'until': row.untilBlockMilestone,
             'totalDonated': float(donation_sum),
+            'positiveVotes': pos_votes,
+            'negativeVotes': neg_votes,
         })
         total += float(donation_sum)
     json_data = {
@@ -180,10 +195,15 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
     if until < int(time.time()):
         return jsonify({'error': 'until value is in the past'}), 400
 
-    if until > 2**64:
+    if until > 2 ** 64:
         return "until value is not a valid date... or is it after the 04.12.219250468 15:30:07 already?!"
 
-    result = session.query(Institution)\
+    try:
+        short = b64decode(str(short)).decode("latin-1")
+    except TypeError:
+        return jsonify({"error": "bad base64 encoding"}), 400
+
+    result = session.query(Institution) \
         .filter(Institution.idInstitution == id_institution).filter(Institution.user == user_inst).one_or_none()
     if result is None:
         return jsonify({'error': 'User has no permission to create projects for this institution'}), 403
@@ -217,7 +237,7 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
         project_inst.scAddress = project_constructor(user_inst, str(str(description)[0:32]), goal)
         session.add(project_inst)
 
-        for milestone in milestones_json:
+        for milestone in sorted(milestones_json, key=lambda x: x['goal']):
             sc_id = project_add_milestone(project_inst, user_inst, milestone['name'],
                                           int(milestone['goal']), int(milestone['until']))
             milestones_inst = Milestone(
@@ -279,10 +299,14 @@ def projects_patch(session, user_inst, id):
         project_inst.descriptionProject = description
 
     if short is not None:
+        try:
+            short = b64decode(short).decode("latin-1")
+        except TypeError:
+            return jsonify({"error": "bad base64 encoding"}), 400
         project_inst.shortDescription = short
 
-    result = session.query(Institution)\
-        .filter(Institution.idInstitution == project_inst.institution_id)\
+    result = session.query(Institution) \
+        .filter(Institution.idInstitution == project_inst.institution_id) \
         .filter(Institution.user == user_inst).one_or_none()
     if result is None:
         return jsonify({'error': 'User has no permission to create projects for this institution'}), 403
@@ -295,13 +319,12 @@ def projects_patch(session, user_inst, id):
             if mile_check:
                 return jsonify({'error': 'milestone error: ' + mile_check}), 400
 
-        for milestone in milestones_json:
+        for milestone in sorted(milestones_json, key=lambda x: x['goal']):
             sc_id = project_add_milestone(project_inst, user_inst,
                                           milestone['name'], int(milestone['goal']), int(milestone['until']))
             milestones_inst = Milestone(
                 nameMilestone=milestone['name'],
                 goalMilestone=int(milestone['goal']),
-                currentVotesMilestone=0,
                 untilBlockMilestone=milestone['until'],
                 milestone_sc_id=sc_id,
             )
