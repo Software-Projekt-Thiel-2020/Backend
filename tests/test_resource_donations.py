@@ -2,9 +2,6 @@
 from backend.smart_contracts.web3 import WEB3
 from tests.test_blockstackauth import TOKEN_1, TOKEN_2, TOKEN_3
 from tests.test_resource_user import test_user_post
-from base64 import b64encode
-
-ACCOUNTS = list(WEB3.eth.accounts)
 
 
 def test_donations_get(client):
