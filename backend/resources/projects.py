@@ -222,6 +222,8 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
 
     try:
         milestones_json = json.loads(milestones)
+        if len(milestones_json) == 0:
+            return jsonify({'error': 'Missing milestone'}), 403
         for milestone in milestones_json:
             mile_check = project_add_milestone_check(project_inst, user_inst, milestone['name'],
                                                      int(milestone['goal']), int(milestone['until']))

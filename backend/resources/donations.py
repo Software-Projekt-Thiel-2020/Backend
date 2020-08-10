@@ -1,5 +1,6 @@
 """Project Resource."""
 from flask import Blueprint, request, jsonify
+from sqlalchemy import func
 
 from backend.database.model import Donation, User
 from backend.database.model import Milestone
@@ -97,6 +98,11 @@ def donations_post(session, user_inst):
     if balance < int(amount):  # ToDo: gas-cost?
         return jsonify({'error': 'not enough balance'}), 406
 
+    # check if project has Milestone
+    milestones_cnt = session.query(func.count(Milestone.idMilestone)).filter(Milestone.project_id == idproject).scalar()
+    if milestones_cnt == 0:
+        return jsonify({'error': 'no Milestone'}), 404
+
     try:
         # Add Donation
         donate_check = project_donate_check(results, user_inst, int(amount), bool(int(vote_enabled)))
@@ -105,7 +111,6 @@ def donations_post(session, user_inst):
 
         milestone_sc_index = project_donate(results, user_inst, int(amount), bool(int(vote_enabled)))
 
-        # if this line fails, we have inconsitent data in the database!
         milestone = session.query(Milestone).filter(Milestone.project_id == int(idproject)).\
             filter(Milestone.milestone_sc_id == milestone_sc_index).one()
 
