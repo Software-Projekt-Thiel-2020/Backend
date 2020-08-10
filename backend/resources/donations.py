@@ -111,7 +111,7 @@ def donations_post(session, user_inst):
 
         milestone_sc_index = project_donate(results, user_inst, int(amount), bool(int(vote_enabled)))
 
-        milestone = session.query(Milestone).filter(Milestone.project_id == int(idproject)). \
+        milestone = session.query(Milestone).filter(Milestone.project_id == int(idproject)).\
             filter(Milestone.milestone_sc_id == milestone_sc_index).one()
 
         donations_inst = Donation(
@@ -176,8 +176,8 @@ def milestones_vote(session, user_inst: User):
 
     voted = 1 if vote else (-1)
 
-    donations_milestone = session.query(Donation).join(Donation.milestone) \
-        .filter(Donation.user == user_inst). \
+    donations_milestone = session.query(Donation).join(Donation.milestone)\
+        .filter(Donation.user == user_inst).\
         filter(Milestone.milestone_sc_id == donation.milestone.milestone_sc_id)  # noqa
 
     for don in donations_milestone:
