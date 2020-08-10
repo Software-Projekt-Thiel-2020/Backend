@@ -1,5 +1,6 @@
 """Project Resource."""
 from flask import Blueprint, request, jsonify
+from sqlalchemy import func
 
 from backend.database.model import Donation, User
 from backend.database.model import Milestone
@@ -102,7 +103,9 @@ def donations_post(session, user_inst):
     milestones = []
     for row in milestoneresults:
         milestones.append(row)
-    if len(milestones) == 0:
+
+    milestones_cnt = session.query(func.count(Milestone.idMilestone)).filter(Milestone.project_id == idproject).scalar()
+    if milestones_cnt == 0:
         return jsonify({'error': 'no Milestone'}), 404
 
     try:
