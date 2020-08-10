@@ -1,4 +1,5 @@
 """Institution Resource."""
+import binascii
 from base64 import b64decode
 import validators
 from flask import Blueprint, request, jsonify
@@ -105,13 +106,13 @@ def institutions_post(session, user_inst):  # pylint:disable=unused-argument
 
     try:
         description = b64decode(description).decode("latin-1")
-    except TypeError:
+    except (TypeError, binascii.Error):
         return jsonify({"error": "bad base64 encoding"}), 400
 
     if short:
         try:
             short = b64decode(short).decode("latin-1")
-        except TypeError:
+        except (TypeError, binascii.Error):
             return jsonify({"error": "bad base64 encoding"}), 400
 
     if webpage is not None and not validators.url(webpage):
@@ -205,13 +206,13 @@ def institutions_patch(session, user_inst):  # pylint:disable=too-many-branches
         if description:
             try:
                 description = b64decode(description).decode("latin-1")
-            except TypeError:
+            except (TypeError, binascii.Error):
                 return jsonify({"error": "bad base64 encoding"}), 400
             institution.descriptionInstitution = description
         if short:
             try:
                 short = b64decode(short).decode("latin-1")
-            except TypeError:
+            except (TypeError, binascii.Error):
                 return jsonify({"error": "bad base64 encoding"}), 400
             institution.shortDescription = short
         if latitude and longitude:

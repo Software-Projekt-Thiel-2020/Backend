@@ -1,4 +1,5 @@
 """Project Resource."""
+import binascii
 import json
 import time
 from base64 import b64decode
@@ -183,7 +184,7 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
 
     try:
         description = b64decode(description).decode("latin-1")  # noqa
-    except TypeError:
+    except (TypeError, binascii.Error):
         return jsonify({"error": "bad base64 encoding"}), 400
 
     if id_institution and session.query(Institution).get(id_institution) is None:
@@ -200,7 +201,7 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
 
     try:
         short = b64decode(str(short)).decode("latin-1")
-    except TypeError:
+    except (TypeError, binascii.Error):
         return jsonify({"error": "bad base64 encoding"}), 400
 
     result = session.query(Institution) \
@@ -294,14 +295,14 @@ def projects_patch(session, user_inst, id):
     if description is not None:
         try:
             description = b64decode(description).decode("latin-1")
-        except TypeError:
+        except (TypeError, binascii.Error):
             return jsonify({"error": "bad base64 encoding"}), 400
         project_inst.descriptionProject = description
 
     if short is not None:
         try:
             short = b64decode(short).decode("latin-1")
-        except TypeError:
+        except (TypeError, binascii.Error):
             return jsonify({"error": "bad base64 encoding"}), 400
         project_inst.shortDescription = short
 
