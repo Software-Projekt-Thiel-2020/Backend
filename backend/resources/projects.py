@@ -235,7 +235,7 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
         project_inst.scAddress = project_constructor(user_inst, str(str(description)[0:32]), goal)
         session.add(project_inst)
 
-        for milestone in milestones_json:
+        for milestone in sorted(milestones_json, key=lambda x: x['goal']):
             sc_id = project_add_milestone(project_inst, user_inst, milestone['name'],
                                           int(milestone['goal']), int(milestone['until']))
             milestones_inst = Milestone(
@@ -317,7 +317,7 @@ def projects_patch(session, user_inst, id):
             if mile_check:
                 return jsonify({'error': 'milestone error: ' + mile_check}), 400
 
-        for milestone in milestones_json:
+        for milestone in sorted(milestones_json, key=lambda x: x['goal']):
             sc_id = project_add_milestone(project_inst, user_inst,
                                           milestone['name'], int(milestone['goal']), int(milestone['until']))
             milestones_inst = Milestone(
