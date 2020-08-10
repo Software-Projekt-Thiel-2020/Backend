@@ -99,11 +99,6 @@ def donations_post(session, user_inst):
         return jsonify({'error': 'not enough balance'}), 406
 
     # check if project has Milestone
-    milestoneresults = session.query(Milestone).filter(Milestone.project_id == idproject)
-    milestones = []
-    for row in milestoneresults:
-        milestones.append(row)
-
     milestones_cnt = session.query(func.count(Milestone.idMilestone)).filter(Milestone.project_id == idproject).scalar()
     if milestones_cnt == 0:
         return jsonify({'error': 'no Milestone'}), 404
