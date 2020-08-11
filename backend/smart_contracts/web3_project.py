@@ -157,15 +157,18 @@ def project_donate_check(project: Project, user_inst: User, amount: int, vote_en
         if not amount > int(WEB3.toWei(0.01, 'ether')):  # require(msg.value >= minDonation);
             return "amount too low to vote"
 
+    # cost donate_register = 1006360000000000
+    # cost project_donate >1215500000000000, using factor of 2 as a safety margin (unit tests work without the margin)
+    # it's not possible to estimate the donate(..) cost before registerung ;(
+    if (2 * 1215500000000000 + 1006360000000000) >= WEB3.eth.getBalance(user_inst.publickeyUser):
+        return "not enough balance"
+
     return None
 
 
 def project_donate_vote(user_inst: User, vote: int, donation: Donation):
     """Method to make the voting Transaction."""
-    donation_sc = WEB3.eth.contract(
-        address=donation.milestone.project.scAddress,
-        abi=PROJECT_JSON["abi"]
-    )
+    donation_sc = WEB3.eth.contract(address=donation.milestone.project.scAddress, abi=PROJECT_JSON["abi"])
 
     transaction = donation_sc.functions.vote(donation.milestone.milestone_sc_id, vote)
     transaction = transaction.buildTransaction({'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser),
@@ -177,7 +180,7 @@ def project_donate_vote(user_inst: User, vote: int, donation: Donation):
     return tx_receipt
 
 
-def project_donate_vote_check(session, user_inst: User, vote: int, donation: Donation) -> Optional[str]:
+def project_donate_vote_check(user_inst: User, vote: int, donation: Donation) -> Optional[str]:
     # require(milestoneId < milestonesCounter); - invariant
 
     # require(milestones[milestoneId].voteableUntil > block.timestamp);
@@ -190,7 +193,16 @@ def project_donate_vote_check(session, user_inst: User, vote: int, donation: Don
     if not donation.voteDonation:
         return "didnt register for voting"
 
-    if session or user_inst or vote:
-        pass
+    try:
+        donation_sc = WEB3.eth.contract(address=donation.milestone.project.scAddress, abi=PROJECT_JSON["abi"])
+
+        transaction = donation_sc.functions.vote(donation.milestone.milestone_sc_id, vote)
+        transaction = transaction.buildTransaction({'nonce': WEB3.eth.getTransactionCount(user_inst.publickeyUser),
+                                                    'from': user_inst.publickeyUser})
+        price = transaction["gasPrice"] * transaction["gas"]
+        if price >= WEB3.eth.getBalance(user_inst.publickeyUser):
+            return "not enough balance"
+    except ValueError:
+        return "balance check failed (can be bad params!)"
 
     return None
