@@ -69,7 +69,7 @@ def add_voucher_check(user: User, institution: Institution, description, expires
             'from': WEB3.eth.defaultAccount
         })
         price = transaction["gasPrice"] * transaction["gas"]
-        if price > WEB3.eth.getBalance(user.publickeyUser):
+        if price >= WEB3.eth.getBalance(user.publickeyUser):
             return "not enough balance"
     except ValueError:
         return "balance check failed (can be bad params!)"
@@ -119,7 +119,16 @@ def redeem_voucher_check(user: User, voucher_user: VoucherUser, sc_address) -> O
     if not WEB3.isAddress(sc_address):
         return "invalid sc_address"
 
-    if user:
-        pass
+    try:
+        contract = WEB3.eth.contract(address=sc_address, abi=INSTITUTION_JSON["abi"])
+        transaction = contract.functions.redeem(voucher_user.redeem_id).buildTransaction({
+            'nonce': WEB3.eth.getTransactionCount(user.publickeyUser),
+            'from': user.publickeyUser
+        })
+        price = transaction["gasPrice"] * transaction["gas"]
+        if price >= WEB3.eth.getBalance(user.publickeyUser):
+            return "not enough balance"
+    except ValueError:
+        return "balance check failed (can be bad params!)"
 
     return None
