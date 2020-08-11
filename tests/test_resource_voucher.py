@@ -485,6 +485,13 @@ def test_voucher_user_post2(client_w_eth):
     assert res.json[0]["price"] == WEB3.toWei(0.02, 'ether')
 
 
+def test_voucher_user_post_balance(client):
+    headers = {"authToken": TOKEN_2, "idVoucher": 2}
+    res = client.post('/api/vouchers/user', headers=headers)
+    assert res._status_code in [400, 406]
+    assert "balance" in res.json["error"]
+
+
 def test_voucher_user_post_bad_voucherid(client_w_eth):
     headers = {"authToken": TOKEN_1, "idVoucher": 1337}
     res = client_w_eth.post('/api/vouchers/user', headers=headers)

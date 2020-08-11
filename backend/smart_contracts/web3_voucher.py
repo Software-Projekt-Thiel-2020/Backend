@@ -58,10 +58,22 @@ def add_voucher(user: User, institution: Institution, description, expires):
 
 
 def add_voucher_check(user: User, institution: Institution, description, expires) -> Optional[str]:
-    if user or institution or description:
-        pass
     if not expires > 0:
         return "expiration cant be negative"
+
+    try:
+        description = WEB3.toBytes(text=description)
+        contract = WEB3.eth.contract(address=institution.scAddress, abi=INSTITUTION_JSON["abi"])
+        transaction = contract.functions.addVoucher(user.publickeyUser, description, expires).buildTransaction({
+            'nonce': WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount),
+            'from': WEB3.eth.defaultAccount
+        })
+        price = transaction["gasPrice"] * transaction["gas"]
+        if price > WEB3.eth.getBalance(user.publickeyUser):
+            return "not enough balance"
+    except ValueError:
+        return "balance check failed (can be bad params!)"
+
     return None
 
 
