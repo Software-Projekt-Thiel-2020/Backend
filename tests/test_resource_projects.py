@@ -310,6 +310,19 @@ def test_projects_post_w_milestones(client_w_eth):
     assert res.json["milestones"][1]["until"] == milestones[1]["until"]
 
 
+def test_projects_post_balance(client):
+    milestones = [
+        {"name": "goal_1", "goal": 100, "requiredVotes": 1337, "until": 1693094933},
+        {"name": "goal_2", "goal": 500, "requiredVotes": 42, "until": 1693094933},
+    ]
+    headers = {"authToken": TOKEN_2, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1792094933,
+               "milestones": json.dumps(milestones), "idInstitution": 4, "description": b64encode(b"test description"),
+               "short": b64encode(b"sdesc")}
+    res = client.post('/api/projects', headers=headers)
+    assert res._status_code in [400, 406]
+    assert "balance" in res.json["error"]
+
+
 def test_projects_post_w_webpage(client_w_eth):
     milestones = [
         {"name": "goal_1", "goal": 100, "requiredVotes": 1337, "until": 1693094933},

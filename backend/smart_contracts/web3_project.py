@@ -36,8 +36,21 @@ def project_constructor_check(owner: User, description: str, goal: int):
     if not goal > 0:  # require(_projectTargetAmount > 0);
         return "goal needs to be a positive number"
 
-    if owner:
-        pass
+    try:
+        projects_sc = WEB3.eth.contract(abi=PROJECT_JSON["abi"], bytecode=PROJECT_JSON["bytecode"])
+        description_bytes = WEB3.toBytes(text=str(description))
+        ctor = projects_sc.constructor(owner.publickeyUser, WEB3.eth.defaultAccount,
+                                       80,
+                                       description_bytes,
+                                       goal,
+                                       int(WEB3.toWei(0.01, 'ether')))
+        transaction = ctor.buildTransaction({'nonce': WEB3.eth.getTransactionCount(owner.publickeyUser),
+                                             'from': owner.publickeyUser})
+        price = transaction["gasPrice"] * transaction["gas"]
+        if price >= WEB3.eth.getBalance(owner.publickeyUser):
+            return "not enough balance"
+    except ValueError:
+        return "balance check failed (can be bad params!)"
 
     return None
 
