@@ -115,7 +115,7 @@ def user_put(user_inst):
         check_name_length(lastname, 44)
 
     except ValueError:
-       return jsonify({"error": "bad name argument"}), 400
+        return jsonify({"error": "bad name argument"}), 400
 
     user_inst.firstnameUser = firstname
     user_inst.lastnameUser = lastname
