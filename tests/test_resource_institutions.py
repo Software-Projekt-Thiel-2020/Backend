@@ -183,6 +183,16 @@ def test_institutions_post2(client_w_eth):
     assert res.json[0]["address"] == "Address"
 
 
+def test_institutions_post_long_name(client_w_eth):
+    headers = {"authToken": TOKEN_1, "username": "sw2020testuser2.id.blockstack",
+               "address": "Address", "webpage": "https://www.example.com/", "description": b64encode(b"description"),
+               "latitude": 13.37, "longitude": 42.69, "publickey": ACCOUNTS[2],
+                "name": "thisnameistoofuckinglonglikeseriouslywhoreadsthisnicolascageistruelythebestactoralivefollowedbykevinspaceybutthepointisthatidonthavebockanymoreandibringmyvomitbagoutsidesurturisthebringerflamesnadasgardwillgodownwhenirisesinthetimesofragnarokodinisinfearfuckoff"}
+    res = client_w_eth.post('/api/institutions', headers=headers)
+    assert res._status_code == 400 
+    assert res.json["error"] == "bad argument"
+
+
 def test_institutions_post_bad_owner(client):
     headers = {"authToken": TOKEN_1, "username": "sw2020testuser1337.id.blockstack", "name": "ExampleInstitution",
                "address": "Address", "webpage": "https://www.example.com/", "description": b64encode(b"description"),
