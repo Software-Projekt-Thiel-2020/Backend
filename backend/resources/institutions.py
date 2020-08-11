@@ -104,6 +104,9 @@ def institutions_post(session, user_inst):  # pylint:disable=unused-argument
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
+    if len(name) > 256:
+        return jsonify({"error": "bad name argument"}), 400
+
     try:
         description = b64decode(description).decode("latin-1")
     except (TypeError, binascii.Error):
