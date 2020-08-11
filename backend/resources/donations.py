@@ -53,7 +53,7 @@ def donations_get(session):
     for donation, project in results:
         json_data.append({
             'id': donation.idDonation,
-            'amount': donation.amountDonation,
+            'amount': str(donation.amountDonation),
             'userid': donation.user_id,
             'milestoneid': donation.milestone_id,
             'projectid': project.idProject,

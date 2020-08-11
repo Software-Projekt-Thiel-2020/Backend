@@ -10,28 +10,28 @@ def test_donations_get(client):
     assert len(res.json) == 4
 
     assert res.json[0]["id"] == 1
-    assert res.json[0]["amount"] == WEB3.toWei(0.03, 'ether')
+    assert res.json[0]["amount"] == str(WEB3.toWei(0.03, 'ether'))
     assert res.json[0]["userid"] == 1
     assert res.json[0]["milestoneid"] == 1
     assert res.json[0]["projectid"] == 1
     assert res.json[0]["projectname"] == "Computer malt Bild"
 
     assert res.json[1]["id"] == 2
-    assert res.json[1]["amount"] == WEB3.toWei(0.02, 'ether')
+    assert res.json[1]["amount"] == str(WEB3.toWei(0.02, 'ether'))
     assert res.json[1]["userid"] == 2
     assert res.json[1]["milestoneid"] == 2
     assert res.json[1]["projectid"] == 1
     assert res.json[1]["projectname"] == "Computer malt Bild"
 
     assert res.json[2]["id"] == 3
-    assert res.json[2]["amount"] == WEB3.toWei(0.01, 'ether')
+    assert res.json[2]["amount"] == str(WEB3.toWei(0.01, 'ether'))
     assert res.json[2]["userid"] == 3
     assert res.json[2]["milestoneid"] == 3
     assert res.json[2]["projectid"] == 1
     assert res.json[2]["projectname"] == "Computer malt Bild"
 
     assert res.json[3]["id"] == 4
-    assert res.json[3]["amount"] == WEB3.toWei(0.04, 'ether')
+    assert res.json[3]["amount"] == str(WEB3.toWei(0.04, 'ether'))
     assert res.json[3]["userid"] == 4
     assert res.json[3]["milestoneid"] == 4
     assert res.json[3]["projectid"] == 2
@@ -44,7 +44,7 @@ def test_donations_get_w_id(client):
     assert len(res.json) == 1
 
     assert res.json[0]["id"] == 4
-    assert res.json[0]["amount"] == WEB3.toWei(0.04, 'ether')
+    assert res.json[0]["amount"] == str(WEB3.toWei(0.04, 'ether'))
     assert res.json[0]["userid"] == 4
     assert res.json[0]["milestoneid"] == 4
     assert res.json[0]["projectid"] == 2
@@ -63,7 +63,7 @@ def test_donations_get_w_minamount(client):
     assert len(res.json) == 1
 
     assert res.json[0]["id"] == 4
-    assert res.json[0]["amount"] == WEB3.toWei(0.04, 'ether')
+    assert res.json[0]["amount"] == str(WEB3.toWei(0.04, 'ether'))
     assert res.json[0]["userid"] == 4
     assert res.json[0]["milestoneid"] == 4
     assert res.json[0]["projectid"] == 2
@@ -87,7 +87,7 @@ def test_donations_get_w_maxamount(client):
     assert len(res.json) == 1
 
     assert res.json[0]["id"] == 3
-    assert res.json[0]["amount"] == WEB3.toWei(0.01, 'ether')
+    assert res.json[0]["amount"] == str(WEB3.toWei(0.01, 'ether'))
     assert res.json[0]["userid"] == 3
     assert res.json[0]["milestoneid"] == 3
     assert res.json[0]["projectid"] == 1
@@ -117,7 +117,7 @@ def test_donations_get_w_user(client):
     assert len(res.json) == 1
 
     assert res.json[0]["id"] == 4
-    assert res.json[0]["amount"] == WEB3.toWei(0.04, 'ether')
+    assert res.json[0]["amount"] == str(WEB3.toWei(0.04, 'ether'))
     assert res.json[0]["userid"] == 4
     assert res.json[0]["milestoneid"] == 4
     assert res.json[0]["projectid"] == 2
@@ -141,7 +141,7 @@ def test_donations_get_w_milestone(client):
     assert len(res.json) == 1
 
     assert res.json[0]["id"] == 1
-    assert res.json[0]["amount"] == WEB3.toWei(0.03, 'ether')
+    assert res.json[0]["amount"] == str(WEB3.toWei(0.03, 'ether'))
     assert res.json[0]["userid"] == 1
     assert res.json[0]["milestoneid"] == 1
     assert res.json[0]["projectid"] == 1
@@ -165,7 +165,7 @@ def test_donations_get_w_project(client):
     assert len(res.json) == 1
 
     assert res.json[0]["id"] == 4
-    assert res.json[0]["amount"] == WEB3.toWei(0.04, 'ether')
+    assert res.json[0]["amount"] == str(WEB3.toWei(0.04, 'ether'))
     assert res.json[0]["userid"] == 4
     assert res.json[0]["milestoneid"] == 4
     assert res.json[0]["projectid"] == 2
@@ -203,7 +203,7 @@ def test_donations_post(client_w_eth):
     assert len(res.json) == 1
 
     assert res.json[0]["id"] == 5
-    assert res.json[0]["amount"] == int(WEB3.toWei(0.02, 'ether'))
+    assert res.json[0]["amount"] == str(WEB3.toWei(0.02, 'ether'))
     assert res.json[0]["userid"] == 7
     assert res.json[0]["milestoneid"] == 1
 
@@ -230,7 +230,7 @@ def test_donations_post2(client_w_eth):
     assert len(res.json) == 1
 
     assert res.json[0]["id"] == 5
-    assert res.json[0]["amount"] == int(WEB3.toWei(0.02, 'ether'))
+    assert res.json[0]["amount"] == str(WEB3.toWei(0.02, 'ether'))
     assert res.json[0]["userid"] == 8
     assert res.json[0]["milestoneid"] == 1
 
@@ -264,17 +264,17 @@ def test_donations_post_multiple(client_w_eth):
     assert len(res.json) == 3
 
     assert res.json[0]["id"] == 5
-    assert res.json[0]["amount"] == int(WEB3.toWei(0.02, 'ether'))
+    assert res.json[0]["amount"] == str(WEB3.toWei(0.02, 'ether'))
     assert res.json[0]["userid"] == 8
     assert res.json[0]["milestoneid"] == 1
 
     assert res.json[1]["id"] == 6
-    assert res.json[1]["amount"] == int(WEB3.toWei(0.02, 'ether'))
+    assert res.json[1]["amount"] == str(WEB3.toWei(0.02, 'ether'))
     assert res.json[1]["userid"] == 8
     assert res.json[1]["milestoneid"] == 1
 
     assert res.json[2]["id"] == 7
-    assert res.json[2]["amount"] == int(WEB3.toWei(0.02, 'ether'))
+    assert res.json[2]["amount"] == str(WEB3.toWei(0.02, 'ether'))
     assert res.json[2]["userid"] == 8
     assert res.json[2]["milestoneid"] == 1
 

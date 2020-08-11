@@ -24,7 +24,7 @@ class Project(BASE):
     latitude = Column(Float)
     longitude = Column(Float)
     until = Column(Integer)
-    goal = Column(DECIMAL(DEC_LEN, 0, asdecimal=False))
+    goal = Column(DECIMAL(DEC_LEN, 0, asdecimal=True))
 
     institution_id = Column(Integer, ForeignKey('Institution.idInstitution'))
     institution = relationship("Institution", back_populates="projects")
@@ -37,7 +37,7 @@ class Milestone(BASE):
     __tablename__ = 'Milestone'
     idMilestone = Column(Integer, primary_key=True)
     nameMilestone = Column(VARCHAR(256))
-    goalMilestone = Column(DECIMAL(DEC_LEN, 0, asdecimal=False))
+    goalMilestone = Column(DECIMAL(DEC_LEN, 0, asdecimal=True))
     untilBlockMilestone = Column(Integer)
 
     project_id = Column(Integer, ForeignKey('Project.idProject'))
@@ -74,7 +74,7 @@ class Voucher(BASE):
     idVoucher = Column(Integer, primary_key=True)
     titleVoucher = Column(VARCHAR(32))
     descriptionVoucher = Column(VARCHAR(1024))
-    priceVoucher = Column(DECIMAL(DEC_LEN, 0, asdecimal=False), nullable=False)
+    priceVoucher = Column(DECIMAL(DEC_LEN, 0, asdecimal=True), nullable=False)
     available = Column(BOOLEAN, default=True)
     validTime = Column(Integer, default=2 * 31536000)
 
@@ -120,7 +120,7 @@ class VoucherUser(BASE):
 class Donation(BASE):
     __tablename__ = 'Donation'
     idDonation = Column(Integer, primary_key=True)
-    amountDonation = Column(DECIMAL(DEC_LEN, 0, asdecimal=False))
+    amountDonation = Column(DECIMAL(DEC_LEN, 0, asdecimal=True))
     voteDonation = Column(BOOLEAN)
     timeOfDonation = Column(DateTime, default=datetime.utcnow)
 
