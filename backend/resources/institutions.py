@@ -198,6 +198,8 @@ def institutions_patch(session, user_inst):  # pylint:disable=too-many-branches
             return jsonify({'error': 'no permission'}), 403
 
         if name:
+            if len(name) > 256:
+                return jsonify({"error": "bad name argument"}), 400
             institution.nameInstitution = name
         if address:
             institution.addressInstitution = address
