@@ -11,6 +11,17 @@ from backend.database.db import DB_SESSION
 from backend.database.model import User
 
 
+def check_name_length(name, length):
+    """
+    Checks if a given name is under a given length otherwise raise a ValueError.
+
+    :except: ValueError if name is too long
+    :return: -
+    """
+    if len(name) > length:
+        raise ValueError()
+
+
 def check_params_int(params: List) -> List[int]:
     """
     Checks a List of params if they are really castable to int.

@@ -6,7 +6,7 @@ from flask import Blueprint, request, jsonify
 from geopy import distance
 
 from backend.database.model import Institution, User
-from backend.resources.helpers import auth_user, check_params_int, check_params_float, db_session_dec
+from backend.resources.helpers import auth_user, check_name_length, check_params_int, check_params_float, db_session_dec
 from backend.smart_contracts.web3_voucher import voucher_constructor, voucher_constructor_check
 
 BP = Blueprint('institutions', __name__, url_prefix='/api/institutions')  # set blueprint name and resource path
@@ -101,6 +101,7 @@ def institutions_post(session, user_inst):  # pylint:disable=unused-argument
     try:
         # pylint: disable=unbalanced-tuple-unpacking
         latitude, longitude = check_params_float([latitude, longitude])
+        check_name_length(name, 256)
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
@@ -198,6 +199,8 @@ def institutions_patch(session, user_inst):  # pylint:disable=too-many-branches
             return jsonify({'error': 'no permission'}), 403
 
         if name:
+            if len(name) > 256:
+                return jsonify({"error": "bad name argument"}), 400
             institution.nameInstitution = name
         if address:
             institution.addressInstitution = address
