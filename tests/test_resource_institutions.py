@@ -413,3 +413,14 @@ def test_institutions_patch_bad_user(client_w_eth):
                "webpage": "https://www.new_example.com/"}
     res = client_w_eth.patch('/api/institutions', headers=headers)
     assert res._status_code == 404
+
+
+def test_institutions_patch_long_name(client_w_eth):
+    test_institutions_post2(client_w_eth)  # create institution
+
+    headers = {"authToken": TOKEN_2, "id": 5,
+               "name": "thisnameistoofuckinglonglikeseriouslywhoreadsthisnicolascageistruelythebestactoralivefollowedbykevinspaceybutthepointisthatidonthavebockanymoreandibringmyvomitbagoutsidesurturisthebringerflamesnadasgardwillgodownwhenirisesinthetimesofragnarokodinisinfearfuckoff"}
+    res = client_w_eth.patch('/api/institutions', headers=headers)
+    assert res._status_code == 400
+    assert res.json["error"] == "bad name argument"
+
