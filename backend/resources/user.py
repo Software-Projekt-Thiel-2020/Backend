@@ -43,7 +43,7 @@ def users_get(session):
             'email': result.emailUser,
             'group': result.group,
             'publickey': result.publickeyUser,
-            'balance': balance,
+            'balance': str(balance),
         })
 
     return jsonify(json_data)
@@ -82,7 +82,7 @@ def user_id(session, id):  # pylint:disable=redefined-builtin,invalid-name
         'email': results.emailUser,
         'group': results.group,
         'publickey': results.publickeyUser,
-        'balance': balance,
+        'balance': str(balance),
     }
     return jsonify(json_data), 200
 

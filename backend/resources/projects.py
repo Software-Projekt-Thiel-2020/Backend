@@ -129,13 +129,13 @@ def projects_id(session, id):  # noqa
             'id': row.idMilestone,
             'idProjekt': row.project_id,
             'milestoneName': row.nameMilestone,
-            'goal': row.goalMilestone,
+            'goal': str(row.goalMilestone),
             'until': row.untilBlockMilestone,
-            'totalDonated': float(donation_sum),
+            'totalDonated': str(donation_sum),
             'positiveVotes': pos_votes,
             'negativeVotes': neg_votes,
         })
-        total += float(donation_sum)
+        total += donation_sum
     json_data = {
         'id': results.idProject,
         'name': results.nameProject,
@@ -149,8 +149,8 @@ def projects_id(session, id):  # noqa
         'longitude': results.longitude,
         'address': results.institution.addressInstitution,
         'until': results.until,
-        'goal': results.goal,
-        'totalDonated': total,
+        'goal': str(results.goal),
+        'totalDonated': str(total),
     }
     return jsonify(json_data), 200
 
