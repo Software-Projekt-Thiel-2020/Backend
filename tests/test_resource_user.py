@@ -76,7 +76,7 @@ def test_users_id_get(client):
     assert res.json["email"] == "ll@swp.de"
     assert res.json["publickey"] == "0xB8331Dcd8693F69f091A9E4648A5a8ee89226CE3"
     assert res.json["group"] is None
-    assert res.json["balance"] >= 0
+    assert int(res.json["balance"]) >= 0
 
 
 def test_users_id_get2(client):

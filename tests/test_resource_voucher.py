@@ -18,7 +18,7 @@ def test_voucher_institution_get(client):
     assert res.json[0]["title"] == "Von Computer gemaltes Bild"
     assert res.json[0]["validTime"] == 2 * 31536000
     assert not res.json[0]["available"]
-    assert res.json[0]["price"] == WEB3.toWei(0.01, 'ether')
+    assert res.json[0]["price"] == str(WEB3.toWei(0.01, 'ether'))
 
     assert res.json[1]["id"] == 2
     assert res.json[1]["amount"] == 2
@@ -28,7 +28,7 @@ def test_voucher_institution_get(client):
     assert res.json[1]["title"] == "Software"
     assert res.json[1]["validTime"] == 2 * 31536000
     assert res.json[1]["available"]
-    assert res.json[1]["price"] == WEB3.toWei(0.02, 'ether')
+    assert res.json[1]["price"] == str(WEB3.toWei(0.02, 'ether'))
 
 
 def test_voucher_institution_get_idinst(client):
@@ -44,7 +44,7 @@ def test_voucher_institution_get_idinst(client):
     assert res.json[0]["title"] == "Von Computer gemaltes Bild"
     assert res.json[0]["validTime"] == 2 * 31536000
     assert not res.json[0]["available"]
-    assert res.json[0]["price"] == WEB3.toWei(0.01, 'ether')
+    assert res.json[0]["price"] == str(WEB3.toWei(0.01, 'ether'))
 
     assert res.json[1]["id"] == 2
     assert res.json[1]["amount"] == 2
@@ -54,7 +54,7 @@ def test_voucher_institution_get_idinst(client):
     assert res.json[1]["title"] == "Software"
     assert res.json[1]["validTime"] == 2 * 31536000
     assert res.json[1]["available"]
-    assert res.json[1]["price"] == WEB3.toWei(0.02, 'ether')
+    assert res.json[1]["price"] == str(WEB3.toWei(0.02, 'ether'))
 
 
 def test_voucher_institution_get_idinst2(client):
@@ -75,7 +75,7 @@ def test_voucher_institution_get_available(client):
     assert res.json[0]["title"] == "Software"
     assert res.json[0]["validTime"] == 2 * 31536000
     assert res.json[0]["available"]
-    assert res.json[0]["price"] == WEB3.toWei(0.02, 'ether')
+    assert res.json[0]["price"] == str(WEB3.toWei(0.02, 'ether'))
 
 
 def test_voucher_institution_get_available2(client):
@@ -90,7 +90,7 @@ def test_voucher_institution_get_available2(client):
     assert res.json[0]["title"] == "Von Computer gemaltes Bild"
     assert res.json[0]["validTime"] == 2 * 31536000
     assert not res.json[0]["available"]
-    assert res.json[0]["price"] == WEB3.toWei(0.01, 'ether')
+    assert res.json[0]["price"] == str(WEB3.toWei(0.01, 'ether'))
 
 
 def test_voucher_institution_get_available_bad(client):
@@ -116,7 +116,7 @@ def test_voucher_institution_post(client_w_eth):
     assert res.json[2]["title"] == "title"
     assert res.json[2]["validTime"] == 2 * 31536000
     assert res.json[2]["available"]
-    assert res.json[2]["price"] == 3000
+    assert res.json[2]["price"] == "3000"
 
 
 def test_voucher_institution_post2(client_w_eth):
@@ -136,7 +136,7 @@ def test_voucher_institution_post2(client_w_eth):
     assert res.json[2]["title"] == "title"
     assert res.json[2]["validTime"] == 2 * 31536000
     assert res.json[2]["available"]
-    assert res.json[2]["price"] == 3000
+    assert res.json[2]["price"] == "3000"
 
 
 def test_voucher_institution_post_wrong_user(client_w_eth):
@@ -189,28 +189,28 @@ def test_voucher_user_get(client):
     assert res.json[0]["idvoucher"] == 1
     assert res.json[0]["untilTime"] == datetime(2020, 1, 1).timestamp()
     assert not res.json[0]["used"]
-    assert res.json[0]["price"] == WEB3.toWei(0.01, 'ether')
+    assert res.json[0]["price"] == str(WEB3.toWei(0.01, 'ether'))
 
     assert res.json[1]["id"] == 2
     assert res.json[1]["userid"] == 2
     assert res.json[1]["idvoucher"] == 2
     assert res.json[1]["untilTime"] == datetime(2022, 5, 17).timestamp()
     assert not res.json[1]["used"]
-    assert res.json[1]["price"] == WEB3.toWei(0.02, 'ether')
+    assert res.json[1]["price"] == str(WEB3.toWei(0.02, 'ether'))
 
     assert res.json[2]["id"] == 3
     assert res.json[2]["userid"] == 6
     assert res.json[2]["idvoucher"] == 1
     assert res.json[2]["untilTime"] == datetime(2022, 1, 13).timestamp()
     assert not res.json[2]["used"]
-    assert res.json[2]["price"] == WEB3.toWei(0.01, 'ether')
+    assert res.json[2]["price"] == str(WEB3.toWei(0.01, 'ether'))
 
     assert res.json[3]["id"] == 4
     assert res.json[3]["userid"] == 7
     assert res.json[3]["idvoucher"] == 2
     assert res.json[3]["untilTime"] == datetime(2021, 5, 17).timestamp()
     assert res.json[3]["used"]
-    assert res.json[3]["price"] == WEB3.toWei(0.02, 'ether')
+    assert res.json[3]["price"] == str(WEB3.toWei(0.02, 'ether'))
 
 
 def test_voucher_user_get_id(client):
@@ -223,7 +223,7 @@ def test_voucher_user_get_id(client):
     assert res.json[0]["idvoucher"] == 1
     assert res.json[0]["untilTime"] == datetime(2022, 1, 13).timestamp()
     assert not res.json[0]["used"]
-    assert res.json[0]["price"] == WEB3.toWei(0.01, 'ether')
+    assert res.json[0]["price"] == str(WEB3.toWei(0.01, 'ether'))
 
 
 def test_voucher_user_get_idvoucher(client):
@@ -236,14 +236,14 @@ def test_voucher_user_get_idvoucher(client):
     assert res.json[0]["idvoucher"] == 2
     assert res.json[0]["untilTime"] == datetime(2022, 5, 17).timestamp()
     assert not res.json[0]["used"]
-    assert res.json[0]["price"] == WEB3.toWei(0.02, 'ether')
+    assert res.json[0]["price"] == str(WEB3.toWei(0.02, 'ether'))
 
     assert res.json[1]["id"] == 4
     assert res.json[1]["userid"] == 7
     assert res.json[1]["idvoucher"] == 2
     assert res.json[1]["untilTime"] == datetime(2021, 5, 17).timestamp()
     assert res.json[1]["used"]
-    assert res.json[1]["price"] == WEB3.toWei(0.02, 'ether')
+    assert res.json[1]["price"] == str(WEB3.toWei(0.02, 'ether'))
 
 
 def test_voucher_user_get_iduser(client):
@@ -256,7 +256,7 @@ def test_voucher_user_get_iduser(client):
     assert res.json[0]["idvoucher"] == 1
     assert res.json[0]["untilTime"] == datetime(2020, 1, 1).timestamp()
     assert not res.json[0]["used"]
-    assert res.json[0]["price"] == WEB3.toWei(0.01, 'ether')
+    assert res.json[0]["price"] == str(WEB3.toWei(0.01, 'ether'))
 
 
 def test_voucher_user_get_used(client):
@@ -269,7 +269,7 @@ def test_voucher_user_get_used(client):
     assert res.json[0]["idvoucher"] == 2
     assert res.json[0]["untilTime"] == datetime(2021, 5, 17).timestamp()
     assert res.json[0]["used"]
-    assert res.json[0]["price"] == WEB3.toWei(0.02, 'ether')
+    assert res.json[0]["price"] == str(WEB3.toWei(0.02, 'ether'))
 
 
 def test_voucher_user_get_used2(client):
@@ -282,21 +282,21 @@ def test_voucher_user_get_used2(client):
     assert res.json[0]["idvoucher"] == 1
     assert res.json[0]["untilTime"] == datetime(2020, 1, 1).timestamp()
     assert not res.json[0]["used"]
-    assert res.json[0]["price"] == WEB3.toWei(0.01, 'ether')
+    assert res.json[0]["price"] == str(WEB3.toWei(0.01, 'ether'))
 
     assert res.json[1]["id"] == 2
     assert res.json[1]["userid"] == 2
     assert res.json[1]["idvoucher"] == 2
     assert res.json[1]["untilTime"] == datetime(2022, 5, 17).timestamp()
     assert not res.json[1]["used"]
-    assert res.json[1]["price"] == WEB3.toWei(0.02, 'ether')
+    assert res.json[1]["price"] == str(WEB3.toWei(0.02, 'ether'))
 
     assert res.json[2]["id"] == 3
     assert res.json[2]["userid"] == 6
     assert res.json[2]["idvoucher"] == 1
     assert res.json[2]["untilTime"] == datetime(2022, 1, 13).timestamp()
     assert not res.json[2]["used"]
-    assert res.json[2]["price"] == WEB3.toWei(0.01, 'ether')
+    assert res.json[2]["price"] == str(WEB3.toWei(0.01, 'ether'))
 
 
 def test_voucher_user_expired(client):
@@ -309,7 +309,7 @@ def test_voucher_user_expired(client):
     assert res.json[0]["idvoucher"] == 1
     assert res.json[0]["untilTime"] == datetime(2020, 1, 1).timestamp()
     assert not res.json[0]["used"]
-    assert res.json[0]["price"] == WEB3.toWei(0.01, 'ether')
+    assert res.json[0]["price"] == str(WEB3.toWei(0.01, 'ether'))
 
 
 def test_voucher_user_expired2(client):
@@ -322,21 +322,21 @@ def test_voucher_user_expired2(client):
     assert res.json[0]["idvoucher"] == 2
     assert res.json[0]["untilTime"] == datetime(2022, 5, 17).timestamp()
     assert not res.json[0]["used"]
-    assert res.json[0]["price"] == WEB3.toWei(0.02, 'ether')
+    assert res.json[0]["price"] == str(WEB3.toWei(0.02, 'ether'))
 
     assert res.json[1]["id"] == 3
     assert res.json[1]["userid"] == 6
     assert res.json[1]["idvoucher"] == 1
     assert res.json[1]["untilTime"] == datetime(2022, 1, 13).timestamp()
     assert not res.json[1]["used"]
-    assert res.json[1]["price"] == WEB3.toWei(0.01, 'ether')
+    assert res.json[1]["price"] == str(WEB3.toWei(0.01, 'ether'))
 
     assert res.json[2]["id"] == 4
     assert res.json[2]["userid"] == 7
     assert res.json[2]["idvoucher"] == 2
     assert res.json[2]["untilTime"] == datetime(2021, 5, 17).timestamp()
     assert res.json[2]["used"]
-    assert res.json[2]["price"] == WEB3.toWei(0.02, 'ether')
+    assert res.json[2]["price"] == str(WEB3.toWei(0.02, 'ether'))
 
 
 def test_voucher_user_delete(client_w_eth):
@@ -353,14 +353,14 @@ def test_voucher_user_delete(client_w_eth):
     assert res.json[0]["idvoucher"] == 1
     assert res.json[0]["untilTime"] == datetime(2020, 1, 1).timestamp()
     assert not res.json[0]["used"]
-    assert res.json[0]["price"] == WEB3.toWei(0.01, 'ether')
+    assert res.json[0]["price"] == str(WEB3.toWei(0.01, 'ether'))
 
     assert res.json[1]["id"] == 2
     assert res.json[1]["userid"] == 2
     assert res.json[1]["idvoucher"] == 2
     assert res.json[1]["untilTime"] == datetime(2022, 5, 17).timestamp()
     assert not res.json[1]["used"]
-    assert res.json[1]["price"] == WEB3.toWei(0.02, 'ether')
+    assert res.json[1]["price"] == str(WEB3.toWei(0.02, 'ether'))
 
     res = client_w_eth.get('/api/vouchers/user?used=1')
     assert res._status_code == 200
@@ -371,14 +371,14 @@ def test_voucher_user_delete(client_w_eth):
     assert res.json[0]["idvoucher"] == 1
     assert res.json[0]["untilTime"] == datetime(2022, 1, 13).timestamp()
     assert res.json[0]["used"]
-    assert res.json[0]["price"] == WEB3.toWei(0.01, 'ether')
+    assert res.json[0]["price"] == str(WEB3.toWei(0.01, 'ether'))
 
     assert res.json[1]["id"] == 4
     assert res.json[1]["userid"] == 7
     assert res.json[1]["idvoucher"] == 2
     assert res.json[1]["untilTime"] == datetime(2021, 5, 17).timestamp()
     assert res.json[1]["used"]
-    assert res.json[1]["price"] == WEB3.toWei(0.02, 'ether')
+    assert res.json[1]["price"] == str(WEB3.toWei(0.02, 'ether'))
 
 
 def test_voucher_user_delete2(client_w_eth):
@@ -407,7 +407,7 @@ def test_voucher_user_delete_bad_id(client):
     assert res.json[0]["idvoucher"] == 2
     assert res.json[0]["untilTime"] == datetime(2021, 5, 17).timestamp()
     assert res.json[0]["used"]
-    assert res.json[0]["price"] == WEB3.toWei(0.02, 'ether')
+    assert res.json[0]["price"] == str(WEB3.toWei(0.02, 'ether'))
 
 
 def test_voucher_user_delete_bad_id2(client):
@@ -424,7 +424,7 @@ def test_voucher_user_delete_bad_id2(client):
     assert res.json[0]["idvoucher"] == 2
     assert res.json[0]["untilTime"] == datetime(2021, 5, 17).timestamp()
     assert res.json[0]["used"]
-    assert res.json[0]["price"] == WEB3.toWei(0.02, 'ether')
+    assert res.json[0]["price"] == str(WEB3.toWei(0.02, 'ether'))
 
 
 def test_voucher_user_delete_bad_user(client):
@@ -441,7 +441,7 @@ def test_voucher_user_delete_bad_user(client):
     assert res.json[0]["idvoucher"] == 2
     assert res.json[0]["untilTime"] == datetime(2021, 5, 17).timestamp()
     assert res.json[0]["used"]
-    assert res.json[0]["price"] == WEB3.toWei(0.02, 'ether')
+    assert res.json[0]["price"] == str(WEB3.toWei(0.02, 'ether'))
 
 
 def test_voucher_user_post(client_w_eth):
@@ -458,14 +458,14 @@ def test_voucher_user_post(client_w_eth):
     assert res.json[0]["idvoucher"] == 2
     assert res.json[0]["untilTime"] == datetime(2021, 5, 17).timestamp()
     assert res.json[0]["used"]
-    assert res.json[0]["price"] == WEB3.toWei(0.02, 'ether')
+    assert res.json[0]["price"] == str(WEB3.toWei(0.02, 'ether'))
 
     assert res.json[1]["id"] == 5
     assert res.json[1]["userid"] == 7
     assert res.json[1]["idvoucher"] == 2
     assert abs(int(res.json[1]["untilTime"]) - int((datetime.now() + timedelta(0, 2 * 31536000)).timestamp())) <= 3
     assert not res.json[1]["used"]
-    assert res.json[1]["price"] == WEB3.toWei(0.02, 'ether')
+    assert res.json[1]["price"] == str(WEB3.toWei(0.02, 'ether'))
 
 
 def test_voucher_user_post2(client_w_eth):
@@ -482,7 +482,7 @@ def test_voucher_user_post2(client_w_eth):
     assert res.json[0]["idvoucher"] == 2
     assert res.json[0]["untilTime"] == datetime(2021, 5, 17).timestamp()
     assert res.json[0]["used"]
-    assert res.json[0]["price"] == WEB3.toWei(0.02, 'ether')
+    assert res.json[0]["price"] == str(WEB3.toWei(0.02, 'ether'))
 
 
 def test_voucher_user_post_bad_voucherid(client_w_eth):
@@ -499,6 +499,6 @@ def test_voucher_user_post_bad_voucherid(client_w_eth):
     assert res.json[0]["idvoucher"] == 1
     assert res.json[0]["untilTime"] == datetime(2022, 1, 13).timestamp()
     assert not res.json[0]["used"]
-    assert res.json[0]["price"] == WEB3.toWei(0.01, 'ether')
+    assert res.json[0]["price"] == str(WEB3.toWei(0.01, 'ether'))
 
 # ToDo: test_voucher_user_no_funds

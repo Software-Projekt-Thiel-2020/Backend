@@ -168,7 +168,7 @@ def voucher_get(session):
             'title': voucher.titleVoucher,
             'validTime': voucher.validTime,
             'available': voucher.available,
-            'price': voucher.priceVoucher,
+            'price': str(voucher.priceVoucher),
             "picturePath": voucher.institution.picPathInstitution,
         })
 
@@ -317,7 +317,7 @@ def voucher_get_user(session):
             "description": vouch.descriptionVoucher,
             "used": vuser.usedVoucher,
             "untilTime": vuser.expires_unixtime.timestamp(),
-            "price": vouch.priceVoucher,
+            "price": str(vouch.priceVoucher),
             "bought": vuser.boughtVoucherUser,
         })
 
