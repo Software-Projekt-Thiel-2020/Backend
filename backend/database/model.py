@@ -273,7 +273,7 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
         project_contract = WEB3.eth.contract(abi=PROJECT_JSON["abi"], bytecode=PROJECT_JSON["bytecode"])
         # constructor(_owner, _admin, _partial_payment, _projectTargetName, _projectTargetAmount, _minDonation)
         tx_hash = project_contract.constructor(users[5].publickeyUser, WEB3.eth.defaultAccount, 80,
-                                               WEB3.toBytes(text="test description"), WEB3.toWei(1, 'ether'),
+                                               WEB3.toBytes(text="test description"), WEB3.toWei(99999999999, 'ether'),
                                                WEB3.toWei(0.01, 'ether')).transact()
         TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 4
 

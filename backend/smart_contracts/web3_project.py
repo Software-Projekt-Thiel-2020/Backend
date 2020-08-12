@@ -31,10 +31,10 @@ def project_constructor_check(owner: User, description: str, goal: int):
     # require(_partial_payment < 100);
 
     if not len(description) > 0:  # require(_projectTargetName.length > 0);
-        return "description needed"
+        return "description needed", 0
 
     if not goal > 0:  # require(_projectTargetAmount > 0);
-        return "goal needs to be a positive number"
+        return "goal needs to be a positive number", 0
 
     try:
         projects_sc = WEB3.eth.contract(abi=PROJECT_JSON["abi"], bytecode=PROJECT_JSON["bytecode"])
@@ -48,11 +48,11 @@ def project_constructor_check(owner: User, description: str, goal: int):
                                              'from': owner.publickeyUser})
         price = transaction["gasPrice"] * transaction["gas"]
         if price >= WEB3.eth.getBalance(owner.publickeyUser):
-            return "not enough balance"
+            return "not enough balance", 0
     except ValueError:
-        return "balance check failed (can be bad params!)"
+        return "balance check failed (can be bad params!)", 0
 
-    return None
+    return None, price
 
 
 def project_add_milestone(project: Project, owner: User, name: str, goal: int, until: int):
@@ -81,27 +81,40 @@ def project_add_milestone(project: Project, owner: User, name: str, goal: int, u
     return processed_receipt[0].args.milestone_id
 
 
-def project_add_milestone_check(project: Project, owner: User, name: str, goal: int, until: int) -> Optional[str]:
+# pylint:disable=too-many-arguments
+def project_add_milestone_check(session, project: Project, owner: User, name: str, goal: int, until: int):
     if not len(name) > 0:  # require(_name.length > 0);
-        return "description needed"
+        return "description needed", 0
 
     if not goal < project.goal:  # require(_targetAmount < projectTarget.amount);
-        return "milestone goal greater than project goal"
+        return "milestone goal greater than project goal", 0
 
     if not until >= (int(time.time()) + 60 * 60 * 24):  # require(_voteableUntil >= block.timestamp + 1 days);
-        return "until needs to be at least 1 day in the future!"
+        return "until needs to be at least 1 day in the future!", 0
     if until > 2**64:
-        return "milestone until value is not a valid date... or is it after the 04.12.219250468 15:30:07 already?!"
+        return "milestone until value is not a valid date... or is it after the 04.12.219250468 15:30:07 already?!", 0
 
     # require(milestones[milestonesCounter - 1].targetAmount < _targetAmount);
     for milestone in project.milestones:
         if not milestone.goalMilestone < goal:
-            return "milestone goal smaller than existing milestone"
-
+            return "milestone goal smaller than existing milestone", 0
     if owner:
         pass
 
-    return None
+    sample_project = session.query(Project).get(1).scAddress  # hacky, but works
+    try:
+        projects_sc = WEB3.eth.contract(address=sample_project, abi=PROJECT_JSON["abi"])
+
+        transaction = projects_sc.functions.addMilestone(WEB3.toBytes(text=name),
+                                                         WEB3.toWei(99999999998, 'ether'),
+                                                         int(until)). \
+            buildTransaction({'nonce': WEB3.eth.getTransactionCount(WEB3.eth.defaultAccount),
+                              'from': WEB3.eth.defaultAccount})
+        price = transaction["gasPrice"] * transaction["gas"]
+    except ValueError:
+        return "balance check failed (can be bad params!)", 0
+
+    return None, price
 
 
 def project_donate_register(project: Project, user_inst: User):
