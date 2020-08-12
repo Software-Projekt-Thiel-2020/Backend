@@ -7,7 +7,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from backend.blockstack_auth import BlockstackAuth
 from backend.database.model import User
-from backend.resources.helpers import auth_user, db_session_dec
+from backend.resources.helpers import auth_user, db_session_dec, check_name_length
 from backend.smart_contracts.web3 import WEB3
 
 BP = Blueprint('user', __name__, url_prefix='/api/users')
@@ -110,12 +110,16 @@ def user_put(user_inst):
     if re.match("^[a-zA-ZäÄöÖüÜ ,.'-]+$", firstname) is None or re.match("^[a-zA-ZäÄöÖüÜ ,.'-]+$", lastname) is None:
         return jsonify({'error': 'Firstname and/or lastname must contain only alphanumeric characters'}), 400
 
-    if firstname is not None:
-        user_inst.firstnameUser = firstname
-    if lastname is not None:
-        user_inst.lastnameUser = lastname
-    if email is not None:
-        user_inst.emailUser = email
+    try:
+        check_name_length(firstname, 44)
+        check_name_length(lastname, 44)
+
+    except ValueError:
+        return jsonify({"error": "bad name argument"}), 400
+
+    user_inst.firstnameUser = firstname
+    user_inst.lastnameUser = lastname
+    user_inst.emailUser = email
 
     return jsonify({'status': 'changed'}), 200
 
@@ -143,6 +147,14 @@ def user_post(session):
         return jsonify({'error': 'Firstname and/or lastname must contain only alphanumeric characters'}), 400
 
     acc = WEB3.eth.account.create()
+
+    try:
+        check_name_length(firstname, 44)
+        check_name_length(lastname, 44)
+        check_name_length(username, 44)
+
+    except ValueError:
+        return jsonify({"error": "bad name argument"}), 400
 
     try:
         shortened_token = BlockstackAuth.short_jwt(auth_token)
