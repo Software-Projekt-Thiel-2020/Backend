@@ -55,7 +55,7 @@ def test_projects_get_userid(client):
 
 def test_projects_get_geo(client):
     """get without parameters."""
-    res = client.get('/api/projects?radius=1&latitude=52.030228&longitude=8.532471')
+    res = client.get('/api/projects?radius=1&latitude=2.0&longitude=1.0')
     assert res._status_code == 200
     assert len(res.json) == 1
 
@@ -63,6 +63,23 @@ def test_projects_get_geo(client):
     assert res.json[0]["idinstitution"] == 1
     assert res.json[0]["name"] == "Computer malt Bild"
     assert res.json[0]["webpage"] == "http://www.cmb.de"
+
+
+def test_projects_get_geo2(client):
+    """get without parameters."""
+    res = client.get('/api/projects?radius=1&latitude=-13.531950&longitude=-71.967461')
+    assert res._status_code == 200
+    assert len(res.json) == 2
+
+    assert res.json[0]["id"] == 2
+    assert res.json[0]["idinstitution"] == 3
+    assert res.json[0]["name"] == "Rangaroek verteidigen"
+    assert res.json[0]["webpage"] == "http://www.asgard.as"
+
+    assert res.json[1]["id"] == 3
+    assert res.json[1]["idinstitution"] == 3
+    assert res.json[1]["name"] == "Softwareprojekt 2020"
+    assert res.json[1]["webpage"] == "http://www.swp.de"
 
 
 def test_projects_get_bad_geo(client):
