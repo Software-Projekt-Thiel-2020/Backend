@@ -13,6 +13,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from backend.database.model import Milestone, Institution, Donation, User
 from backend.database.model import Project
 from backend.resources.helpers import auth_user, check_params_int, db_session_dec
+from backend.smart_contracts.web3 import WEB3
 from backend.smart_contracts.web3_project import project_constructor, project_add_milestone, \
     project_constructor_check, project_add_milestone_check
 
@@ -158,7 +159,8 @@ def projects_id(session, id):  # noqa
 @BP.route('', methods=['POST'])
 @auth_user
 @db_session_dec
-def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, too-many-locals, too-many-branches
+# pylint:disable=unused-argument, too-many-locals, too-many-branches, too-many-statements
+def projects_post(session, user_inst: User):
     """
     Handles POST for resource <base>/api/projects .
 
@@ -222,21 +224,33 @@ def projects_post(session, user_inst: User):  # pylint:disable=unused-argument, 
     )
 
     try:
+        price_sum = 0
         milestones_json = json.loads(milestones)
         if len(milestones_json) == 0:
             return jsonify({'error': 'Missing milestone'}), 403
-        for milestone in milestones_json:
-            mile_check = project_add_milestone_check(project_inst, user_inst, milestone['name'],
-                                                     int(milestone['goal']), int(milestone['until']))
-            if mile_check:
-                return jsonify({'error': 'milestone error: ' + mile_check}), 400
 
-        ctor_check = project_constructor_check(user_inst, str(str(description)[0:32]), goal)
+        ctor_check, price = project_constructor_check(user_inst, str(str(description)[0:32]), goal)
         if ctor_check:
             return jsonify({'error': 'sc error: ' + ctor_check}), 400
+        price_sum += price
+
+        owner_balance = WEB3.eth.getBalance(user_inst.publickeyUser)
+        if price_sum > owner_balance:
+            return jsonify({'error': 'milestone error: not enough balance to create project'}), 400
+
+        for milestone in milestones_json:
+            mile_check, price = project_add_milestone_check(session, project_inst, user_inst, milestone['name'],
+                                                            int(milestone['goal']), int(milestone['until']))
+            if mile_check:
+                return jsonify({'error': 'milestone error: ' + mile_check}), 400
+            price_sum += price
+
+        if price_sum > owner_balance:
+            return jsonify({'error': 'milestone error: not enough balance to create all milestones'}), 400
 
         project_inst.scAddress = project_constructor(user_inst, str(str(description)[0:32]), goal)
         session.add(project_inst)
+        session.commit()
 
         for milestone in sorted(milestones_json, key=lambda x: x['goal']):
             sc_id = project_add_milestone(project_inst, user_inst, milestone['name'],
@@ -313,12 +327,16 @@ def projects_patch(session, user_inst, id):
         return jsonify({'error': 'User has no permission to create projects for this institution'}), 403
 
     try:
+        price_sum = 0
         milestones_json = json.loads(milestones)
         for milestone in milestones_json:
-            mile_check = project_add_milestone_check(project_inst, user_inst, milestone['name'],
-                                                     int(milestone['goal']), int(milestone['until']))
+            mile_check, price = project_add_milestone_check(session, project_inst, user_inst, milestone['name'],
+                                                            int(milestone['goal']), int(milestone['until']))
             if mile_check:
                 return jsonify({'error': 'milestone error: ' + mile_check}), 400
+            price_sum += price
+        if price_sum > WEB3.eth.getBalance(user_inst.publickeyUser):
+            return jsonify({'error': 'milestone error: not enough balance to create all milestones'}), 400
 
         for milestone in sorted(milestones_json, key=lambda x: x['goal']):
             sc_id = project_add_milestone(project_inst, user_inst,

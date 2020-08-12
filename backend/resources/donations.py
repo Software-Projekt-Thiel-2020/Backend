@@ -170,7 +170,7 @@ def milestones_vote(session, user_inst: User):
     if donation.voted is not None:
         return jsonify({"error": "already voted"}), 400
 
-    vote_check = project_donate_vote_check(session, user_inst, 0 if vote else 1, donation)
+    vote_check = project_donate_vote_check(user_inst, 0 if vote else 1, donation)
     if vote_check:
         return jsonify({'error': 'sc error: ' + vote_check}), 400
 

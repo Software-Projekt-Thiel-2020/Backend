@@ -8,7 +8,7 @@ from web3.exceptions import InvalidAddress
 from backend.database.model import Voucher, VoucherUser, Institution
 from backend.resources.helpers import auth_user, check_params_int, db_session_dec
 from backend.smart_contracts.web3 import WEB3
-from backend.smart_contracts.web3_voucher import add_voucher, redeem_voucher, redeem_voucher_check
+from backend.smart_contracts.web3_voucher import add_voucher, redeem_voucher, redeem_voucher_check, add_voucher_check
 from backend.database.constants import DEC_LEN
 
 BP = Blueprint('voucher', __name__, url_prefix='/api/vouchers')
@@ -193,19 +193,22 @@ def voucher_post(session, user):
 
     try:
         voucher = session.query(Voucher).filter(Voucher.idVoucher == id_voucher).one()
-        balance = WEB3.eth.getBalance(user.publickeyUser)
+        inst: Institution = session.query(Institution).filter(Institution.idInstitution == voucher.institution_id).one()
 
-        if balance < int(voucher.priceVoucher):  # ToDo: gas-cost?
+        if WEB3.eth.getBalance(user.publickeyUser) < int(voucher.priceVoucher):
             return jsonify({'error': 'not enough balance'}), 406
         if not voucher.available:
             return jsonify({'error': 'voucher not available'}), 406
+
+        err = add_voucher_check(
+            user, inst, voucher.titleVoucher, abs((datetime.now() + timedelta(0, 2 * 31536000)) - datetime.now()).days)
+        if err:
+            return jsonify({'error': 'voucher error: ' + err}), 400
 
         association = VoucherUser(usedVoucher=False,
                                   expires_unixtime=(datetime.now() + timedelta(0, 2 * 31536000)),
                                   voucher=voucher,
                                   user=user)
-
-        inst: Institution = session.query(Institution).filter(Institution.idInstitution == voucher.institution_id).one()
 
         transaction = {
             'nonce': WEB3.eth.getTransactionCount(user.publickeyUser),

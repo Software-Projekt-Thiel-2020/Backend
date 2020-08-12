@@ -208,6 +208,14 @@ def test_donations_post(client_w_eth):
     assert res.json[0]["milestoneid"] == 1
 
 
+def test_donations_post_balance(client):
+    headers = {"authToken": TOKEN_2, "idproject": 1, "amount": int(WEB3.toWei(0.02, 'ether')), "voteEnabled": 1}
+    res = client.post('/api/donations', headers=headers)
+
+    assert res._status_code in [400, 406]
+    assert "balance" in res.json["error"]
+
+
 def test_donations_post2(client_w_eth):
     test_user_post(client_w_eth)
     res = client_w_eth.get('/api/users?username=sw2020testuser1337.id.blockstack')
@@ -355,6 +363,26 @@ def test_donations_vote(client_w_eth):
     assert res._status_code == 200
     assert len(res.json) == 1
     assert res.json["status"] == "ok"
+
+
+def test_donations_vote_balance(client_w_eth):
+    test_donations_post(client_w_eth)
+    # spend all money
+    signed_tx = WEB3.eth.account.signTransaction({'from': '0x7Dca2Ba711f089C608ABe8C6F59Fe7B5F84fced8',
+                                                  'nonce': WEB3.eth.getTransactionCount('0x7Dca2Ba711f089C608ABe8C6F59Fe7B5F84fced8'),
+                                                  'to': WEB3.eth.defaultAccount,  # sw2020testuser2.id.blockstack
+                                                  'value': WEB3.eth.getBalance('0x7Dca2Ba711f089C608ABe8C6F59Fe7B5F84fced8') - WEB3.eth.gasPrice * 21000,
+                                                  'gasPrice': WEB3.eth.gasPrice,
+                                                  'gas': 21000},
+                                                 b'\x02P\x13\x96\xdc\xae\x86\x86\xff\x86\x83)Hj\xf1\x1c\x94\xc7?\xabj'
+                                                 b'\xda\x93\t\xc0\xe8\xe4\t\xde\xd1M\xaf')
+    WEB3.eth.waitForTransactionReceipt(WEB3.eth.sendRawTransaction(signed_tx.rawTransaction))
+
+    headers = {"authToken": TOKEN_2, "id": 5, "vote": 1}
+    res = client_w_eth.post('/api/donations/vote', headers=headers)
+
+    assert res._status_code in [400, 406]
+    assert "balance" in res.json["error"]
 
 
 def test_donations_vote2(client_w_eth):

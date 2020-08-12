@@ -268,12 +268,26 @@ def test_projects_post_required_params_no_milestone(client_w_eth):
     assert res._status_code == 403
     assert res.json["error"] == "Missing milestone"
 
+
 def test_projects_post_w_bad_milestones(client):
     headers = {"authToken": TOKEN_2, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1792094933,
                "milestones": "dennis", "idInstitution": 4, "description": b64encode(b"test description"), "short": b64encode(b"sdesc")}
     res = client.post('/api/projects', headers=headers)
     assert res._status_code == 400
     assert res.json["error"] == "invalid json"
+
+
+def test_projects_post_balance(client):
+    milestones = [
+        {"name": "goal_1", "goal": 100, "requiredVotes": 1337, "until": 1693094933},
+        {"name": "goal_2", "goal": 500, "requiredVotes": 42, "until": 1693094933},
+    ]
+    headers = {"authToken": TOKEN_2, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1792094933,
+               "milestones": json.dumps(milestones), "idInstitution": 4, "description": b64encode(b"test description"),
+               "short": b64encode(b"sdesc")}
+    res = client.post('/api/projects', headers=headers)
+    assert res._status_code in [400, 406]
+    assert "balance" in res.json["error"]
 
 
 def test_projects_post_w_milestones(client_w_eth):
@@ -308,6 +322,19 @@ def test_projects_post_w_milestones(client_w_eth):
     assert res.json["milestones"][1]["idProjekt"] == res.json["id"]
     assert res.json["milestones"][1]["goal"] == str(milestones[1]["goal"])
     assert res.json["milestones"][1]["until"] == milestones[1]["until"]
+
+
+def test_projects_post_balance(client):
+    milestones = [
+        {"name": "goal_1", "goal": 100, "requiredVotes": 1337, "until": 1693094933},
+        {"name": "goal_2", "goal": 500, "requiredVotes": 42, "until": 1693094933},
+    ]
+    headers = {"authToken": TOKEN_2, "name": "example", "goal": 5000, "requiredVotes": "1337", "until": 1792094933,
+               "milestones": json.dumps(milestones), "idInstitution": 4, "description": b64encode(b"test description"),
+               "short": b64encode(b"sdesc")}
+    res = client.post('/api/projects', headers=headers)
+    assert res._status_code in [400, 406]
+    assert "balance" in res.json["error"]
 
 
 def test_projects_post_w_webpage(client_w_eth):
@@ -519,6 +546,17 @@ def test_projects_patch_w_bad_webpage(client):
 def test_projects_patch_wo_auth_wo_params(client):
     res = client.patch('/api/projects/1')
     assert res._status_code == 401
+
+
+def test_projects_patch_w_milestones_balance(client):
+    milestones = [
+        {"name": "goal_1", "goal": WEB3.toWei(0.6, 'ether'), "until": 1693094933},
+        {"name": "goal_2", "goal": WEB3.toWei(0.7, 'ether'), "until": 1693094933},
+    ]
+    headers = {"authToken": TOKEN_1, "milestones": json.dumps(milestones), "idInstitution": 4}
+    res = client.patch('/api/projects/1', headers=headers)
+    assert res._status_code in [400, 406]
+    assert "balance" in res.json["error"]
 
 
 def test_projects_patch_w_milestones(client_w_eth):

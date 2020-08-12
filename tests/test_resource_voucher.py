@@ -393,6 +393,28 @@ def test_voucher_user_delete2(client_w_eth):
     assert res._status_code == 201
 
 
+def test_voucher_user_delete_balance(client_w_eth):
+    # create new voucher
+    headers = {"authToken": TOKEN_2, "idVoucher": 2}
+    res = client_w_eth.post('/api/vouchers/user', headers=headers)
+    assert res._status_code == 200
+    # spend all money
+    signed_tx = WEB3.eth.account.signTransaction({'from': '0x7Dca2Ba711f089C608ABe8C6F59Fe7B5F84fced8',
+                                                  'nonce': WEB3.eth.getTransactionCount('0x7Dca2Ba711f089C608ABe8C6F59Fe7B5F84fced8'),
+                                                  'to': WEB3.eth.defaultAccount,  # sw2020testuser2.id.blockstack
+                                                  'value': WEB3.eth.getBalance('0x7Dca2Ba711f089C608ABe8C6F59Fe7B5F84fced8') - WEB3.eth.gasPrice * 21000,
+                                                  'gasPrice': WEB3.eth.gasPrice,
+                                                  'gas': 21000},
+                                                 b'\x02P\x13\x96\xdc\xae\x86\x86\xff\x86\x83)Hj\xf1\x1c\x94\xc7?\xabj'
+                                                 b'\xda\x93\t\xc0\xe8\xe4\t\xde\xd1M\xaf')
+    WEB3.eth.waitForTransactionReceipt(WEB3.eth.sendRawTransaction(signed_tx.rawTransaction))
+    # try to use this voucher
+    headers = {"authToken": TOKEN_2, "id": 5}
+    res = client_w_eth.delete('/api/vouchers/user', headers=headers)
+    assert res._status_code in [400, 406]
+    assert "balance" in res.json["error"]
+
+
 def test_voucher_user_delete_bad_id(client):
     headers = {"authToken": TOKEN_1, "id": 2}
     res = client.delete('/api/vouchers/user', headers=headers)
@@ -483,6 +505,13 @@ def test_voucher_user_post2(client_w_eth):
     assert res.json[0]["untilTime"] == datetime(2021, 5, 17).timestamp()
     assert res.json[0]["used"]
     assert res.json[0]["price"] == str(WEB3.toWei(0.02, 'ether'))
+
+
+def test_voucher_user_post_balance(client):
+    headers = {"authToken": TOKEN_2, "idVoucher": 2}
+    res = client.post('/api/vouchers/user', headers=headers)
+    assert res._status_code in [400, 406]
+    assert "balance" in res.json["error"]
 
 
 def test_voucher_user_post_bad_voucherid(client_w_eth):

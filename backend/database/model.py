@@ -221,22 +221,22 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
         # Deploy Sample SmartContracts
         WEB3.eth.sendTransaction({'from': WEB3.eth.accounts[9],
                                   'to': users[5].publickeyUser,  # sw2020testuser1.id.blockstack
-                                  'value': 1 * 10 ** 18})
+                                  'value': 16616580000000000})
         WEB3.eth.sendTransaction({'from': WEB3.eth.accounts[9],
                                   'to': users[6].publickeyUser,  # sw2020testuser2.id.blockstack
-                                  'value': 1 * 10 ** 18})
+                                  'value': 9442340000000000})
         WEB3.eth.sendTransaction({'from': WEB3.eth.accounts[9],
                                   'to': users[3].publickeyUser,  #
-                                  'value': 1 * 10 ** 18})
+                                  'value': 51664200000000000})
         WEB3.eth.sendTransaction({'from': WEB3.eth.accounts[9],
                                   'to': users[2].publickeyUser,  #
-                                  'value': 1 * 10 ** 18})
+                                  'value': 21664200000000000})
         WEB3.eth.sendTransaction({'from': WEB3.eth.accounts[9],
                                   'to': users[1].publickeyUser,  #
-                                  'value': 1 * 10 ** 18})
+                                  'value': 22221860000000000})
         WEB3.eth.sendTransaction({'from': WEB3.eth.accounts[9],
                                   'to': users[0].publickeyUser,  #
-                                  'value': 1 * 10 ** 18})
+                                  'value': 32521860000000000})
 
         # ========== Institutions ==========
         voucher_contract = WEB3.eth.contract(abi=INSTITUTION_JSON["abi"], bytecode=INSTITUTION_JSON["bytecode"])
@@ -273,7 +273,7 @@ def add_sample_data(db_session):  # pylint:disable=too-many-statements, too-many
         project_contract = WEB3.eth.contract(abi=PROJECT_JSON["abi"], bytecode=PROJECT_JSON["bytecode"])
         # constructor(_owner, _admin, _partial_payment, _projectTargetName, _projectTargetAmount, _minDonation)
         tx_hash = project_contract.constructor(users[5].publickeyUser, WEB3.eth.defaultAccount, 80,
-                                               WEB3.toBytes(text="test description"), WEB3.toWei(1, 'ether'),
+                                               WEB3.toBytes(text="test description"), WEB3.toWei(99999999999, 'ether'),
                                                WEB3.toWei(0.01, 'ether')).transact()
         TX_RECEIPTS.append(WEB3.eth.waitForTransactionReceipt(tx_hash))  # 4
 
