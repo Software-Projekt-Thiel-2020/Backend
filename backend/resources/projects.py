@@ -254,7 +254,6 @@ def projects_post(session, user_inst: User):
 
         project_inst.scAddress = project_constructor(user_inst, str(str(description)[0:32]), goal)
         session.add(project_inst)
-        session.commit()
 
         for milestone in sorted(milestones_json, key=lambda x: x['goal']):
             sc_id = project_add_milestone(project_inst, user_inst, milestone['name'],
