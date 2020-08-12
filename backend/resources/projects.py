@@ -58,11 +58,15 @@ def projects_get(session):
 
     json_data = []
     for result in results:
-
-        if radius and latitude and longitude and \
-                distance.distance((latitude, longitude), (result.institution.latitude, result.institution.longitude)) \
-                        .km > radius:
-            continue
+        if radius and latitude and longitude:
+            if result.latitude and result.longitude:
+                if distance.distance((latitude, longitude),
+                                     (result.latitude, result.longitude)).km > radius:
+                    continue
+            else:
+                if distance.distance((latitude, longitude),
+                                     (result.institution.latitude, result.institution.longitude)).km > radius:
+                    continue
         json_data.append({
             'id': result.idProject,
             'name': result.nameProject,
