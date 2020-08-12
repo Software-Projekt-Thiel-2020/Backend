@@ -121,8 +121,8 @@ def donations_post(session, user_inst):
             voteDonation=bool(int(vote_enabled)),
         )
         # If already voted for this milestone, set donations_inst.voted
-        donations_milestone = session.query(Donation).join(Donation.milestone) \
-            .filter(Donation.user == user_inst). \
+        donations_milestone = session.query(Donation).join(Donation.milestone).join(Milestone.project) \
+            .filter(Donation.user == user_inst).filter(Milestone.project == results). \
             filter(Milestone.milestone_sc_id == donations_inst.milestone.milestone_sc_id).first()  # noqa
         if donations_milestone:
             donations_inst.voted = donations_milestone.voted
