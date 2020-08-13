@@ -182,6 +182,9 @@ def institutions_patch(session, user_inst):  # pylint:disable=too-many-branches
     if None in [latitude, longitude] and any([latitude, longitude]):
         return jsonify({"error": "bad geo argument"}), 400
 
+    if webpage is not None and not validators.url(webpage):
+        return jsonify({'error': 'webpage is not a valid url'}), 400
+
     try:
         if name:  # check if name is already taken
             if session.query(Institution).filter(Institution.nameInstitution == name).one_or_none():
