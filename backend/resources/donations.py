@@ -181,8 +181,8 @@ def milestones_vote(session, user_inst: User):
     voted = 1 if vote else (-1)
 
     donations_milestone = session.query(Donation).join(Donation.milestone)\
-        .filter(Donation.user == user_inst).\
-        filter(Milestone.milestone_sc_id == donation.milestone.milestone_sc_id)  # noqa
+        .filter(Donation.user == user_inst).filter(Donation.milestone == donation.milestone)\
+        .filter(Milestone.milestone_sc_id == donation.milestone.milestone_sc_id)  # noqa
 
     for don in donations_milestone:
         don.voted = voted
