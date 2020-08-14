@@ -78,7 +78,7 @@ def institutions_get(session):
 @BP.route('', methods=['POST'])
 @auth_user
 @db_session_dec
-def institutions_post(session, user_inst):  # pylint:disable=unused-argument
+def institutions_post(session, user_inst):  # pylint:disable=unused-argument, too-many-branches
     """
     Handles POST for resource <base>/api/institutions .
     :return: json response
@@ -105,10 +105,11 @@ def institutions_post(session, user_inst):  # pylint:disable=unused-argument
     except ValueError:
         return jsonify({"error": "bad argument"}), 400
 
-    try:
-        description = b64decode(description).decode("latin-1")
-    except (TypeError, binascii.Error):
-        return jsonify({"error": "bad base64 encoding"}), 400
+    if description:
+        try:
+            description = b64decode(description).decode("latin-1")
+        except (TypeError, binascii.Error):
+            return jsonify({"error": "bad base64 encoding"}), 400
 
     if short:
         try:
